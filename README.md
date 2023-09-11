@@ -1,0 +1,2 @@
+pnpm install
+npx nodemon
