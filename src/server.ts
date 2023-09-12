@@ -3,11 +3,13 @@ import express from 'express';
 import http from 'http';
 import mongoose from 'mongoose';
 import contractRoutes from './routes/contract.routes';
+import userRoutes from './routes/user.routes';
+import auth from './middlewares/auth.middleware';
 
 const router = express();
 
 mongoose
-  .connect(config.mongo.url, { retryWrites: true, w: 'majority' })
+  .connect(config.mongo.url, { retryWrites: true })
   .then(() => {
     console.log('MongoDB connected');
     start();
@@ -17,6 +19,7 @@ mongoose
   });
 
 const start = () => {
+  // Usefull log
   router.use((req, res, next) => {
     console.log(
       `${req.method} : ${req.url}, from: ${req.socket.remoteAddress}`,
@@ -42,10 +45,12 @@ const start = () => {
   });
 
   // Routes
-  router.use('/contracts', contractRoutes);
+  router.use('/user', userRoutes);
+  router.use('/contract', auth, contractRoutes);
 
+  // Check route
   router.get('/is-it-alive', (req, res, next) => {
-    res.status(200).json({ message: 'yes it is!' });
+    res.json({ message: 'yes it is!' });
   });
 
   router.use((req, res, next) => {
@@ -56,5 +61,7 @@ const start = () => {
 
   http
     .createServer(router)
-    .listen(config.server.port, () => console.log('Server is running'));
+    .listen(config.server.port, () =>
+      console.log(`Server is running on port ${config.server.port}`),
+    );
 };
