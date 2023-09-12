@@ -31,7 +31,7 @@ export const genToken = (user: any): string => {
     },
   };
   const token = jwt.sign(payload, config.auth.secret, {
-    expiresIn: '1h',
+    expiresIn: '4h',
   });
   return token;
 };

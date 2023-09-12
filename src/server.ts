@@ -45,6 +45,14 @@ const start = () => {
   });
 
   // Routes
+  router.use((req, res, next) => {
+    if (req.method === 'POST') {
+      if (req.headers['content-type'] !== 'application/json') {
+        return res.status(415).send('Content-Type should be application/json');
+      }
+    }
+    next();
+  });
   router.use('/user', userRoutes);
   router.use('/contract', auth, contractRoutes);
 
