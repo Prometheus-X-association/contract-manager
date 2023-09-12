@@ -4,15 +4,21 @@ import Contract, {
   IContractDB,
   IContractHeader,
 } from 'models/contract.model';
-import { genContract } from 'services/contract.service';
+import contract from 'services/contract.service';
+import { pdp } from 'services/policy.service';
 // Create
 export const createContract = async (req: Request, res: Response) => {
-  console.log(req);
+  const isAuthorized = await pdp.evalPolicy(req);
+  if (!isAuthorized) {
+    return res.status(403).json({
+      error: 'Unauthorized. Security policies not met.',
+    });
+  }
   try {
     const contractHeader: IContractHeader = {
       caller: req.body.caller,
     };
-    const generatedContract: IContract = genContract(contractHeader);
+    const generatedContract: IContract = contract.genContract(contractHeader);
     const newContract = new Contract(generatedContract);
     const savedContract = await newContract.save();
     return res.status(201).json(savedContract);
@@ -22,7 +28,6 @@ export const createContract = async (req: Request, res: Response) => {
     });
   }
 };
-
 // Read
 export const getContract = async (req: Request, res: Response) => {
   try {
@@ -38,7 +43,6 @@ export const getContract = async (req: Request, res: Response) => {
       .json({ error: 'An error occurred while retrieving the contract.' });
   }
 };
-
 // Update
 export const updateContract = async (req: Request, res: Response) => {
   try {
