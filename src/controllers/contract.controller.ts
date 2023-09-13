@@ -1,9 +1,6 @@
 import { Request, Response } from 'express';
-import Contract, {
-  IContract,
-  IContractDB,
-  IContractHeader,
-} from 'models/contract.model';
+import Contract from 'models/contract.model';
+import { IContract, IContractDB } from 'models/interfaces/contract.interface';
 import contract from 'services/contract.service';
 import { pdp } from 'services/policy.service';
 // Create
@@ -15,16 +12,14 @@ export const createContract = async (req: Request, res: Response) => {
     });
   }
   try {
-    const contractHeader: IContractHeader = {
-      caller: req.body.caller,
-    };
-    const generatedContract: IContract = contract.genContract(contractHeader);
+    const generatedContract: IContract = contract.genContract(req.body);
     const newContract = new Contract(generatedContract);
     const savedContract = await newContract.save();
     return res.status(201).json(savedContract);
   } catch (error) {
     res.status(500).json({
-      error: 'An error occurred while creating the contract.',
+      message: `An error occurred while creating the contract.`,
+      error,
     });
   }
 };
