@@ -5,7 +5,7 @@ const pep = async (req: Request, res: Response, next: NextFunction) => {
   try {
     // tmp
     const policy: PDPPolicy = {
-      subjectType: 'contract',
+      subject: 'contract',
       action: req.method as PDPAction,
       conditions: {
         message: 'hello',
