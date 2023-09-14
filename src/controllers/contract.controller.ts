@@ -2,15 +2,8 @@ import { Request, Response } from 'express';
 import Contract from 'models/contract.model';
 import { IContract, IContractDB } from 'models/interfaces/contract.interface';
 import contract from 'services/contract.service';
-import { pdp } from 'services/policy.service';
 // Create
 export const createContract = async (req: Request, res: Response) => {
-  const isAuthorized = await pdp.evalPolicy(req);
-  if (!isAuthorized) {
-    return res.status(403).json({
-      error: 'Unauthorized. Security policies not met.',
-    });
-  }
   try {
     const generatedContract: IContract = contract.genContract(req.body);
     const newContract = new Contract(generatedContract);

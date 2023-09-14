@@ -1,11 +1,11 @@
-import { config } from './config/config';
+import { config } from 'config/config';
 import express from 'express';
 import http from 'http';
 import mongoose from 'mongoose';
-import contractRoutes from './routes/contract.routes';
-import userRoutes from './routes/user.routes';
-import auth from './middlewares/auth.middleware';
-
+import contractRoutes from 'routes/contract.routes';
+import userRoutes from 'routes/user.routes';
+import auth from 'middlewares/auth.middleware';
+import pep from 'middlewares/pep.middlewares';
 const router = express();
 
 mongoose
@@ -44,6 +44,8 @@ const start = () => {
     next();
   });
 
+  // Policy enforcement point
+  router.use(pep);
   // Routes
   router.use((req, res, next) => {
     if (req.method === 'POST') {
