@@ -3,17 +3,23 @@ import pdp, { PDPAction, PDPPolicy } from 'services/pdp.service';
 
 const pep = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    // tmp
+    const urlSegments = req.url.split('/');
     const policy: PDPPolicy = {
-      subject: 'contract',
+      subject: urlSegments[1],
       action: req.method as PDPAction,
-      conditions: {
-        message: 'hello',
-      } /*
-      fields: [],
-      */,
     };
 
+    // tmp
+    policy.conditions =
+      policy.subject === 'user'
+        ? {
+            task: urlSegments[2],
+          }
+        : policy.subject === 'contract'
+        ? {
+            participant: 'admin',
+          }
+        : {};
     const isAuthorized = await pdp.evalPolicy(policy);
     if (isAuthorized) {
       next();
