@@ -4,6 +4,7 @@ import http from 'http';
 import mongoose from 'mongoose';
 import contractRoutes from 'routes/contract.routes';
 import userRoutes from 'routes/user.routes';
+import papRoutes from 'routes/pap.routes';
 import auth from 'middlewares/auth.middleware';
 import pep from 'middlewares/pep.middlewares';
 const router = express();
@@ -46,7 +47,6 @@ const start = () => {
 
   // Policy enforcement point
   router.use(pep);
-  // Routes
   router.use((req, res, next) => {
     if (req.method === 'POST') {
       if (req.headers['content-type'] !== 'application/json') {
@@ -55,9 +55,10 @@ const start = () => {
     }
     next();
   });
+  // Routes
   router.use('/user', userRoutes);
   router.use('/contract', auth, contractRoutes);
-
+  router.use('/pap', auth, papRoutes);
   // Check route
   router.get('/is-it-alive', (req, res, next) => {
     res.json({ message: 'yes it is!' });

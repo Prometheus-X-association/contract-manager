@@ -1,4 +1,4 @@
-// Policy Information Point
+// Policy Service
 import { PDPPolicy } from './pdp.service';
 
 // Temporary static policies for testing

@@ -34,7 +34,7 @@ interface Policy {
   identifier?: string;
   startDate?: string;
   endDate?: string;
-}
+} //
 interface SpiCategory {}
 export interface IContract {
   '@context': string;

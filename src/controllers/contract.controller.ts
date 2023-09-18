@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import Contract from 'models/contract.model';
-import { IContract, IContractDB } from 'models/interfaces/contract.interface';
+import { IContract, IContractDB } from 'interfaces/contract.interface';
 import contract from 'services/contract.service';
 // Create
 export const createContract = async (req: Request, res: Response) => {
