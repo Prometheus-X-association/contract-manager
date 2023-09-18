@@ -9,17 +9,15 @@ import auth from 'middlewares/auth.middleware';
 import pep from 'middlewares/pep.middlewares';
 const router = express();
 
-mongoose
-  .connect(config.mongo.url, { retryWrites: true })
-  .then(() => {
+const startServer = async () => {
+  try {
+    await mongoose.connect(config.mongo.url, { retryWrites: true });
     console.log('MongoDB connected');
-    start();
-  })
-  .catch((e) => {
-    console.log(e);
-  });
+  } catch (error) {
+    console.error('Error connecting to MongoDB:', error);
+    process.exit(1);
+  }
 
-const start = () => {
   // Usefull log
   router.use((req, res, next) => {
     console.log(
@@ -70,9 +68,7 @@ const start = () => {
     return res.status(404).json({ message });
   });
 
-  http
-    .createServer(router)
-    .listen(config.server.port, () =>
-      console.log(`Server is running on port ${config.server.port}`),
-    );
+  return http.createServer(router);
 };
+
+export default { router, startServer };

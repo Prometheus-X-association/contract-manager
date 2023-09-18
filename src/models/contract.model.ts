@@ -5,6 +5,11 @@ const ContractSchema: Schema = new Schema({
   createdAt: {
     type: Date,
     default: Date.now,
+    // Temporary field
+    updated: {
+      type: Boolean,
+      default: false,
+    },
   },
 });
 // Create a MongoDB model based on the schema

@@ -3,6 +3,7 @@ import { IPolicy } from '../interfaces/policy.interface';
 
 // Policy mongoose schema
 const policySchema: Schema = new Schema({
+  // Temporary fields
   name: { type: String, required: true },
   description: { type: String, required: true },
 });

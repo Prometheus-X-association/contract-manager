@@ -12,6 +12,7 @@ import policyService from 'services/policy.service';
 export type PDPAction = 'POST' | 'GET' | 'UPDATE' | 'DELETE';
 
 export interface PDPPolicy {
+  dbId?: string;
   subject: string;
   action: PDPAction;
   conditions?: any;
