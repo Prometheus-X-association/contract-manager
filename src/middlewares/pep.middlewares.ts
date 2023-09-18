@@ -1,25 +1,11 @@
+// Policy Enforcement Point
 import { Request, Response, NextFunction } from 'express';
 import pdp, { PDPAction, PDPPolicy } from 'services/pdp.service';
+import pip from 'services/pip.service';
 
 const pep = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const urlSegments = req.url.split('/');
-    const policy: PDPPolicy = {
-      subject: urlSegments[1],
-      action: req.method as PDPAction,
-    };
-
-    // tmp
-    policy.conditions =
-      policy.subject === 'user'
-        ? {
-            task: urlSegments[2],
-          }
-        : policy.subject === 'contract'
-        ? {
-            participant: 'admin',
-          }
-        : {};
+    const policy: PDPPolicy = pip.buildAuthenticationPolicy(req);
     const isAuthorized = await pdp.evalPolicy(policy);
     if (isAuthorized) {
       next();

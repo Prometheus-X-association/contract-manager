@@ -1,3 +1,4 @@
+// Policy Decision Point
 import {
   AbilityBuilder,
   PureAbility,
@@ -5,6 +6,7 @@ import {
   SubjectType,
   mongoQueryMatcher,
 } from '@casl/ability';
+import policyService from 'services/policy.service';
 
 // Define custom types and interfaces
 export type PDPAction = 'POST' | 'GET' | 'UPDATE' | 'DELETE';
@@ -47,29 +49,8 @@ const defineAbility = (policies: PDPPolicy[]) => {
 
 // Evaluate a policy to check permissions
 const evalPolicy = async (policy: PDPPolicy) => {
-  // Temporary static policies for testing
-  const policies: PDPPolicy[] = [
-    {
-      subject: 'contract',
-      action: 'GET',
-      conditions: {},
-    },
-    {
-      subject: 'contract',
-      action: 'DELETE',
-      conditions: {
-        participant: 'admin',
-      },
-    },
-    {
-      subject: 'user',
-      action: 'GET',
-      conditions: {
-        task: 'login',
-      },
-    },
-  ];
   // Define the ability based on policies
+  const policies: PDPPolicy[] = policyService.fetch();
   const ability = defineAbility(policies);
   // Check if the given policy has permission
   const hasPermission = ability.can(policy.action, {

@@ -6,6 +6,7 @@ const ContractSchema: Schema = new Schema({
     type: Date,
     default: Date.now,
   },
+  /*
   caller: {
     type: String,
     default: '',
@@ -14,6 +15,7 @@ const ContractSchema: Schema = new Schema({
     type: Boolean,
     default: false,
   },
+  */
 });
 
 export default mongoose.model<IContractDB>('Contract', ContractSchema);
