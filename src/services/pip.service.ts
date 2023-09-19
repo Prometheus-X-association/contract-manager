@@ -1,10 +1,10 @@
 // Policy Information Point
-import { PDPAction, PDPPolicy } from './pdp.service';
+import { PDPAction, AuthorizationPolicy } from './pdp.service';
 import { Request } from 'express';
 
 const buildAuthenticationPolicy = (req: Request) => {
   const urlSegments = req.url.split('/');
-  const policy: PDPPolicy = {
+  const policy: AuthorizationPolicy = {
     subject: urlSegments[1],
     action: req.method as PDPAction,
   };

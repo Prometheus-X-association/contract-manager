@@ -54,4 +54,8 @@ export interface IContract {
 export type IContractDB = IContract &
   Document & {
     createdAt: Date;
+    // tmp field
+    updated: boolean;
+    signedByOrchestrator: boolean;
+    signedByParticipant: boolean;
   };

@@ -1,7 +1,7 @@
 // Policy Administration Point
 import Policy from 'models/policy.model';
 import { Request } from 'express';
-import policyService from './policy.service';
+import policyService from './policy.provider.service';
 
 // Create a new policy
 const create = async (req: Request) => {

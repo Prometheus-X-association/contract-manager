@@ -6,12 +6,12 @@ import {
   SubjectType,
   mongoQueryMatcher,
 } from '@casl/ability';
-import policyService from 'services/policy.service';
+import policyService from 'services/policy.provider.service';
 
 // Define custom types and interfaces
 export type PDPAction = 'POST' | 'GET' | 'UPDATE' | 'DELETE';
 
-export interface PDPPolicy {
+export interface AuthorizationPolicy {
   dbId?: string;
   subject: string;
   action: PDPAction;
@@ -31,11 +31,11 @@ const lambdaMatcher = (matchConditions: MatchConditions) => {
 };
 
 // Define the ability based on provided policies
-const defineAbility = (policies: PDPPolicy[]) => {
+const defineAbility = (policies: AuthorizationPolicy[]) => {
   // Create an AbilityBuilder instance
   const { can: allow, build } = new AbilityBuilder<Ability>(PureAbility);
   // Define permissions based on policies
-  policies.forEach((item: PDPPolicy) => {
+  policies.forEach((item: AuthorizationPolicy) => {
     const matchConditions = mongoQueryMatcher(item.conditions);
     allow(
       item.action,
@@ -49,9 +49,9 @@ const defineAbility = (policies: PDPPolicy[]) => {
 };
 
 // Evaluate a policy to check permissions
-const evalPolicy = async (policy: PDPPolicy) => {
+const evalPolicy = async (policy: AuthorizationPolicy) => {
   // Define the ability based on policies
-  const policies: PDPPolicy[] = policyService.fetch();
+  const policies: AuthorizationPolicy[] = policyService.fetch();
   const ability = defineAbility(policies);
   // Check if the given policy has permission
   const hasPermission = ability.can(policy.action, {

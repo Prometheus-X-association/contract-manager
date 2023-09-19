@@ -10,6 +10,14 @@ const ContractSchema: Schema = new Schema({
       type: Boolean,
       default: false,
     },
+    signedByOrchestrator: {
+      type: Boolean,
+      default: false,
+    },
+    signedByParticipant: {
+      type: Boolean,
+      default: false,
+    },
   },
 });
 // Create a MongoDB model based on the schema

@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
 import Contract from 'models/contract.model';
 import { IContract, IContractDB } from 'interfaces/contract.interface';
-import contract from 'services/contract.service';
+import contractService from 'services/contract.service';
 // Create
 export const createContract = async (req: Request, res: Response) => {
   try {
-    const generatedContract: IContract = contract.genContract(req.body);
+    const generatedContract: IContract = contractService.genContract(req.body);
     const newContract = new Contract(generatedContract);
     const savedContract = await newContract.save();
     return res.status(201).json(savedContract);
@@ -64,3 +64,78 @@ export const deleteContract = async (req: Request, res: Response) => {
       .json({ error: 'An error occurred while deleting the contract.' });
   }
 };
+// Sign for orchestrator
+export const signContractForOrchestrator = async (
+  req: Request,
+  res: Response,
+) => {
+  try {
+    const contractId: string = req.params.id;
+    // Find the contract and update it with orchestrator signature
+    const updatedContract = await Contract.findOneAndUpdate(
+      { _id: contractId },
+      // temporary signature
+      { signedByOrchestrator: true },
+      // return updated document
+      { new: true },
+    );
+    if (!updatedContract) {
+      return res.status(404).json({ error: 'The contract does not exist.' });
+    }
+    res.status(200).json({ message: 'Contract signed successfully.' });
+  } catch (error) {
+    console.error('Error signing the contract:', error);
+    res
+      .status(500)
+      .json({ error: 'An error occurred while signing the contract.' });
+  }
+};
+// Sign for participant
+export const signContractForParticipant = async (
+  req: Request,
+  res: Response,
+) => {
+  try {
+    const contractId: string = req.params.id;
+    // Find the contract and update it with participant signature
+    const updatedContract = await Contract.findOneAndUpdate(
+      { _id: contractId },
+      // temporary signature
+      { signedByParticipant: true },
+      // return updated document
+      { new: true },
+    );
+    if (!updatedContract) {
+      return res.status(404).json({ error: 'The contract does not exist.' });
+    }
+    res.status(200).json({ message: 'Contract signed successfully.' });
+  } catch (error) {
+    console.error('Error signing the contract:', error);
+    res
+      .status(500)
+      .json({ error: 'An error occurred while signing the contract.' });
+  }
+};
+//
+// Check if data is authorized for exploitation based on the contract ?
+export async function checkDataExploitation(req: Request, res: Response) {
+  const contractId = req.params.id;
+  // const data = req.params.data; // Some data ?
+  try {
+    // Find the contract in the database by ID
+    const contract = await Contract.findById(contractId);
+    if (!contract) {
+      return res.status(404).json({ message: 'Contract not found' });
+    }
+    // Check if the data is authorized based on the contract using PDP ?
+    const isAuthorized = false; // Todo
+    if (isAuthorized) {
+      return res.status(200).json({ authorized: true });
+    } else {
+      return res.status(403).json({ authorized: false });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+}

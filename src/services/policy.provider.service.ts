@@ -1,8 +1,8 @@
-// Policy Service
-import { PDPPolicy } from './pdp.service';
+// Policy Provider Service
+import { AuthorizationPolicy } from './pdp.service';
 
 // Temporary default static policies for testing
-const policies: PDPPolicy[] = [
+const policies: AuthorizationPolicy[] = [
   {
     subject: 'contract',
     action: 'GET',
@@ -42,7 +42,7 @@ const add = (data: any) => {
 // Update an existing policy in the policy list by dbId
 const update = (id: string, data: any) => {
   // Find the policy in the list based on its ID
-  const index = policies.findIndex((policy: PDPPolicy) => {
+  const index = policies.findIndex((policy: AuthorizationPolicy) => {
     return policy.dbId === id;
   });
   if (index !== -1) {
@@ -53,7 +53,7 @@ const update = (id: string, data: any) => {
 // Remove a policy from the policy list by dbId
 const remove = (id: string) => {
   // Find the policy in the list based on its dbId
-  const index = policies.findIndex((policy: PDPPolicy) => {
+  const index = policies.findIndex((policy: AuthorizationPolicy) => {
     return policy.dbId === id;
   });
   if (index !== -1) {
@@ -62,7 +62,7 @@ const remove = (id: string) => {
   }
 };
 // Fetch all policies from the policy list
-const fetch = (): PDPPolicy[] => {
+const fetch = (): AuthorizationPolicy[] => {
   return policies;
 };
 
