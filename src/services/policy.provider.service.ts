@@ -22,6 +22,13 @@ const policies: AuthorizationPolicy[] = [
   },
   {
     subject: 'contract',
+    action: 'PUT',
+    conditions: {
+      participant: 'admin',
+    },
+  },
+  {
+    subject: 'contract',
     action: 'DELETE',
     conditions: {
       participant: 'admin',

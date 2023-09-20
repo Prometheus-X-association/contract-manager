@@ -9,7 +9,7 @@ import {
 import policyService from 'services/policy.provider.service';
 
 // Define custom types and interfaces
-export type PDPAction = 'POST' | 'GET' | 'UPDATE' | 'DELETE';
+export type PDPAction = 'POST' | 'GET' | 'PUT' | 'DELETE';
 
 export interface AuthorizationPolicy {
   dbId?: string;

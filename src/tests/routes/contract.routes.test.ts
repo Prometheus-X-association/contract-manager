@@ -5,6 +5,7 @@ import app from 'server';
 const SERVER_PORT = 9999;
 describe('Routes for Contract API', () => {
   let server: any;
+  let authToken: string;
   before(async () => {
     server = await app.startServer();
     await new Promise((resolve) => {
@@ -13,6 +14,19 @@ describe('Routes for Contract API', () => {
         resolve(true);
       });
     });
+
+    const authResponse = await supertest(app.router)
+      // .post('/user/login')
+      .get('/user/login');
+    /*
+      .send({
+        username: 'username',
+        password: 'password',
+      });
+      */
+
+    expect(authResponse.status).to.equal(200);
+    authToken = authResponse.body.token;
   });
 
   after(() => {
@@ -36,26 +50,27 @@ describe('Routes for Contract API', () => {
     };
     // Send a POST request to create the contract
     const response = await supertest(app.router)
-      .post('/contracts')
+      .post('/contract')
+      .set('Authorization', `Bearer ${authToken}`)
       .send(contractData);
     // Check if the response status is 201 (Created)
     expect(response.status).to.equal(201);
     // Check if the response has a 'id' property
-    expect(response.body).to.have.property('id');
+    expect(response.body).to.have.property('_id');
     // Store the contract ID for later use (for update and delete tests)
-    createdContractId = response.body.id;
+    createdContractId = response.body._id;
   });
 
   // Test case: Get a contract by ID
   it('should get a contract by ID', async () => {
     // Send a GET request to retrieve the contract by its ID
-    const response = await supertest(app.router).get(
-      `/contracts/${createdContractId}`,
-    );
+    const response = await supertest(app.router)
+      .get(`/contract/${createdContractId}`)
+      .set('Authorization', `Bearer ${authToken}`);
     // Check if the response status is 200 (OK)
     expect(response.status).to.equal(200);
     // Check if the response has a 'id' property
-    expect(response.body).to.have.property('id');
+    expect(response.body).to.have.property('_id');
   });
 
   // Test case: Update a contract by ID
@@ -65,29 +80,27 @@ describe('Routes for Contract API', () => {
     };
     // Send a PUT request to update the contract by its ID
     const response = await supertest(app.router)
-      .put(`/contracts/${createdContractId}`)
+      .put(`/contract/${createdContractId}`)
+      .set('Authorization', `Bearer ${authToken}`)
       .send(updatedContractData);
     // Check if the response status is 200 (OK)
     expect(response.status).to.equal(200);
     // Check if the response has the expected 'message'
-    expect(response.body).to.have.property(
-      'message',
-      'Contract updated successfully',
-    );
+    expect(response.body).to.have.property('_id');
   });
 
   // Test case: Delete a contract by ID
   it('should delete a contract by ID', async () => {
     // Send a DELETE request to delete the contract by its ID
-    const response = await supertest(app.router).delete(
-      `/contracts/${createdContractId}`,
-    );
+    const response = await supertest(app.router)
+      .delete(`/contract/${createdContractId}`)
+      .set('Authorization', `Bearer ${authToken}`);
     // Check if the response status is 200 (OK)
     expect(response.status).to.equal(200);
     // Check if the response has the expected 'message'
     expect(response.body).to.have.property(
       'message',
-      'Contract deleted successfully',
+      'Contract deleted successfully.',
     );
   });
 });
