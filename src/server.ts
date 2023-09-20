@@ -7,20 +7,21 @@ import userRoutes from 'routes/user.routes';
 import papRoutes from 'routes/pap.routes';
 import auth from 'middlewares/auth.middleware';
 import pep from 'middlewares/pep.middlewares';
+import { logger } from 'utils/logger';
 const router = express();
 
 const startServer = async () => {
   try {
     await mongoose.connect(config.mongo.url, { retryWrites: true });
-    console.log('MongoDB connected');
+    logger.info('MongoDB connected');
   } catch (error) {
-    console.error('Error connecting to MongoDB:', error);
+    logger.error('Error connecting to MongoDB:', error);
     process.exit(1);
   }
 
   // Usefull log
   router.use((req, res, next) => {
-    console.log(
+    logger.info(
       `${req.method} : ${req.url}, from: ${req.socket.remoteAddress}`,
     );
     next();
@@ -64,7 +65,7 @@ const startServer = async () => {
 
   router.use((req, res, next) => {
     const message = 'Not found!';
-    console.log(`404 ${message}`);
+    logger.info(`404 ${message}`);
     return res.status(404).json({ message });
   });
 

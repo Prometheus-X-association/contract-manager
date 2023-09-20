@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import Contract from 'models/contract.model';
 import { IContract, IContractDB } from 'interfaces/contract.interface';
 import contractService from 'services/contract.service';
+import { logger } from 'utils/logger';
 // Create
 export const createContract = async (req: Request, res: Response) => {
   try {
@@ -84,7 +85,7 @@ export const signContractForOrchestrator = async (
     }
     res.status(200).json({ message: 'Contract signed successfully.' });
   } catch (error) {
-    console.error('Error signing the contract:', error);
+    logger.error('Error signing the contract:', error);
     res
       .status(500)
       .json({ error: 'An error occurred while signing the contract.' });
@@ -110,7 +111,7 @@ export const signContractForParticipant = async (
     }
     res.status(200).json({ message: 'Contract signed successfully.' });
   } catch (error) {
-    console.error('Error signing the contract:', error);
+    logger.error('Error signing the contract:', error);
     res
       .status(500)
       .json({ error: 'An error occurred while signing the contract.' });
@@ -122,11 +123,14 @@ export async function checkDataExploitation(req: Request, res: Response) {
   const contractId = req.params.id;
   // const data = req.params.data; // Some data ?
   try {
+    /*
     // Find the contract in the database by ID
     const contract = await Contract.findById(contractId);
     if (!contract) {
       return res.status(404).json({ message: 'Contract not found' });
     }
+    */
+    // Todo
     // Check if the data is authorized based on the contract using PDP ?
     const isAuthorized = false; // Todo
     if (isAuthorized) {
@@ -135,7 +139,7 @@ export async function checkDataExploitation(req: Request, res: Response) {
       return res.status(403).json({ authorized: false });
     }
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     return res.status(500).json({ message: 'Internal server error' });
   }
 }

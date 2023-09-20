@@ -2,6 +2,7 @@
 import { Request, Response, NextFunction } from 'express';
 import pdp, { AuthorizationPolicy } from 'services/pdp.service';
 import pip from 'services/pip.service';
+import { logger } from 'utils/logger';
 
 const pep = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -15,7 +16,7 @@ const pep = async (req: Request, res: Response, next: NextFunction) => {
         .json({ error: 'Unauthorized. Security policies not met.' });
     }
   } catch (error) {
-    console.error(error);
+    logger.error(error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
 };

@@ -2,6 +2,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { IContract } from 'interfaces/contract.interface';
 import { config } from 'config/config';
+import { logger } from 'utils/logger';
 
 let contractModel: any;
 try {
@@ -11,7 +12,7 @@ try {
   contractModel = JSON.parse(modelData);
 } catch (error) {
   // Handle errors produced when reading the contract model
-  console.error('An error occurred while reading the contract model\n', error);
+  logger.error('An error occurred while reading the contract model\n', error);
 }
 
 // Validate the contract input data against the contract model
@@ -55,7 +56,7 @@ const genContract = (contractData: IContract): IContract => {
   // Validate the contract input data against the contract model
   const valid = isValid(contractData, contractModel);
   // tmp
-  console.log(contractData);
+  logger.info(contractData);
   // Spread the input contrat data to the final contrat
   const generatedContract: IContract = {
     //, ... Missing fields here

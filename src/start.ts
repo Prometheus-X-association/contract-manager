@@ -1,9 +1,35 @@
 import { config } from 'config/config';
+import mongoose from 'mongoose';
 import app from 'server';
+import { logger } from 'utils/logger';
 
 app.startServer().then((server) => {
-  console.log('Server created.');
+  logger.info('Server created.');
   server.listen(config.server.port, () =>
-    console.log(`Server is running on port ${config.server.port}.`),
+    logger.info(`Server is running on port ${config.server.port}.`),
   );
+  // Create a custom shutdown function
+  const gracefulShutdown = async () => {
+    logger.info('Shutting down gracefully...');
+    try {
+      // Close the Express server first
+      server.close(() => {
+        logger.info('Express server closed.');
+        // Close the MongoDB connection
+        mongoose.connection.close().then(() => {
+          logger.info('MongoDB connection closed.');
+          // Terminate the Node.js process gracefully
+          process.exit(0);
+        });
+      });
+    } catch (err) {
+      logger.error('Error during graceful shutdown:', err);
+      // Terminate with an error status code
+      process.exit(1);
+    }
+  };
+  // Handle the SIGTERM signal (During shutdown in production)
+  process.on('SIGTERM', gracefulShutdown);
+  // Handle the SIGINT signal (Using Ctrl+C)
+  process.on('SIGINT', gracefulShutdown);
 });
