@@ -8,9 +8,10 @@ const format = winston.format.printf(({ message }) => {
 });
 // Create a Winston logger with a default console transport.
 export const logger = winston.createLogger({
+  level: 'info',
   levels: {
-    info: 0,
-    error: 1,
+    error: 0,
+    info: 1,
   },
   transports: [
     new winston.transports.Console(),

@@ -1,9 +1,7 @@
 {
   "ts-node": {
     // Do not forget to `npm i -D tsconfig-paths`
-    "require": [
-      "tsconfig-paths/register"
-    ]
+    "require": ["tsconfig-paths/register"]
   },
   "compilerOptions": {
     /* Visit https://aka.ms/tsconfig to read more about this file */
@@ -56,7 +54,7 @@
     // "sourceMap": true,                                /* Create source map files for emitted JavaScript files. */
     // "inlineSourceMap": true,                          /* Include sourcemap files inside the emitted JavaScript. */
     // "outFile": "./",                                  /* Specify a file that bundles all outputs into one JavaScript file. If 'declaration' is true, also designates a file that bundles all .d.ts output. */
-    // "outDir": "./",                                   /* Specify an output folder for all emitted files. */
+    "outDir": "build" /* Specify an output folder for all emitted files. */,
     // "removeComments": true,                           /* Disable emitting comments. */
     // "noEmit": true,                                   /* Disable emitting files from a compilation. */
     // "importHelpers": true,                            /* Allow importing helper functions from tslib once per project, instead of including them per-file. */
@@ -105,7 +103,5 @@
     "skipLibCheck": true /* Skip type checking all .d.ts files. */,
     "baseUrl": "./src"
   },
-  "include": [
-    "src/**/*"
-  ]
+  "include": ["src/**/*"]
 }

@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 import app from 'server';
 import { logger } from 'utils/logger';
 
+logger.info('Starting server...');
 app.startServer().then((server) => {
   logger.info('Server created.');
   server.listen(config.server.port, () =>

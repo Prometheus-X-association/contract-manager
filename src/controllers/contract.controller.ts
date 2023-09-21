@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import Contract from 'models/contract.model';
 import { IContract, IContractDB } from 'interfaces/contract.interface';
 import contractService from 'services/contract.service';
+import pdp, { AuthorizationPolicy } from 'services/pdp.service';
 import { logger } from 'utils/logger';
 // Create
 export const createContract = async (req: Request, res: Response) => {
@@ -83,7 +84,7 @@ export const signContractForOrchestrator = async (
     if (!updatedContract) {
       return res.status(404).json({ error: 'The contract does not exist.' });
     }
-    res.status(200).json({ message: 'Contract signed successfully.' });
+    return res.json(updatedContract);
   } catch (error) {
     logger.error('Error signing the contract:', error);
     res
@@ -109,7 +110,7 @@ export const signContractForParticipant = async (
     if (!updatedContract) {
       return res.status(404).json({ error: 'The contract does not exist.' });
     }
-    res.status(200).json({ message: 'Contract signed successfully.' });
+    return res.json(updatedContract);
   } catch (error) {
     logger.error('Error signing the contract:', error);
     res
@@ -119,20 +120,24 @@ export const signContractForParticipant = async (
 };
 //
 // Check if data is authorized for exploitation based on the contract ?
-export async function checkDataExploitation(req: Request, res: Response) {
+export const checkDataExploitation = async (req: Request, res: Response) => {
   const contractId = req.params.id;
-  // const data = req.params.data; // Some data ?
+  // The data to be checked
+  const data = req.params.data;
   try {
-    /*
-    // Find the contract in the database by ID
+    //Retrieve contract data by ID
     const contract = await Contract.findById(contractId);
     if (!contract) {
       return res.status(404).json({ message: 'Contract not found' });
-    }
-    */
-    // Todo
-    // Check if the data is authorized based on the contract using PDP ?
-    const isAuthorized = false; // Todo
+    } /*
+    // Retrieve permissions from the contract
+    const contractPermissions = contract.permissions;
+    // Create an authorization policy based on contract permissions
+    const policy: AuthorizationPolicy =
+      buildPolicyFromContractPermissions(contractPermissions);
+    // Use the PDP to evaluate the authorization policy
+    const isAuthorized = await pdp.evalPolicy(policy);*/
+    const isAuthorized = false;
     if (isAuthorized) {
       return res.status(200).json({ authorized: true });
     } else {
@@ -142,4 +147,4 @@ export async function checkDataExploitation(req: Request, res: Response) {
     logger.error(error);
     return res.status(500).json({ message: 'Internal server error' });
   }
-}
+};

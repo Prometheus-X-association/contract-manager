@@ -15,7 +15,7 @@
   "version": "1.0.0",
   "main": "src/start.ts",
   "scripts": {
-    "build": "rm -rf build/ && tsc",
+    "build": "npx rimraf -rf build/ && tsc && tsc-alias",
     "start": "node build/start.js",
     "test": "mocha --require ts-node/register --exit ./src/tests/**/*.test.ts"
   },
@@ -30,7 +30,9 @@
     "@types/supertest": "^2.0.12",
     "chai": "^4.3.8",
     "mocha": "^10.2.0",
+    "rimraf": "^5.0.1",
     "supertest": "^6.3.3",
+    "tsc-alias": "^1.8.8",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.2.2"
   }

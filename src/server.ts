@@ -18,7 +18,7 @@ const startServer = async () => {
     logger.error('Error connecting to MongoDB:', error);
     process.exit(1);
   }
-
+  //
   // Usefull log
   router.use((req, res, next) => {
     logger.info(
