@@ -123,21 +123,21 @@ export const signContractForParticipant = async (
 export const checkDataExploitation = async (req: Request, res: Response) => {
   const contractId = req.params.id;
   // The data to be checked
-  const data = req.params.data;
+  const data = req.body;
   try {
     //Retrieve contract data by ID
     const contract = await Contract.findById(contractId);
     if (!contract) {
       return res.status(404).json({ message: 'Contract not found' });
-    } /*
+    }
     // Retrieve permissions from the contract
-    const contractPermissions = contract.permissions;
+    const permissions = contract.permission;
     // Create an authorization policy based on contract permissions
-    const policy: AuthorizationPolicy =
-      buildPolicyFromContractPermissions(contractPermissions);
+    const policies: AuthorizationPolicy[] =
+      contractService.genPolicies(permissions);
+    pdp.defineReferencePolicies(policies);
     // Use the PDP to evaluate the authorization policy
-    const isAuthorized = await pdp.evalPolicy(policy);*/
-    const isAuthorized = false;
+    const isAuthorized = pdp.evalPolicy(data.policies);
     if (isAuthorized) {
       return res.status(200).json({ authorized: true });
     } else {

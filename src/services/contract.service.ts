@@ -3,6 +3,7 @@ import * as path from 'path';
 import { IContract } from 'interfaces/contract.interface';
 import { config } from 'config/config';
 import { logger } from 'utils/logger';
+import { AuthorizationPolicy } from './pdp.service';
 
 let contractModel: any;
 try {
@@ -64,5 +65,9 @@ const genContract = (contractData: IContract): IContract => {
   };
   return generatedContract;
 };
-
-export default { genContract };
+// const policies: AuthorizationPolicy[]
+const genPolicies = (permission: any) => {
+  const policies: AuthorizationPolicy[] = [];
+  return policies;
+};
+export default { genContract, genPolicies };

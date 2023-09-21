@@ -2,10 +2,11 @@ import mongoose, { Schema } from 'mongoose';
 import { IContractDB } from '../interfaces/contract.interface';
 // Contract mongoose schema
 const ContractSchema: Schema = new Schema({
+  permissions: {},
+  // Temporary field
   createdAt: {
     type: Date,
     default: Date.now,
-    // Temporary field
     updated: {
       type: Boolean,
       default: false,

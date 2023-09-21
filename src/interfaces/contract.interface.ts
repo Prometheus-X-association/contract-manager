@@ -53,8 +53,8 @@ export interface IContract {
 // Type used for Contract data manipulation within the API
 export type IContractDB = IContract &
   Document & {
-    createdAt: Date;
     // tmp field
+    createdAt: Date;
     updated: boolean;
     signedByOrchestrator: boolean;
     signedByParticipant: boolean;
