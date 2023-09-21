@@ -7,7 +7,7 @@ import Policy from 'models/policy.model';
 export const createPolicy = (req: Request, res: Response) => {
   try {
     // create policy using pap
-    const policy = pap.create(req);
+    const policy = pap.create(req.body);
     res.status(201).json(policy);
   } catch (error: any) {
     res.status(400).json({ error: error.message });
@@ -16,7 +16,7 @@ export const createPolicy = (req: Request, res: Response) => {
 // Update a policy by ID
 export const updatePolicy = (req: Request, res: Response) => {
   try {
-    const policy = pap.update(req);
+    const policy = pap.update(req.params.id, req.body);
     if (!policy) {
       return res.status(404).json({ error: 'Policy not found' });
     }
@@ -28,7 +28,7 @@ export const updatePolicy = (req: Request, res: Response) => {
 // Delete a policy by ID
 export const deletePolicy = async (req: Request, res: Response) => {
   try {
-    const policy = pap.remove(req);
+    const policy = pap.remove(req.params.id);
     if (!policy) {
       return res.status(404).json({ error: 'Policy not found' });
     }

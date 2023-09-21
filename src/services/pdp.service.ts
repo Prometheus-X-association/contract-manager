@@ -28,6 +28,7 @@ const lambdaMatcher = (matchConditions: MatchConditions) => {
   return matchConditions;
 };
 
+// Policy Decision Point
 class PDPService {
   private static instance: PDPService;
   private referencePolicies: AuthorizationPolicy[] = [];
@@ -77,6 +78,5 @@ class PDPService {
     return build({ conditionsMatcher: lambdaMatcher });
   }
 }
-const pdp = PDPService.getInstance();
 
-export default pdp;
+export default PDPService.getInstance();

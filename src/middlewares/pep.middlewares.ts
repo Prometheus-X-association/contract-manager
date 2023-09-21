@@ -1,10 +1,10 @@
-// Policy Enforcement Point
 import { Request, Response, NextFunction } from 'express';
 import pdp, { AuthorizationPolicy } from 'services/pdp.service';
 import pip from 'services/pip.service';
 import policyService from 'services/policy.provider.service';
 import { logger } from 'utils/logger';
 
+// Policy Enforcement Point
 const pep = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const policy: AuthorizationPolicy = pip.buildAuthenticationPolicy(req);

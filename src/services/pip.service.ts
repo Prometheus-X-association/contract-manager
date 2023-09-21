@@ -1,24 +1,43 @@
-// Policy Information Point
 import { PDPAction, AuthorizationPolicy } from './pdp.service';
 import { Request } from 'express';
 
-const buildAuthenticationPolicy = (req: Request) => {
-  const urlSegments = req.url.split('/');
-  const policy: AuthorizationPolicy = {
-    subject: urlSegments[1],
-    action: req.method as PDPAction,
-  };
-  // tmp
-  policy.conditions =
-    policy.subject === 'user'
-      ? {
-          task: urlSegments[2],
-        }
-      : policy.subject === 'contract'
-      ? {
-          participant: 'admin',
-        }
-      : {};
-  return policy;
-};
-export default { buildAuthenticationPolicy };
+// Policy Information Point
+class PIPService {
+  private static instance: PIPService;
+
+  private constructor() {
+    // Initialize the singleton, if needed
+  }
+
+  public static getInstance(): PIPService {
+    if (!PIPService.instance) {
+      PIPService.instance = new PIPService();
+    }
+    return PIPService.instance;
+  }
+
+  public buildAuthenticationPolicy(req: Request): AuthorizationPolicy {
+    // Get URL segments to build the policy
+    const urlSegments = req.url.split('/');
+    // Create an authorization policy based on request information
+    const policy: AuthorizationPolicy = {
+      subject: urlSegments[1],
+      action: req.method as PDPAction,
+    };
+    // Temporary conditions
+    policy.conditions =
+      policy.subject === 'user'
+        ? {
+            task: urlSegments[2],
+          }
+        : policy.subject === 'contract'
+        ? {
+            participant: 'admin',
+          }
+        : {};
+    // Return the constructed authorization policy
+    return policy;
+  }
+}
+
+export default PIPService.getInstance();

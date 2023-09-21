@@ -1,36 +1,53 @@
 // Policy Administration Point
 import Policy from 'models/policy.model';
-import { Request } from 'express';
 import policyService from './policy.provider.service';
+import { IPolicy } from 'interfaces/policy.interface';
+import { IJSON } from 'interfaces/global.interface';
 
-// Create a new policy
-const create = async (req: Request) => {
-  const newPolicy = new Policy(req.body);
-  const savedPolicy = await newPolicy.save();
-  policyService.add(savedPolicy);
-  return savedPolicy;
-};
-// Update an existing policy
-const update = async (req: Request) => {
-  const updatedPolicy = await Policy.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    { new: true },
-  );
-  if (updatedPolicy === null) {
-    throw new Error('An error occured while updating policy');
-  }
-  policyService.update(req.params.id, updatedPolicy);
-  return updatedPolicy;
-};
-// Remove a policy by ID
-const remove = async (req: Request) => {
-  const deletedPolicy = await Policy.findByIdAndDelete(req.params.id);
-  if (deletedPolicy === null) {
-    throw new Error('An error occured while updating policy');
-  }
-  policyService.remove(req.params.id);
-  return deletedPolicy;
-};
+// Policy Administration Point
+class PAPService {
+  private static instance: PAPService;
 
-export default { create, update, remove };
+  private constructor() {
+    // Initialize the singleton, if needed
+  }
+
+  public static getInstance(): PAPService {
+    if (!PAPService.instance) {
+      PAPService.instance = new PAPService();
+    }
+    return PAPService.instance;
+  }
+
+  public async create(data: IJSON): Promise<IPolicy> {
+    // Create a new policy
+    const newPolicy = new Policy(data);
+    const savedPolicy = await newPolicy.save();
+    policyService.add(savedPolicy);
+    return savedPolicy;
+  }
+
+  public async update(id: string, data: IJSON): Promise<IPolicy> {
+    // Update an existing policy
+    const updatedPolicy = await Policy.findByIdAndUpdate(id, data, {
+      new: true,
+    });
+    if (!updatedPolicy) {
+      throw new Error('An error occurred while updating policy');
+    }
+    policyService.update(id, updatedPolicy);
+    return updatedPolicy;
+  }
+
+  public async remove(id: string): Promise<IPolicy> {
+    // Remove a policy by ID
+    const deletedPolicy = await Policy.findByIdAndDelete(id);
+    if (!deletedPolicy) {
+      throw new Error('An error occurred while deleting policy');
+    }
+    policyService.remove(id);
+    return deletedPolicy;
+  }
+}
+
+export default PAPService.getInstance();
