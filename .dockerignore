@@ -8,3 +8,4 @@ npm-debug.log
 .git/
 .gitignore
 README.md
+src/tests

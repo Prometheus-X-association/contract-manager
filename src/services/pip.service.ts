@@ -23,6 +23,7 @@ class PIPService {
     const policy: AuthorizationPolicy = {
       subject: urlSegments[1],
       action: req.method as PDPAction,
+      conditions: {},
     };
     // Temporary conditions
     policy.conditions =

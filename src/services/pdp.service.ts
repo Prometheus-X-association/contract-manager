@@ -7,13 +7,13 @@ import {
 } from '@casl/ability';
 
 // Define custom types and interfaces
-export type PDPAction = 'POST' | 'GET' | 'PUT' | 'DELETE';
+export type PDPAction = 'write' | 'POST' | 'GET' | 'PUT' | 'DELETE';
 
 export interface AuthorizationPolicy {
   dbId?: string;
   subject: string;
   action: PDPAction;
-  conditions?: any;
+  conditions: Record<string, unknown>;
   fields?: [];
 }
 
@@ -45,6 +45,7 @@ class PDPService {
   }
 
   defineReferencePolicies(policies: AuthorizationPolicy[]): void {
+    //
     this.referencePolicies = policies;
   }
 
