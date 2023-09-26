@@ -1,0 +1,6 @@
+{
+  "imports": [],
+  "output": "./src/interfaces/schemas.interface.ts",
+  "models": "./src/models/*.ts",
+  "naming": "pascal-case"
+}

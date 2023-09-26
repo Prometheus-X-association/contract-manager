@@ -1,13 +1,23 @@
-// Interface for the generated contract
-interface Constraint {}
+import { ContractDocument, Contract } from './schemas.interface';
+
+/*
+interface Constraint {
+  '@type': string;
+  leftOperand?: string;
+  operator?: string;
+  rightOperand?: string;
+}
+interface UnknownConstraint {
+  '@type': string;
+}
 interface Permission {
   '@type': string;
-  target: string;
-  assigner: string;
-  assignee: string;
-  action: string;
-  data: string;
-  constraint: Constraint;
+  target?: string;
+  assigner?: string;
+  assignee?: string;
+  action?: string;
+  data?: string;
+  constraint?: Constraint | UnknownConstraint;
 }
 interface Data {
   uid: string;
@@ -23,9 +33,9 @@ interface Purpose {
   purposeCategory: string;
   consentType: string;
   piiCategory: string;
-  primaryPurpose: boolean;
+  primaryPurpose: string;
   termination: string;
-  thirdPartyDisclosure: boolean;
+  thirdPartyDisclosure: string;
   thirdPartyName: string;
 }
 interface Policy {
@@ -34,8 +44,10 @@ interface Policy {
   identifier?: string;
   startDate?: string;
   endDate?: string;
-} //
-interface SpiCategory {}
+}
+interface SpiCategory {
+  // Add necessary properties here
+}
 export interface IContract {
   '@context': string;
   '@type': string;
@@ -46,16 +58,19 @@ export interface IContract {
   permission?: Permission[];
   data?: Data[];
   purpose?: Purpose[];
+  signatures?: Signature[];
+  createdAt?: Date;
   // policyUrl: string;
   policy?: Policy;
   spiCat?: SpiCategory;
 }
+interface Signature {
+  party: string;
+  value: string;
+}
+*/
+
+// Interface for the generated ODRL contract
+export type IContractDB = Contract;
 // Type used for Contract data manipulation within the API
-export type IContractDB = IContract &
-  Document & {
-    // tmp field
-    createdAt: Date;
-    updated: boolean;
-    signedByOrchestrator: boolean;
-    signedByParticipant: boolean;
-  };
+export type IContract = ContractDocument;

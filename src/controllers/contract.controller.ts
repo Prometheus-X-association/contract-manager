@@ -135,8 +135,8 @@ export const checkDataExploitation = async (req: Request, res: Response) => {
     // Create an authorization policy based on contract permissions
     const policies: AuthorizationPolicy[] =
       contractService.genPolicies(permissions);
-    pdp.defineReferencePolicies(policies);
     // Use the PDP to evaluate the authorization policy
+    pdp.defineReferencePolicies(policies);
     const isAuthorized = pdp.evalPolicy(data.policies);
     if (isAuthorized) {
       return res.status(200).json({ authorized: true });

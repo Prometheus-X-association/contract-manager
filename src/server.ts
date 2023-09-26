@@ -3,6 +3,7 @@ import express from 'express';
 import http from 'http';
 import mongoose from 'mongoose';
 import contractRoutes from 'routes/contract.routes';
+import catalogBridgeRoutes from 'routes/catalog.bridge.routes';
 import userRoutes from 'routes/user.routes';
 import papRoutes from 'routes/pap.routes';
 import auth from 'middlewares/auth.middleware';
@@ -56,6 +57,7 @@ const startServer = async () => {
   });
   // Routes
   router.use('/user', userRoutes);
+  router.use('/catalog', catalogBridgeRoutes);
   router.use('/contract', auth, contractRoutes);
   router.use('/pap', auth, papRoutes);
   // Check route

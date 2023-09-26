@@ -1,14 +1,16 @@
 {
   "dependencies": {
     "@casl/ability": "^6.5.0",
+    "axios": "^1.5.0",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "jsonwebtoken": "^9.0.2",
-    "mongoose": "^7.5.0",
+    "mongoose": "^7.5.3",
     "nodemon": "^3.0.1",
     "prettier": "^3.0.3",
     "sinon": "^16.0.0",
     "ts-node": "^10.9.1",
+    "typeodm.io": "^1.2.0",
     "winston": "^3.10.0",
     "winston-mongodb": "^5.1.1"
   },
@@ -16,6 +18,7 @@
   "version": "1.0.0",
   "main": "src/start.ts",
   "scripts": {
+    "gen-types": "npx mongoose-tsgen --config mtgen.config.json",
     "build": "npx rimraf -rf build/ && tsc && tsc-alias",
     "start": "node build/start.js",
     "test": "mocha --require ts-node/register --exit ./src/tests/**/*.test.ts"
@@ -32,6 +35,7 @@
     "@types/supertest": "^2.0.12",
     "chai": "^4.3.8",
     "mocha": "^10.2.0",
+    "mongoose-tsgen": "^9.2.7",
     "rimraf": "^5.0.1",
     "supertest": "^6.3.3",
     "tsc-alias": "^1.8.8",

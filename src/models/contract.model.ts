@@ -1,24 +1,58 @@
 import mongoose, { Schema } from 'mongoose';
 import { IContractDB } from '../interfaces/contract.interface';
+
+// Purpose mongoose schema
+const PurposeSchema = new mongoose.Schema({
+  uid: String,
+  purpose: String,
+  action: String,
+  assigner: String,
+  assignee: String,
+  purposeCategory: String,
+  consentType: String,
+  piiCategory: String,
+  primaryPurpose: String,
+  termination: String,
+  thirdPartyDisclosure: String,
+  thirdPartyName: String,
+});
+// Constraints mongoose schemas
+const DefaultConstraintSchema = new mongoose.Schema({
+  '@type': String,
+  leftOperand: String,
+  operator: String,
+  rightOperand: String,
+});
+const UnknownConstraintSchema = new mongoose.Schema(
+  {
+    '@type': String,
+  },
+  { strict: false },
+);
+// Signature mongoose schema
+const SignatureSchema = new mongoose.Schema({
+  party: String,
+  value: String,
+  signed: {
+    type: Boolean,
+    default: false,
+  },
+});
 // Contract mongoose schema
 const ContractSchema: Schema = new Schema({
-  permissions: {},
-  // Temporary field
+  uid: String,
+  profile: String,
+  permission: [
+    {
+      action: String,
+      constraint: [DefaultConstraintSchema, UnknownConstraintSchema],
+    },
+  ],
+  purpose: [PurposeSchema],
+  signatures: [SignatureSchema],
   createdAt: {
     type: Date,
     default: Date.now,
-    updated: {
-      type: Boolean,
-      default: false,
-    },
-    signedByOrchestrator: {
-      type: Boolean,
-      default: false,
-    },
-    signedByParticipant: {
-      type: Boolean,
-      default: false,
-    },
   },
 });
 // Create a MongoDB model based on the schema
