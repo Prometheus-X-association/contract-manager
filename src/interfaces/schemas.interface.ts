@@ -20,7 +20,6 @@ export type ContractPermissionConstraint = {
   leftOperand?: string;
   operator?: string;
   rightOperand?: string;
-  _id: mongoose.Types.ObjectId;
 };
 
 /**
@@ -73,7 +72,6 @@ export type ContractSignature = {
   party?: string;
   value?: string;
   signed?: boolean;
-  _id: mongoose.Types.ObjectId;
 };
 
 /**
@@ -167,7 +165,6 @@ export type ContractPermissionConstraintDocument =
     leftOperand?: string;
     operator?: string;
     rightOperand?: string;
-    _id: mongoose.Types.ObjectId;
   };
 
 /**
@@ -211,7 +208,6 @@ export type ContractSignatureDocument = mongoose.Types.Subdocument & {
   party?: string;
   value?: string;
   signed?: boolean;
-  _id: mongoose.Types.ObjectId;
 };
 
 /**
@@ -403,7 +399,7 @@ declare module 'mongoose' {
       path: T,
       select?: string | any,
       model?: string | Model<any, THelpers>,
-      match?: any
+      match?: any,
     ): Query<
       ResultType extends Array<DocType>
         ? Array<PopulatedDocument<Unarray<ResultType>, T>>
@@ -416,7 +412,7 @@ declare module 'mongoose' {
       THelpers;
 
     populate<T extends string>(
-      options: Modify<PopulateOptions, { path: T }> | Array<PopulateOptions>
+      options: Modify<PopulateOptions, { path: T }> | Array<PopulateOptions>,
     ): Query<
       ResultType extends Array<DocType>
         ? Array<PopulatedDocument<Unarray<ResultType>, T>>

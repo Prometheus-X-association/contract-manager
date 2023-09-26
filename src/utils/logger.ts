@@ -1,5 +1,4 @@
 import * as winston from 'winston';
-
 // Add custom colors
 winston.addColors({
   error: 'red',
@@ -7,12 +6,14 @@ winston.addColors({
   info: 'white',
 });
 
-const format = winston.format.printf(({ message }) => {
-  if (typeof message === 'object' && message !== null) {
-    return JSON.stringify(message, null, 2);
-  }
-  return message;
-});
+const format = winston.format.printf(
+  ({ timestamp, level, message, ...meta }) => {
+    if (meta !== null && Object.keys(meta).length > 0) {
+      return `${message}\n${JSON.stringify(meta, null, 2)}`;
+    }
+    return message;
+  },
+);
 
 // Create a Winston logger with custom colors and a default console transport.
 export const logger = winston.createLogger({

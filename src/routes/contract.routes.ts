@@ -4,8 +4,7 @@ import {
   getContract,
   updateContract,
   deleteContract,
-  signContractForOrchestrator,
-  signContractForParticipant,
+  signContract,
   checkDataExploitation,
 } from '../controllers/contract.controller';
 
@@ -21,9 +20,7 @@ router.put('/:id', updateContract);
 router.delete('/:id', deleteContract);
 //
 // Sign contract for orchestrator
-router.put('/:id', signContractForOrchestrator);
-// Sign contract for participant
-router.put('/:id', signContractForParticipant);
+router.put('/sign/:id', signContract);
 // Check data exploitation
 router.put('/:id', checkDataExploitation);
 

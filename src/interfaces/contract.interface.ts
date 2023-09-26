@@ -71,6 +71,6 @@ interface Signature {
 */
 
 // Interface for the generated ODRL contract
-export type IContractDB = Contract;
+export type IContractDB = ContractDocument;
 // Type used for Contract data manipulation within the API
-export type IContract = ContractDocument;
+export type IContract = Contract;

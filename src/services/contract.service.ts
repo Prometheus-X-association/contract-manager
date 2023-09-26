@@ -9,6 +9,8 @@ import contractConfig, {
   IConstraint,
 } from 'config/contrat.config';
 
+import Contract from 'models/contract.model';
+
 // Contract Service
 class ContractService {
   private contractModel: any;
@@ -75,20 +77,21 @@ class ContractService {
   }
 
   // Generate a contract based on the contract data
-  public genContract(contractData: IContract): IContract {
+  public genContract(contractData: IContract): Promise<IContract> {
     if (!this.contractModel) {
       throw new Error('No contract model found.');
     }
     // Validate the contract input data against the contract model
     const valid = this.isValid(contractData);
-    // tmp
-    logger.info(contractData);
+    /*
     // Spread the input contract data to the final contract
-    const generatedContract: IContract = {
-      // ... Missing fields here
+    const contract: IContract = {
+      // ... Missing fields here ?
       ...contractData,
     };
-    return generatedContract;
+    */
+    const newContract = new Contract(contractData);
+    return newContract.save();
   }
 
   // Generate policies based on permissions and constraint configuration.

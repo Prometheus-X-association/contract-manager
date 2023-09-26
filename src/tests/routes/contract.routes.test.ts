@@ -1,6 +1,7 @@
 import supertest from 'supertest';
 import { expect } from 'chai';
 import app from 'server';
+import { ContractSignature } from 'interfaces/schemas.interface';
 
 const SERVER_PORT = 9999;
 describe('Routes for Contract API', () => {
@@ -87,6 +88,33 @@ describe('Routes for Contract API', () => {
     expect(response.status).to.equal(200);
     // Check if the response has the expected 'message'
     expect(response.body).to.have.property('_id');
+  });
+
+  // Sign a contract for a given party
+  it('should sign a contract for a party', async () => {
+    // Define the signature data for the given party
+    const signatureData: ContractSignature = {
+      party: 'orchestrator',
+      value: 'OchestratorSignature',
+    };
+    // Send a PUT request to sign the contract for the party
+    const response = await supertest(app.router)
+      .put(`/contract/sign/${createdContractId}`)
+      .set('Authorization', `Bearer ${authToken}`)
+      .send(signatureData);
+
+    // Check if the response status is OK (200)
+    expect(response.status).to.equal(200);
+    // Check if the response contains the updated contract with the signature
+    expect(response.body).to.have.property('signatures');
+    const signatures = response.body.signatures;
+    const partySignature = signatures.find(
+      (signature: ContractSignature) => signature.party === signatureData.party,
+    );
+    // Check if the party's signature exists in the updated contract
+    expect(partySignature).to.exist;
+    // Check if the party's signature has the expected 'signed' value (true)
+    expect(partySignature.signed).to.equal(true);
   });
 
   // Test case: Delete a contract by ID

@@ -4,13 +4,13 @@ import { IContract, IContractDB } from 'interfaces/contract.interface';
 import contractService from 'services/contract.service';
 import pdp, { AuthorizationPolicy } from 'services/pdp.service';
 import { logger } from 'utils/logger';
+import { ContractSignature } from 'interfaces/schemas.interface';
 // Create
 export const createContract = async (req: Request, res: Response) => {
   try {
-    const generatedContract: IContract = contractService.genContract(req.body);
-    const newContract = new Contract(generatedContract);
-    const savedContract = await newContract.save();
-    return res.status(201).json(savedContract);
+    const contract: IContract = await contractService.genContract(req.body);
+    logger.info(contract);
+    return res.status(201).json(contract);
   } catch (error) {
     res.status(500).json({
       message: `An error occurred while creating the contract.`,
@@ -66,24 +66,52 @@ export const deleteContract = async (req: Request, res: Response) => {
       .json({ error: 'An error occurred while deleting the contract.' });
   }
 };
-// Sign for orchestrator
-export const signContractForOrchestrator = async (
-  req: Request,
-  res: Response,
-) => {
+
+// Todo: move business logic to the appropriate service layer.
+// Sign for a given party and signature
+export const signContract = async (req: Request, res: Response) => {
   try {
     const contractId: string = req.params.id;
-    // Find the contract and update it with orchestrator signature
+    // Get the signature value and party name from the request body
+    const { party, value }: ContractSignature = req.body;
+    // Find the contract by its ID and according to the party
     const updatedContract = await Contract.findOneAndUpdate(
-      { _id: contractId },
-      // temporary signature
-      { signedByOrchestrator: true },
-      // return updated document
+      // Condition to find the existing element
+      { _id: contractId, 'signatures.party': party },
+      {
+        // Replace the signature value and mark it as signed
+        $set: {
+          'signatures.$.value': value,
+          'signatures.$.signed': true,
+        },
+      },
       { new: true },
     );
+
     if (!updatedContract) {
-      return res.status(404).json({ error: 'The contract does not exist.' });
+      // If the party doesn't exist, push it
+      const updatedContract: IContract | null =
+        await Contract.findByIdAndUpdate(
+          contractId,
+          {
+            $push: {
+              signatures: {
+                party,
+                value,
+                signed: true,
+              },
+            },
+          },
+          { new: true },
+        ).lean();
+      if (!updatedContract) {
+        logger.error('The contract does not exist.');
+        return res.status(404).json({ error: 'The contract does not exist.' });
+      }
+      logger.info('Updated contract with pushed signature:', updatedContract);
+      return res.json(updatedContract);
     }
+    logger.info('Updated contract with updated signature:', updatedContract);
     return res.json(updatedContract);
   } catch (error) {
     logger.error('Error signing the contract:', error);
@@ -92,33 +120,6 @@ export const signContractForOrchestrator = async (
       .json({ error: 'An error occurred while signing the contract.' });
   }
 };
-// Sign for participant
-export const signContractForParticipant = async (
-  req: Request,
-  res: Response,
-) => {
-  try {
-    const contractId: string = req.params.id;
-    // Find the contract and update it with participant signature
-    const updatedContract = await Contract.findOneAndUpdate(
-      { _id: contractId },
-      // temporary signature
-      { signedByParticipant: true },
-      // return updated document
-      { new: true },
-    );
-    if (!updatedContract) {
-      return res.status(404).json({ error: 'The contract does not exist.' });
-    }
-    return res.json(updatedContract);
-  } catch (error) {
-    logger.error('Error signing the contract:', error);
-    res
-      .status(500)
-      .json({ error: 'An error occurred while signing the contract.' });
-  }
-};
-//
 // Check if data is authorized for exploitation based on the contract ?
 export const checkDataExploitation = async (req: Request, res: Response) => {
   const contractId = req.params.id;

@@ -17,27 +17,31 @@ const PurposeSchema = new mongoose.Schema({
   thirdPartyName: String,
 });
 // Constraints mongoose schemas
-const DefaultConstraintSchema = new mongoose.Schema({
-  '@type': String,
-  leftOperand: String,
-  operator: String,
-  rightOperand: String,
-});
-const UnknownConstraintSchema = new mongoose.Schema(
+const DefaultConstraintSchema = new mongoose.Schema(
   {
     '@type': String,
+    leftOperand: String,
+    operator: String,
+    rightOperand: String,
   },
-  { strict: false },
+  { _id: false },
+);
+const UnknownConstraintSchema = new mongoose.Schema(
+  { '@type': String },
+  { strict: false, _id: false },
 );
 // Signature mongoose schema
-const SignatureSchema = new mongoose.Schema({
-  party: String,
-  value: String,
-  signed: {
-    type: Boolean,
-    default: false,
+const SignatureSchema = new mongoose.Schema(
+  {
+    party: String,
+    value: String,
+    signed: {
+      type: Boolean,
+      default: false,
+    },
   },
-});
+  { _id: false },
+);
 // Contract mongoose schema
 const ContractSchema: Schema = new Schema({
   uid: String,
