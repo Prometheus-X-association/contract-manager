@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import contractService from 'services/contract.service';
 import { AuthorizationPolicy } from 'services/pdp.service';
+import policyProviderService from 'services/policy.provider.service';
 import sinon from 'sinon';
 import { logger } from 'utils/logger';
 
@@ -37,7 +37,7 @@ describe('genPolicies', () => {
       },
     ];
     const result: AuthorizationPolicy[] =
-      contractService.genPolicies(permissions);
+      policyProviderService.genPolicies(permissions);
     const expectedPolicies: AuthorizationPolicy[] = [
       {
         subject: 'Offer',
@@ -69,7 +69,7 @@ describe('genPolicies', () => {
         ],
       },
     ];
-    contractService.genPolicies(permissions);
+    policyProviderService.genPolicies(permissions);
     // Check if the warn method was called with the correct message
     sinon.assert.calledWith(
       warnSpy,

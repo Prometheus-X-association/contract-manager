@@ -35,10 +35,6 @@ const SignatureSchema = new mongoose.Schema(
   {
     party: String,
     value: String,
-    signed: {
-      type: Boolean,
-      default: false,
-    },
   },
   { _id: false },
 );
@@ -54,6 +50,10 @@ const ContractSchema: Schema = new Schema({
   ],
   purpose: [PurposeSchema],
   signatures: [SignatureSchema],
+  signed: {
+    type: Boolean,
+    default: false,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

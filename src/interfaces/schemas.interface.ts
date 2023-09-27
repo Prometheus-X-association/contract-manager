@@ -299,7 +299,6 @@ export type ContractPurpose = {
 export type ContractSignature = {
   party?: string;
   value?: string;
-  signed?: boolean;
 };
 
 /**
@@ -316,6 +315,7 @@ export type Contract = {
   permission: ContractPermission[];
   purpose: ContractPurpose[];
   signatures: ContractSignature[];
+  signed?: boolean;
   createdAt?: Date;
   _id: mongoose.Types.ObjectId;
 };
@@ -435,7 +435,6 @@ export type ContractPurposeDocument = mongoose.Types.Subdocument & {
 export type ContractSignatureDocument = mongoose.Types.Subdocument & {
   party?: string;
   value?: string;
-  signed?: boolean;
 };
 
 /**
@@ -456,6 +455,7 @@ export type ContractDocument = mongoose.Document<
     permission: mongoose.Types.DocumentArray<ContractPermissionDocument>;
     purpose: mongoose.Types.DocumentArray<ContractPurposeDocument>;
     signatures: mongoose.Types.DocumentArray<ContractSignatureDocument>;
+    signed?: boolean;
     createdAt?: Date;
     _id: mongoose.Types.ObjectId;
   };
