@@ -263,7 +263,6 @@ export type ContractPermissionConstraint = {
 export type ContractPermission = {
   action?: string;
   constraint: ContractPermissionConstraint[];
-  _id: mongoose.Types.ObjectId;
 };
 
 /**
@@ -406,7 +405,6 @@ export type ContractPermissionConstraintDocument =
 export type ContractPermissionDocument = mongoose.Types.Subdocument & {
   action?: string;
   constraint: mongoose.Types.DocumentArray<ContractPermissionConstraintDocument>;
-  _id: mongoose.Types.ObjectId;
 };
 
 /**

@@ -44,7 +44,7 @@ describe('Routes for Bilateral Contract API', () => {
     };
     // Send a POST request to create the contract
     const response = await supertest(app.router)
-      .post('/contract')
+      .post(`${API_ROUTE_BASE}`)
       .set('Authorization', `Bearer ${authToken}`)
       .send(contractData);
     // Check if the response status is 201 (Created)

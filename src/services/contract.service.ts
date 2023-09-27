@@ -4,6 +4,7 @@ import Contract from 'models/contract.model';
 import { checkFieldsMatching, loadModel } from 'utils/utils';
 import pdp, { AuthorizationPolicy } from './pdp.service';
 import policyProviderService from './policy.provider.service';
+import { logger } from 'utils/logger';
 
 // Ecosystem Contract Service
 class ContractService {
@@ -29,13 +30,10 @@ class ContractService {
 
   // Validate the contract input data against the contract model
   public isValid(contract: IContract): boolean {
-    if (!this.contractModel) {
-      throw new Error('No contract model found.');
-    }
     // Perform validation
     const matching = checkFieldsMatching(contract, this.contractModel);
     if (!matching.success) {
-      throw new Error(`${matching.success} is an invalid field.`);
+      throw new Error(`${matching.field} is an invalid field.`);
     }
     return matching.success;
   }
@@ -43,13 +41,19 @@ class ContractService {
   // Generate a contract based on the contract data
   public genContract(contractData: IContract): Promise<IContract> {
     if (!this.contractModel) {
+      logger.error('No contract model found.');
       throw new Error('No contract model found.');
     }
-    // Validate the contract input data against the contract model
-    this.isValid(contractData);
-    // Generate the contrat after validation
-    const newContract = new Contract(contractData);
-    return newContract.save();
+    try {
+      // Validate the contract input data against the contract model
+      this.isValid(contractData);
+      // Generate the contrat after validation
+      const newContract = new Contract(contractData);
+      return newContract.save();
+    } catch (error: any) {
+      logger.error(error.message);
+      throw error;
+    }
   }
   // get contract
   public async getContract(contractId: string): Promise<IContractDB | null> {

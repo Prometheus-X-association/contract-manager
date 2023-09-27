@@ -10,10 +10,10 @@ export const createContract = async (req: Request, res: Response) => {
     const contract: IContract = await contractService.genContract(req.body);
     logger.info(contract);
     return res.status(201).json(contract);
-  } catch (error) {
+  } catch (error: any) {
     res.status(500).json({
       message: `An error occurred while creating the contract.`,
-      error,
+      error: error.message,
     });
   }
 };

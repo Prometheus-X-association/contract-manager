@@ -51,6 +51,7 @@ const ContractSchema: Schema = new Schema({
     {
       action: String,
       constraint: [DefaultConstraintSchema, UnknownConstraintSchema],
+      _id: false,
     },
   ],
   purpose: [PurposeSchema],
