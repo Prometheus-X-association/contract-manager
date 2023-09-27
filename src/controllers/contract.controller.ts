@@ -1,3 +1,4 @@
+// Ecosystem Contract Controller
 import { Request, Response } from 'express';
 import { IContract, IContractDB } from 'interfaces/contract.interface';
 import contractService from 'services/contract.service';
@@ -78,7 +79,7 @@ export const signContract = async (req: Request, res: Response) => {
       party,
       value,
     );
-    logger.info('Updated contract:', updatedContract);
+    logger.info('Signed contract:', updatedContract);
     return res.json(updatedContract);
   } catch (error) {
     logger.error('Error signing the contract:', error);

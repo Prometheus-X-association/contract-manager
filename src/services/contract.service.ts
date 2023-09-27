@@ -5,7 +5,7 @@ import { checkFieldsMatching, loadModel } from 'utils/utils';
 import pdp, { AuthorizationPolicy } from './pdp.service';
 import policyProviderService from './policy.provider.service';
 
-// Contract Service
+// Ecosystem Contract Service
 class ContractService {
   private contractModel: any;
   private static instance: ContractService;
@@ -103,18 +103,25 @@ class ContractService {
         // Replace the signature value
         { $set: { 'signatures.$.value': value } },
         { new: true },
-      );
+      ).lean();
       if (!updatedContract) {
         // If the party doesn't exist, push it
         const updatedContractWithPush = await Contract.findByIdAndUpdate(
           contractId,
           { $push: { signatures: { party, value } } },
           { new: true },
-        ).lean();
+        );
         if (!updatedContractWithPush) {
           throw new Error('The contract does not exist.');
         }
-        return updatedContractWithPush;
+        // Check if both parties have signed
+        if (updatedContractWithPush.signatures.length === 2) {
+          // Set signed to true if both parties have signed
+          updatedContractWithPush.signed = true;
+          // Save the changes to the database
+          await updatedContractWithPush.save();
+        }
+        return updatedContractWithPush.toObject();
       }
       return updatedContract;
     } catch (error) {

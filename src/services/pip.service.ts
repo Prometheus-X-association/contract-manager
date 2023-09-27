@@ -35,6 +35,10 @@ class PIPService {
         ? {
             participant: 'admin',
           }
+        : policy.subject === 'bilateral'
+        ? {
+            participant: 'admin',
+          }
         : {};
     // Return the constructed authorization policy
     return policy;

@@ -11,17 +11,17 @@ import {
 const router = express.Router();
 
 // Create
-router.post('/', createContract);
+router.post('/contract/', createContract);
 // Read
-router.get('/:id', getContract);
+router.get('/contract/:id', getContract);
 // Update
-router.put('/:id', updateContract);
+router.put('/contract/:id', updateContract);
 // Delete
-router.delete('/:id', deleteContract);
+router.delete('/contract/:id', deleteContract);
 //
 // Sign contract
-router.put('/sign/:id', signContract);
+router.put('/contract/sign/:id', signContract);
 // Check data exploitation
-router.put('/:id', checkDataExploitation);
+router.put('/contract/:id', checkDataExploitation);
 
 export default router;

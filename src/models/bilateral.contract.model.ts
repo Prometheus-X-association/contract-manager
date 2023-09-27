@@ -33,11 +33,11 @@ const BilateralUnknownConstraintSchema = new mongoose.Schema(
 // Signature mongoose schema
 const BilateralSignatureSchema = new mongoose.Schema(
   {
-    party: String,
-    value: String,
-    signed: {
-      type: Boolean,
-      default: false,
+    party: { type: String, required: true },
+    value: { type: String, required: true },
+    date: {
+      type: Date,
+      default: Date.now,
     },
   },
   { _id: false },
@@ -57,6 +57,10 @@ const BilateralContractSchema: Schema = new Schema({
   ],
   purpose: [BilateralPurposeSchema],
   signatures: [BilateralSignatureSchema],
+  signed: {
+    type: Boolean,
+    default: false,
+  },
   createdAt: {
     type: Date,
     default: Date.now,

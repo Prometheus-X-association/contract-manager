@@ -15,12 +15,40 @@ class PolicyProviderService {
     this.policies = [
       // Temporary default static policies for testing
       {
-        subject: 'contract',
+        subject: 'is-it-alive',
+        action: 'GET',
+        conditions: {},
+      },
+      // Bilateral contrat default authorisation rules
+      {
+        subject: 'bilateral',
         action: 'GET',
         conditions: {},
       },
       {
-        subject: 'is-it-alive',
+        subject: 'bilateral',
+        action: 'POST',
+        conditions: {
+          participant: 'admin',
+        },
+      },
+      {
+        subject: 'bilateral',
+        action: 'PUT',
+        conditions: {
+          participant: 'admin',
+        },
+      },
+      {
+        subject: 'bilateral',
+        action: 'DELETE',
+        conditions: {
+          participant: 'admin',
+        },
+      },
+      // Contract default authorisation rules
+      {
+        subject: 'contract',
         action: 'GET',
         conditions: {},
       },
@@ -45,6 +73,7 @@ class PolicyProviderService {
           participant: 'admin',
         },
       },
+      // User default authorisation rules
       {
         subject: 'user',
         action: 'GET',

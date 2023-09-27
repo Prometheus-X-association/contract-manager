@@ -69,9 +69,9 @@ export type BilateralContractPurpose = {
  * ```
  */
 export type BilateralContractSignature = {
-  party?: string;
-  value?: string;
-  signed?: boolean;
+  party: string;
+  value: string;
+  date?: Date;
 };
 
 /**
@@ -88,6 +88,7 @@ export type BilateralContract = {
   permission: BilateralContractPermission[];
   purpose: BilateralContractPurpose[];
   signatures: BilateralContractSignature[];
+  signed?: boolean;
   createdAt?: Date;
   _id: mongoose.Types.ObjectId;
 };
@@ -208,9 +209,9 @@ export type BilateralContractPurposeDocument = mongoose.Types.Subdocument & {
  * Type of `BilateralContractDocument["signatures"]` element.
  */
 export type BilateralContractSignatureDocument = mongoose.Types.Subdocument & {
-  party?: string;
-  value?: string;
-  signed?: boolean;
+  party: string;
+  value: string;
+  date?: Date;
 };
 
 /**
@@ -231,6 +232,7 @@ export type BilateralContractDocument = mongoose.Document<
     permission: mongoose.Types.DocumentArray<BilateralContractPermissionDocument>;
     purpose: mongoose.Types.DocumentArray<BilateralContractPurposeDocument>;
     signatures: mongoose.Types.DocumentArray<BilateralContractSignatureDocument>;
+    signed?: boolean;
     createdAt?: Date;
     _id: mongoose.Types.ObjectId;
   };
@@ -297,8 +299,9 @@ export type ContractPurpose = {
  * ```
  */
 export type ContractSignature = {
-  party?: string;
-  value?: string;
+  party: string;
+  value: string;
+  date?: Date;
 };
 
 /**
@@ -433,8 +436,9 @@ export type ContractPurposeDocument = mongoose.Types.Subdocument & {
  * Type of `ContractDocument["signatures"]` element.
  */
 export type ContractSignatureDocument = mongoose.Types.Subdocument & {
-  party?: string;
-  value?: string;
+  party: string;
+  value: string;
+  date?: Date;
 };
 
 /**

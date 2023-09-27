@@ -1,3 +1,4 @@
+// Ecosystem Contract Model
 import mongoose, { Schema } from 'mongoose';
 import { IContractDB } from '../interfaces/contract.interface';
 
@@ -33,8 +34,12 @@ const UnknownConstraintSchema = new mongoose.Schema(
 // Signature mongoose schema
 const SignatureSchema = new mongoose.Schema(
   {
-    party: String,
-    value: String,
+    party: { type: String, required: true },
+    value: { type: String, required: true },
+    date: {
+      type: Date,
+      default: Date.now,
+    },
   },
   { _id: false },
 );

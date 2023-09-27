@@ -1,12 +1,12 @@
-// Ecosystem Contract Routes Test Cases
+// Bilateral Contract Routes Test Cases
 import supertest from 'supertest';
 import { expect } from 'chai';
 import app from 'server';
-import { ContractSignature } from 'interfaces/schemas.interface';
+import { BilateralContractSignature } from 'interfaces/schemas.interface';
 
 const SERVER_PORT = 9999;
-const API_ROUTE_BASE = '/contract/';
-describe('Routes for Contract API', () => {
+const API_ROUTE_BASE = '/bilateral/contract/';
+describe('Routes for Bilateral Contract API', () => {
   let server: any;
   let authToken: string;
   before(async () => {
@@ -18,16 +18,7 @@ describe('Routes for Contract API', () => {
       });
     });
 
-    const authResponse = await supertest(app.router)
-      // .post('/user/login')
-      .get('/user/login');
-    /*
-      .send({
-        username: 'username',
-        password: 'password',
-      });
-      */
-
+    const authResponse = await supertest(app.router).get('/user/login');
     expect(authResponse.status).to.equal(200);
     authToken = authResponse.body.token;
   });
@@ -40,7 +31,7 @@ describe('Routes for Contract API', () => {
   // Variable to store the ID of the created contract
   let createdContractId: String;
   // Test case: Create a new contract
-  it('should create a new contract', async () => {
+  it('should create a new bilateral contract', async () => {
     const contractData = {
       '@context': 'context',
       '@type': 'type',
@@ -65,7 +56,7 @@ describe('Routes for Contract API', () => {
   });
 
   // Test case: Get a contract by ID
-  it('should get a contract by ID', async () => {
+  it('should get a bilateral contract by ID', async () => {
     // Send a GET request to retrieve the contract by its ID
     const response = await supertest(app.router)
       .get(`${API_ROUTE_BASE}${createdContractId}`)
@@ -77,7 +68,7 @@ describe('Routes for Contract API', () => {
   });
 
   // Test case: Update a contract by ID
-  it('should update a contract by ID', async () => {
+  it('should update a bilateral contract by ID', async () => {
     const updatedContractData = {
       updated: true,
     };
@@ -93,9 +84,9 @@ describe('Routes for Contract API', () => {
   });
 
   // Test case: Sign a contract for party A twice and party B once
-  it('should sign a contract for party A twice and party B once, and set signed to true', async () => {
+  it('should sign a bilateral contract for party A twice, then party B once, and finally set signed to true', async () => {
     // Define the signature data for party A for a first time
-    const signatureDataPartyA1: ContractSignature = {
+    const signatureDataPartyA1: BilateralContractSignature = {
       party: 'partyA',
       value: 'partyASignature1',
     };
@@ -107,7 +98,7 @@ describe('Routes for Contract API', () => {
     // Check if the response status for party A's first signature is OK (200)
     expect(responsePartyA1.status).to.equal(200);
     // Define the signature data for party A for a second time
-    const signatureDataPartyA2: ContractSignature = {
+    const signatureDataPartyA2: BilateralContractSignature = {
       party: 'partyA',
       value: 'partyASignature2',
     };
@@ -117,7 +108,7 @@ describe('Routes for Contract API', () => {
       .set('Authorization', `Bearer ${authToken}`)
       .send(signatureDataPartyA2);
     // Define the signature data for party B
-    const signatureDataPartyB: ContractSignature = {
+    const signatureDataPartyB: BilateralContractSignature = {
       party: 'partyB',
       value: 'partyBSignature',
     };
@@ -133,17 +124,17 @@ describe('Routes for Contract API', () => {
     const signatures = response.body.signatures;
     // Check if party A's second signature exists in the updated contract
     const partyASignature2 = signatures.find(
-      (signature: ContractSignature) =>
+      (signature: BilateralContractSignature) =>
         signature.party === 'partyA' && signature.value === 'partyASignature2',
     );
     // Check if party B's signature exists in the updated contract
     const partyBSignature = signatures.find(
-      (signature: ContractSignature) =>
+      (signature: BilateralContractSignature) =>
         signature.party === 'partyB' && signature.value === 'partyBSignature',
     );
     // Check if party A's first signature does NOT exist in the updated contract
     const partyASignature1 = signatures.find(
-      (signature: ContractSignature) =>
+      (signature: BilateralContractSignature) =>
         signature.party === 'partyA' && signature.value === 'partyASignature1',
     );
     // Check if both of party A's second signature and party B's signature exist
@@ -156,7 +147,7 @@ describe('Routes for Contract API', () => {
   });
 
   // Test case: Delete a contract by ID
-  it('should delete a contract by ID', async () => {
+  it('should delete a bilateral contract by ID', async () => {
     // Send a DELETE request to delete the contract by its ID
     const response = await supertest(app.router)
       .delete(`${API_ROUTE_BASE}${createdContractId}`)
