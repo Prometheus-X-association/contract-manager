@@ -5,6 +5,7 @@ import contractService from 'services/contract.service';
 import pdp, { AuthorizationPolicy } from 'services/pdp.service';
 import { logger } from 'utils/logger';
 import { ContractSignature } from 'interfaces/schemas.interface';
+import policyProviderService from 'services/policy.provider.service';
 // Create
 export const createContract = async (req: Request, res: Response) => {
   try {
@@ -135,7 +136,7 @@ export const checkDataExploitation = async (req: Request, res: Response) => {
     const permissions = contract.permission;
     // Create an authorization policy based on contract permissions
     const policies: AuthorizationPolicy[] =
-      contractService.genPolicies(permissions);
+      policyProviderService.genPolicies(permissions);
     // Use the PDP to evaluate the authorization policy
     pdp.defineReferencePolicies(policies);
     const isAuthorized = pdp.evalPolicy(data.policies);

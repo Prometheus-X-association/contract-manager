@@ -1,33 +1,32 @@
-import { IContract } from 'interfaces/contract.interface';
+import { IBilateralContract } from 'interfaces/contract.interface';
 import { config } from 'config/config';
-
-import Contract from 'models/contract.model';
+import BilateralContract from 'models/bilateral.contract.model';
 import { checkFieldsMatching, loadModel } from 'utils/utils';
 
-// Contract Service
-class ContractService {
+// Bilateral Contract Service
+class BilateralContractService {
   private contractModel: any;
-  private static instance: ContractService;
+  private static instance: BilateralContractService;
 
   private constructor() {
     this.initContractModel();
   }
 
-  public static getInstance(): ContractService {
-    if (!ContractService.instance) {
-      ContractService.instance = new ContractService();
+  public static getInstance(): BilateralContractService {
+    if (!BilateralContractService.instance) {
+      BilateralContractService.instance = new BilateralContractService();
     }
-    return ContractService.instance;
+    return BilateralContractService.instance;
   }
 
   private initContractModel() {
     console.time('initContractModel');
-    this.contractModel = loadModel(config.contract.modelPath);
+    this.contractModel = loadModel(config.bilateralContract.modelPath);
     console.timeEnd('initContractModel');
   }
 
   // Validate the contract input data against the contract model
-  public isValid(contract: IContract): boolean {
+  public isValid(contract: IBilateralContract): boolean {
     if (!this.contractModel) {
       throw new Error('No contract model found.');
     }
@@ -40,16 +39,18 @@ class ContractService {
   }
 
   // Generate a contract based on the contract data
-  public genContract(contractData: IContract): Promise<IContract> {
+  public genContract(
+    contractData: IBilateralContract,
+  ): Promise<IBilateralContract> {
     if (!this.contractModel) {
       throw new Error('No contract model found.');
     }
     // Validate the contract input data against the contract model
     this.isValid(contractData);
     // Generate the contrat after validation
-    const newContract = new Contract(contractData);
+    const newContract = new BilateralContract(contractData);
     return newContract.save();
   }
 }
 
-export default ContractService.getInstance();
+export default BilateralContractService.getInstance();

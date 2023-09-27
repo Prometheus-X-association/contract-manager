@@ -1,14 +1,19 @@
 import { Request, Response } from 'express';
-import Contract from 'models/contract.model';
-import { IContract, IContractDB } from 'interfaces/contract.interface';
-import contractService from 'services/contract.service';
+import BilateralContract from 'models/bilateral.contract.model';
+import {
+  IBilateralContract,
+  IBilateralContractDB,
+} from 'interfaces/contract.interface';
+import bilateralContractService from 'services/bilateral.contract.service';
 import pdp, { AuthorizationPolicy } from 'services/pdp.service';
 import { logger } from 'utils/logger';
-import { ContractSignature } from 'interfaces/schemas.interface';
+import { BilateralContractSignature } from 'interfaces/schemas.interface';
+import policyProviderService from 'services/policy.provider.service';
 // Create
 export const createContract = async (req: Request, res: Response) => {
   try {
-    const contract: IContract = await contractService.genContract(req.body);
+    const contract: IBilateralContract =
+      await bilateralContractService.genContract(req.body);
     logger.info(contract);
     return res.status(201).json(contract);
   } catch (error) {
@@ -22,7 +27,8 @@ export const createContract = async (req: Request, res: Response) => {
 export const getContract = async (req: Request, res: Response) => {
   try {
     const contractId: string = req.params.id;
-    const contract: IContractDB | null = await Contract.findById(contractId);
+    const contract: IBilateralContractDB | null =
+      await BilateralContract.findById(contractId);
     if (!contract) {
       return res.status(404).json({ error: 'Contract not found.' });
     }
@@ -37,9 +43,11 @@ export const getContract = async (req: Request, res: Response) => {
 export const updateContract = async (req: Request, res: Response) => {
   try {
     const contractId: string = req.params.id;
-    const updates: Partial<IContractDB> = req.body;
-    const updatedContract: IContractDB | null =
-      await Contract.findByIdAndUpdate(contractId, updates, { new: true });
+    const updates: Partial<IBilateralContractDB> = req.body;
+    const updatedContract: IBilateralContractDB | null =
+      await BilateralContract.findByIdAndUpdate(contractId, updates, {
+        new: true,
+      });
     if (!updatedContract) {
       return res.status(404).json({ error: 'Contract not found.' });
     }
@@ -54,8 +62,8 @@ export const updateContract = async (req: Request, res: Response) => {
 export const deleteContract = async (req: Request, res: Response) => {
   try {
     const contractId: string = req.params.id;
-    const deletedContract: IContractDB | null =
-      await Contract.findByIdAndDelete(contractId);
+    const deletedContract: IBilateralContractDB | null =
+      await BilateralContract.findByIdAndDelete(contractId);
     if (!deletedContract) {
       return res.status(404).json({ error: 'Contract not found.' });
     }
@@ -73,9 +81,9 @@ export const signContract = async (req: Request, res: Response) => {
   try {
     const contractId: string = req.params.id;
     // Get the signature value and party name from the request body
-    const { party, value }: ContractSignature = req.body;
+    const { party, value }: BilateralContractSignature = req.body;
     // Find the contract by its ID and according to the party
-    const updatedContract = await Contract.findOneAndUpdate(
+    const updatedContract = await BilateralContract.findOneAndUpdate(
       // Condition to find the existing element
       { _id: contractId, 'signatures.party': party },
       {
@@ -90,8 +98,8 @@ export const signContract = async (req: Request, res: Response) => {
 
     if (!updatedContract) {
       // If the party doesn't exist, push it
-      const updatedContract: IContract | null =
-        await Contract.findByIdAndUpdate(
+      const updatedContract: IBilateralContract | null =
+        await BilateralContract.findByIdAndUpdate(
           contractId,
           {
             $push: {
@@ -127,7 +135,7 @@ export const checkDataExploitation = async (req: Request, res: Response) => {
   const data = req.body;
   try {
     //Retrieve contract data by ID
-    const contract = await Contract.findById(contractId);
+    const contract = await BilateralContract.findById(contractId);
     if (!contract) {
       return res.status(404).json({ message: 'Contract not found' });
     }
@@ -135,7 +143,7 @@ export const checkDataExploitation = async (req: Request, res: Response) => {
     const permissions = contract.permission;
     // Create an authorization policy based on contract permissions
     const policies: AuthorizationPolicy[] =
-      contractService.genPolicies(permissions);
+      policyProviderService.genPolicies(permissions);
     // Use the PDP to evaluate the authorization policy
     pdp.defineReferencePolicies(policies);
     const isAuthorized = pdp.evalPolicy(data.policies);
