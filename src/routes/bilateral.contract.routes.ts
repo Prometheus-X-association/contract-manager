@@ -6,7 +6,7 @@ import {
   deleteContract,
   signContract,
   checkDataExploitation,
-} from '../controllers/contract.controller';
+} from '../controllers/bilateral.contract.controller';
 
 const router = express.Router();
 

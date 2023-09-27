@@ -8,6 +8,234 @@
 import mongoose from 'mongoose';
 
 /**
+ * Lean version of BilateralContractPermissionConstraintDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BilateralContractPermissionDocument.toObject()`.
+ * ```
+ * const bilateralcontractpermissionObject = bilateralcontractpermission.toObject();
+ * ```
+ */
+export type BilateralContractPermissionConstraint = {
+  '@type'?: string;
+  leftOperand?: string;
+  operator?: string;
+  rightOperand?: string;
+};
+
+/**
+ * Lean version of BilateralContractPermissionDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BilateralContractDocument.toObject()`.
+ * ```
+ * const bilateralcontractObject = bilateralcontract.toObject();
+ * ```
+ */
+export type BilateralContractPermission = {
+  action?: string;
+  constraint: BilateralContractPermissionConstraint[];
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of BilateralContractPurposeDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BilateralContractDocument.toObject()`.
+ * ```
+ * const bilateralcontractObject = bilateralcontract.toObject();
+ * ```
+ */
+export type BilateralContractPurpose = {
+  uid?: string;
+  purpose?: string;
+  action?: string;
+  assigner?: string;
+  assignee?: string;
+  purposeCategory?: string;
+  consentType?: string;
+  piiCategory?: string;
+  primaryPurpose?: string;
+  termination?: string;
+  thirdPartyDisclosure?: string;
+  thirdPartyName?: string;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of BilateralContractSignatureDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BilateralContractDocument.toObject()`.
+ * ```
+ * const bilateralcontractObject = bilateralcontract.toObject();
+ * ```
+ */
+export type BilateralContractSignature = {
+  party?: string;
+  value?: string;
+  signed?: boolean;
+};
+
+/**
+ * Lean version of BilateralContractDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BilateralContractDocument.toObject()`. To avoid conflicts with model names, use the type alias `BilateralContractObject`.
+ * ```
+ * const bilateralcontractObject = bilateralcontract.toObject();
+ * ```
+ */
+export type BilateralContract = {
+  uid?: string;
+  profile?: string;
+  permission: BilateralContractPermission[];
+  purpose: BilateralContractPurpose[];
+  signatures: BilateralContractSignature[];
+  createdAt?: Date;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of BilateralContractDocument (type alias of `BilateralContract`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { BilateralContract } from "../models"
+ * import { BilateralContractObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const bilateralcontractObject: BilateralContractObject = bilateralcontract.toObject();
+ * ```
+ */
+export type BilateralContractObject = BilateralContract;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type BilateralContractQuery = mongoose.Query<
+  any,
+  BilateralContractDocument,
+  BilateralContractQueries
+> &
+  BilateralContractQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `BilateralContractSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type BilateralContractQueries = {};
+
+export type BilateralContractMethods = {};
+
+export type BilateralContractStatics = {};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const BilateralContract = mongoose.model<BilateralContractDocument, BilateralContractModel>("BilateralContract", BilateralContractSchema);
+ * ```
+ */
+export type BilateralContractModel = mongoose.Model<
+  BilateralContractDocument,
+  BilateralContractQueries
+> &
+  BilateralContractStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new BilateralContract schema instances:
+ * ```
+ * const BilateralContractSchema: BilateralContractSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type BilateralContractSchema = mongoose.Schema<
+  BilateralContractDocument,
+  BilateralContractModel,
+  BilateralContractMethods,
+  BilateralContractQueries
+>;
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `BilateralContractPermissionDocument["constraint"]` element.
+ */
+export type BilateralContractPermissionConstraintDocument =
+  mongoose.Types.Subdocument & {
+    '@type'?: string;
+    leftOperand?: string;
+    operator?: string;
+    rightOperand?: string;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `BilateralContractDocument["permission"]` element.
+ */
+export type BilateralContractPermissionDocument = mongoose.Types.Subdocument & {
+  action?: string;
+  constraint: mongoose.Types.DocumentArray<BilateralContractPermissionConstraintDocument>;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `BilateralContractDocument["purpose"]` element.
+ */
+export type BilateralContractPurposeDocument = mongoose.Types.Subdocument & {
+  uid?: string;
+  purpose?: string;
+  action?: string;
+  assigner?: string;
+  assignee?: string;
+  purposeCategory?: string;
+  consentType?: string;
+  piiCategory?: string;
+  primaryPurpose?: string;
+  termination?: string;
+  thirdPartyDisclosure?: string;
+  thirdPartyName?: string;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `BilateralContractDocument["signatures"]` element.
+ */
+export type BilateralContractSignatureDocument = mongoose.Types.Subdocument & {
+  party?: string;
+  value?: string;
+  signed?: boolean;
+};
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const BilateralContract = mongoose.model<BilateralContractDocument, BilateralContractModel>("BilateralContract", BilateralContractSchema);
+ * ```
+ */
+export type BilateralContractDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  BilateralContractQueries
+> &
+  BilateralContractMethods & {
+    uid?: string;
+    profile?: string;
+    permission: mongoose.Types.DocumentArray<BilateralContractPermissionDocument>;
+    purpose: mongoose.Types.DocumentArray<BilateralContractPurposeDocument>;
+    signatures: mongoose.Types.DocumentArray<BilateralContractSignatureDocument>;
+    createdAt?: Date;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
  * Lean version of ContractPermissionConstraintDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `ContractPermissionDocument.toObject()`.
@@ -399,7 +627,7 @@ declare module 'mongoose' {
       path: T,
       select?: string | any,
       model?: string | Model<any, THelpers>,
-      match?: any,
+      match?: any
     ): Query<
       ResultType extends Array<DocType>
         ? Array<PopulatedDocument<Unarray<ResultType>, T>>
@@ -412,7 +640,7 @@ declare module 'mongoose' {
       THelpers;
 
     populate<T extends string>(
-      options: Modify<PopulateOptions, { path: T }> | Array<PopulateOptions>,
+      options: Modify<PopulateOptions, { path: T }> | Array<PopulateOptions>
     ): Query<
       ResultType extends Array<DocType>
         ? Array<PopulatedDocument<Unarray<ResultType>, T>>
