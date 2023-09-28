@@ -96,42 +96,54 @@ class ContractService {
   // sign contract
   public async signContract(
     contractId: string,
-    party: string | undefined,
-    value: string | undefined,
+    party: string,
+    value: string,
   ): Promise<IContract> {
     try {
-      // Find the contract by its ID and according to the party
-      const updatedContract = await Contract.findOneAndUpdate(
-        // Condition to find the existing element
-        { _id: contractId, 'signatures.party': party },
-        // Replace the signature value
-        { $set: { 'signatures.$.value': value } },
-        { new: true },
-      ).lean();
-      if (!updatedContract) {
-        // If the party doesn't exist, push it
-        const updatedContractWithPush = await Contract.findByIdAndUpdate(
-          contractId,
-          { $push: { signatures: { party, value } } },
-          { new: true },
-        );
-        if (!updatedContractWithPush) {
-          throw new Error('The contract does not exist.');
-        }
-        // Check if both parties have signed
-        if (updatedContractWithPush.signatures.length === 2) {
-          // Set signed to true if both parties have signed
-          updatedContractWithPush.signed = true;
-          // Save the changes to the database
-          await updatedContractWithPush.save();
-        }
-        return updatedContractWithPush.toObject();
+      // Find the contract by its ID
+      const contract = await Contract.findById(contractId, {
+        // Exclude useless meta data
+        _id: 0,
+        __v: 0,
+      }).lean();
+
+      if (!contract) {
+        throw new Error('The contract does not exist.');
       }
-      return updatedContract;
+      // Check if the party is the orchestrator
+      const isOrchestrator = party === 'orchestrator';
+      const currentSignature = contract.signatures.find(
+        (signature) => signature.party === party,
+      );
+      if (currentSignature) {
+        // Update the value of an existing signature
+        currentSignature.value = value;
+      } else {
+        // Add a new signature if it doesn't exist
+        contract.signatures.push({ party, value });
+      }
+      // Check if both parties have signed, including the orchestrator
+      const totalSignatures = contract.signatures.length;
+      if (totalSignatures >= 2 && isOrchestrator) {
+        // Set signed to true if there are at least
+        // two parties and the orchestrator who signed
+        contract.signed = true;
+      }
+      // Update the contract in the database
+      const updatedContract = await Contract.findByIdAndUpdate(
+        contractId,
+        contract,
+        { new: true, _id: 0, __v: 0 },
+      );
+      if (!updatedContract) {
+        throw new Error('Error occured while updating contract signature.');
+      }
+      return updatedContract.toObject();
     } catch (error) {
       throw error;
     }
   }
+
   // Check if data is authorized for exploitation
   // according to the contract permission
   public async checkPermission(

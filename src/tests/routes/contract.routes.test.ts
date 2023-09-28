@@ -6,6 +6,9 @@ import { ContractSignature } from 'interfaces/schemas.interface';
 
 const SERVER_PORT = 9999;
 const API_ROUTE_BASE = '/contract/';
+beforeEach(() => {
+  console.log('\n');
+});
 describe('Routes for Contract API', () => {
   let server: any;
   let authToken: string;
@@ -92,9 +95,9 @@ describe('Routes for Contract API', () => {
     expect(response.body).to.have.property('_id');
   });
 
-  // Test case: Sign a contract for party A twice and party B once
-  it('should sign a contract for party A twice and party B once, and set signed to true', async () => {
-    // Define the signature data for party A for a first time
+  // Test case: Sign a contract for party A twice a party B once and the orchestrator
+  it('should sign a contract for party A twice, party B once, the orchestrator, and set signed to true', async () => {
+    // Define the signature data for party A for the first time
     const signatureDataPartyA1: ContractSignature = {
       party: 'partyA',
       value: 'partyASignature1',
@@ -106,7 +109,7 @@ describe('Routes for Contract API', () => {
       .send(signatureDataPartyA1);
     // Check if the response status for party A's first signature is OK (200)
     expect(responsePartyA1.status).to.equal(200);
-    // Define the signature data for party A for a second time
+    // Define the signature data for party A for the second time
     const signatureDataPartyA2: ContractSignature = {
       party: 'partyA',
       value: 'partyASignature2',
@@ -122,15 +125,28 @@ describe('Routes for Contract API', () => {
       value: 'partyBSignature',
     };
     // Send a PUT request to sign the contract for party B
-    const response = await supertest(app.router)
+    const responsePartyB = await supertest(app.router)
       .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
       .set('Authorization', `Bearer ${authToken}`)
       .send(signatureDataPartyB);
-    // Check if the response status is OK (200)
-    expect(response.status).to.equal(200);
-    // Check if the response contains the updated contract with the signature
-    expect(response.body).to.have.property('signatures');
-    const signatures = response.body.signatures;
+
+    // Check if the response status for party B's signature is OK (200)
+    expect(responsePartyB.status).to.equal(200);
+    // Define the signature data for the orchestrator
+    const signatureDataOrchestrator: ContractSignature = {
+      party: 'orchestrator',
+      value: 'orchestratorSignature',
+    };
+    // Send a PUT request to sign the contract for the orchestrator
+    const responseOrchestrator = await supertest(app.router)
+      .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
+      .set('Authorization', `Bearer ${authToken}`)
+      .send(signatureDataOrchestrator);
+    // Check if the response status for the orchestrator's signature is OK (200)
+    expect(responseOrchestrator.status).to.equal(200);
+    // Check if the response contains the updated contract with the signatures
+    expect(responseOrchestrator.body).to.have.property('signatures');
+    const signatures = responseOrchestrator.body.signatures;
     // Check if party A's second signature exists in the updated contract
     const partyASignature2 = signatures.find(
       (signature: ContractSignature) =>
@@ -141,18 +157,19 @@ describe('Routes for Contract API', () => {
       (signature: ContractSignature) =>
         signature.party === 'partyB' && signature.value === 'partyBSignature',
     );
-    // Check if party A's first signature does NOT exist in the updated contract
-    const partyASignature1 = signatures.find(
+    // Check if the orchestrator's signature exists in the updated contract
+    const orchestratorSignature = signatures.find(
       (signature: ContractSignature) =>
-        signature.party === 'partyA' && signature.value === 'partyASignature1',
+        signature.party === 'orchestrator' &&
+        signature.value === 'orchestratorSignature',
     );
-    // Check if both of party A's second signature and party B's signature exist
+    // Check if both of party A's second signature, party B's signature,
+    // and orchestrator's signature do exist
     expect(partyASignature2).to.exist;
     expect(partyBSignature).to.exist;
-    // Check if party A's first signature does NOT exist
-    expect(partyASignature1).to.not.exist;
+    expect(orchestratorSignature).to.exist;
     // Check if the 'signed' field is set to true
-    expect(response.body.signed).to.equal(true);
+    expect(responseOrchestrator.body.signed).to.equal(true);
   });
 
   // Test case: Delete a contract by ID

@@ -5,16 +5,21 @@ winston.addColors({
   warn: 'cyan',
   info: 'white',
 });
-
+winston.addColors({
+  meta: 'italic gray',
+});
+const colorizer = winston.format.colorize();
 const format = winston.format.printf(
   ({ timestamp, level, message, ...meta }) => {
     if (meta !== null && Object.keys(meta).length > 0) {
-      return `${message}\n${JSON.stringify(meta, null, 2)}`;
+      return `${message}${colorizer.colorize(
+        'meta',
+        `\n${JSON.stringify(meta, null, 2)}`,
+      )}`;
     }
     return message;
   },
 );
-
 // Create a Winston logger with custom colors and a default console transport.
 export const logger = winston.createLogger({
   levels: {
