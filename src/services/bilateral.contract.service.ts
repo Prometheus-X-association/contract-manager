@@ -100,43 +100,50 @@ class BilateralContractService {
   // sign contract
   public async signContract(
     contractId: string,
-    party: string | undefined,
-    value: string | undefined,
+    party: string,
+    value: string,
   ): Promise<IBilateralContract> {
     try {
-      // Find the contract by its ID and according to the party
-      const updatedContract = await BilateralContract.findOneAndUpdate(
-        // Condition to find the existing element
-        { _id: contractId, 'signatures.party': party },
-        // Replace the signature value
-        { $set: { 'signatures.$.value': value } },
-        { new: true },
-      ).lean();
-      if (!updatedContract) {
-        // If the party doesn't exist, push it
-        const updatedContractWithPush =
-          await BilateralContract.findByIdAndUpdate(
-            contractId,
-            { $push: { signatures: { party, value } } },
-            { new: true },
-          );
-        if (!updatedContractWithPush) {
-          throw new Error('The contract does not exist.');
-        }
-        // Check if both parties have signed
-        if (updatedContractWithPush.signatures.length === 2) {
-          // Set signed to true if both parties have signed
-          updatedContractWithPush.signed = true;
-          // Save the changes to the database
-          await updatedContractWithPush.save();
-        }
-        return updatedContractWithPush.toObject();
+      // Find the contract by its ID
+      const existingContract = await BilateralContract.findById(contractId);
+
+      if (!existingContract) {
+        throw new Error('The contract does not exist.');
       }
-      return updatedContract;
+      // Check if the contract already has two participants
+      if (existingContract.signatures.length >= 2) {
+        // Check if the new party is different from the existing ones
+        const parties = existingContract.signatures.map(
+          (signature) => signature.party,
+        );
+        if (!parties.includes(party)) {
+          throw new Error('Cannot add a third participant.');
+        }
+      }
+      // Find the party's existing signature
+      const existingSignature = existingContract.signatures.find(
+        (signature) => signature.party === party,
+      );
+      if (existingSignature) {
+        // Update the value of an existing signature
+        existingSignature.value = value;
+      } else {
+        // Add a new signature if it doesn't exist
+        existingContract.signatures.push({ party, value });
+      }
+      // Check if both parties have signed
+      if (existingContract.signatures.length === 2) {
+        // Set signed to true if both parties have signed
+        existingContract.signed = true;
+      }
+      // Save the changes to the database
+      await existingContract.save();
+      return existingContract.toObject();
     } catch (error) {
       throw error;
     }
   }
+
   // Check if data is authorized for exploitation
   // according to the contract permission
   public async checkPermission(

@@ -85,11 +85,12 @@ export const signContract = async (req: Request, res: Response) => {
     );
     logger.info('Signed contract:', updatedContract);
     return res.json(updatedContract);
-  } catch (error) {
+  } catch (error: any) {
     logger.error('Error signing the contract:', error);
-    res
-      .status(500)
-      .json({ error: 'An error occurred while signing the contract.' });
+    res.status(500).json({
+      error: 'An error occurred while signing the contract:',
+      message: error.message,
+    });
   }
 };
 // Check if data is authorized for exploitation

@@ -146,6 +146,28 @@ describe('Routes for Bilateral Contract API', () => {
     expect(response.body.signed).to.equal(true);
   });
 
+  // Test case: Try to add a third participant and expect an error
+  it('should return an error when trying to add a third participant', async () => {
+    // Define the signature data for party C
+    const signatureDataPartyC: BilateralContractSignature = {
+      party: 'partyC',
+      value: 'partyCSignature',
+    };
+    // Send a PUT request to sign the contract for party C
+    const responsePartyC = await supertest(app.router)
+      .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
+      .set('Authorization', `Bearer ${authToken}`)
+      .send(signatureDataPartyC);
+    // Check if the response status is not OK (expecting an error)
+    expect(responsePartyC.status).to.not.equal(200);
+    // Check if the response contains an error message
+    // indicating that a third participant is not allowed
+    expect(responsePartyC.body).to.have.property('error');
+    expect(responsePartyC.body.message).to.equal(
+      'Cannot add a third participant.',
+    );
+  });
+
   // Test case: Delete a contract by ID
   it('should delete a bilateral contract by ID', async () => {
     // Send a DELETE request to delete the contract by its ID
