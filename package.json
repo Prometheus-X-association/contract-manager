@@ -1,4 +1,7 @@
 {
+  "engines": {
+    "node": ">=18.15.0 <18.18.0"
+  },
   "dependencies": {
     "@casl/ability": "^6.5.0",
     "axios": "^1.5.0",
@@ -21,7 +24,8 @@
     "gen-types": "npx mongoose-tsgen --config mtgen.config.json",
     "build": "npx rimraf -rf build/ && tsc && tsc-alias",
     "start": "node build/start.js",
-    "test": "mocha --require ts-node/register --exit ./src/tests/**/*.test.ts"
+    "test": "mocha --require ts-node/register --exit ./src/tests/**/*.test.ts",
+    "watch": "npx nodemon"
   },
   "author": "",
   "license": "ISC",
