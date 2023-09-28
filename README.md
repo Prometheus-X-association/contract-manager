@@ -7,6 +7,18 @@ Before you begin, ensure you have met the following requirements:
 - [Node Version Manager (nvm)](https://github.com/nvm-sh/nvm) installed
 - [pnpm](https://pnpm.io/) package manager installed
 
+- Make sure to fill your .env (see .env.sample):
+
+  ```bash
+  cat .env.sample
+  ```
+
+- Make sure you have a folder containing your contract models:
+
+  ```bash
+  ls ./your_contract_models_folder
+  ```
+ 
 ## Usage
 
 1. Use the required Node.js version using nvm:
