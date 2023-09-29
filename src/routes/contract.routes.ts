@@ -11,8 +11,41 @@ import {
 
 const router = express.Router();
 
-// Create
+/**
+ * @swagger
+ * tags:
+ *   name: Contracts
+ *   description: Endpoints for managing contracts
+ * /contracts:
+ *   post:
+ *     summary: Create a contract
+ *     description: |
+ *       Creates a contract and returns it in ODRL format. You can provide input data, and if it is outside the contract model definitions, an error is returned indicating the problematic field.
+ *     requestBody:
+ *       description: Contract data input
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: ''
+ *     responses:
+ *       200:
+ *         description: Success - Contract created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: ''
+ *       400:
+ *         description: Bad Request - Invalid input data, details in the response body
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: ''
+ *       500:
+ *         description: Internal Server Error
+ */
 router.post('/', createContract);
+
 // Read
 router.get('/:id', getContract);
 // Update

@@ -10,6 +10,8 @@ import papRoutes from 'routes/pap.routes';
 import auth from 'middlewares/auth.middleware';
 import pep from 'middlewares/pep.middlewares';
 import { logger } from 'utils/logger';
+import swaggerUi from 'swagger-ui-express';
+import swaggerSpec from './swagger';
 const router = express();
 
 const startServer = async () => {
@@ -45,6 +47,8 @@ const startServer = async () => {
     // res.setHeader('Access-Control-Allow-Credentials', 'true');
     next();
   });
+  // swagger
+  router.use('/doc-api', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
   // Policy enforcement point
   router.use(pep);
