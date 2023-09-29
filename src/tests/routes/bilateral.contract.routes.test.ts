@@ -6,6 +6,9 @@ import { BilateralContractSignature } from 'interfaces/schemas.interface';
 
 const SERVER_PORT = 9999;
 const API_ROUTE_BASE = '/bilateral/contract/';
+beforeEach(() => {
+  console.log('\n');
+});
 describe('Routes for Bilateral Contract API', () => {
   let server: any;
   let authToken: string;

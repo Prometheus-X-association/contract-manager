@@ -5,8 +5,9 @@ import {
 import { config } from 'config/config';
 import BilateralContract from 'models/bilateral.contract.model';
 import { checkFieldsMatching, loadModel } from 'utils/utils';
-import pdp, { AuthorizationPolicy } from './pdp.service';
+import pdp from './pdp.service';
 import policyProviderService from './policy.provider.service';
+import { IAuthorisationPolicy } from 'interfaces/policy.interface';
 
 // Bilateral Contract Service
 class BilateralContractService {
@@ -160,7 +161,7 @@ class BilateralContractService {
       // Retrieve permissions from the contract
       const permissions = contract.permission;
       // Create an authorization policy based on contract permissions
-      const policies: AuthorizationPolicy[] =
+      const policies: IAuthorisationPolicy[] =
         policyProviderService.genPolicies(permissions);
       // Use the PDP to evaluate the authorization policy
       pdp.defineReferencePolicies(policies);

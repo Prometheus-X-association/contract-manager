@@ -10,84 +10,11 @@ import contractConfig, {
 class PolicyProviderService {
   private static instance: PolicyProviderService;
   private policies: IAuthorisationPolicy[];
+  private policiesPromise: Promise<IAuthorisationPolicy[]>;
 
   private constructor() {
     this.policies = [];
-    this.fetchAuthorisationPolicies().then((policies) => {
-      this.policies = policies;
-    });
-    /*
-    [
-      // Temporary default static policies for testing
-      {
-        subject: 'is-it-alive',
-        action: 'GET',
-        conditions: {},
-      },
-      // Bilateral contrat default authorisation rules
-      {
-        subject: 'bilateral',
-        action: 'GET',
-        conditions: {},
-      },
-      {
-        subject: 'bilateral',
-        action: 'POST',
-        conditions: {
-          participant: 'admin',
-        },
-      },
-      {
-        subject: 'bilateral',
-        action: 'PUT',
-        conditions: {
-          participant: 'admin',
-        },
-      },
-      {
-        subject: 'bilateral',
-        action: 'DELETE',
-        conditions: {
-          participant: 'admin',
-        },
-      },
-      // Contract default authorisation rules
-      {
-        subject: 'contract',
-        action: 'GET',
-        conditions: {},
-      },
-      {
-        subject: 'contract',
-        action: 'POST',
-        conditions: {
-          participant: 'admin',
-        },
-      },
-      {
-        subject: 'contract',
-        action: 'PUT',
-        conditions: {
-          participant: 'admin',
-        },
-      },
-      {
-        subject: 'contract',
-        action: 'DELETE',
-        conditions: {
-          participant: 'admin',
-        },
-      },
-      // User default authorisation rules
-      {
-        subject: 'user',
-        action: 'GET',
-        conditions: {
-          task: 'login',
-        },
-      },
-    ];
-    */
+    this.policiesPromise = this.fetchAuthorisationPolicies();
   }
 
   public static getInstance(): PolicyProviderService {
@@ -223,8 +150,8 @@ class PolicyProviderService {
   }
 
   // Fetch all policies from the policy list
-  public fetch(): IAuthorisationPolicy[] {
-    return this.policies;
+  public fetch(): Promise<IAuthorisationPolicy[]> {
+    return this.policiesPromise;
   }
 }
 

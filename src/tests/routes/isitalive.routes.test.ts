@@ -3,7 +3,7 @@ import { expect } from 'chai';
 import app from 'server';
 
 const SERVER_PORT = 9999;
-describe('Routes for Contract API', () => {
+describe('Test route to Ping the API', () => {
   let server: any;
   before(async () => {
     server = await app.startServer();

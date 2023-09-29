@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { AuthorizationPolicy } from 'services/pdp.service';
+import { IAuthorisationPolicy } from 'interfaces/policy.interface';
 import policyProviderService from 'services/policy.provider.service';
 import sinon from 'sinon';
 import { logger } from 'utils/logger';
@@ -36,9 +36,9 @@ describe('genPolicies', () => {
         ],
       },
     ];
-    const result: AuthorizationPolicy[] =
+    const result: IAuthorisationPolicy[] =
       policyProviderService.genPolicies(permissions);
-    const expectedPolicies: AuthorizationPolicy[] = [
+    const expectedPolicies: IAuthorisationPolicy[] = [
       {
         subject: 'Offer',
         action: 'write',

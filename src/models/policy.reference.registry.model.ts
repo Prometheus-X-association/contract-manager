@@ -10,12 +10,10 @@ const AuthorisationPolicySchema: Schema = new Schema(
   },
   { _id: false },
 );
-
 // Mongoose schema for a registry of reference policies
 const PolicyReferenceRegistrySchema: Schema = new Schema({
   policies: [AuthorisationPolicySchema],
 });
-
 // Mongoose model for PolicyReferenceRegistry
 export default mongoose.model<PolicyReferenceRegistry>(
   'PolicyReferenceRegistry',
