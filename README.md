@@ -43,7 +43,13 @@ Before you begin, ensure you have met the following requirements:
 
    This will install all the necessary dependencies for your project.
 
-3. Watch for changes and automatically restart the server in development:
+3. Make sure to seed the database
+
+   ```bash
+   npm run seed
+   ```
+
+4. Watch for changes and automatically restart the server in development:
 
    ```bash
    npm run watch
@@ -51,7 +57,7 @@ Before you begin, ensure you have met the following requirements:
 
    This command will use nodemon to watch for changes and restart your application when changes are detected.
    
-4. Generate TypeScript types for Mongoose using mongoose-tsgen:
+5. Generate TypeScript types for Mongoose using mongoose-tsgen:
 
    ```bash
    npm run gen-types
@@ -59,7 +65,7 @@ Before you begin, ensure you have met the following requirements:
 
    This command will generate TypeScript types based on your Mongoose models.
 
-5. Build the project:
+6. Build the project:
 
    ```bash
    npm run build
@@ -67,7 +73,7 @@ Before you begin, ensure you have met the following requirements:
 
    This command will clean the `build/` directory and compile your TypeScript code.
 
-6. Start your Node.js application:
+7. Start your Node.js application:
 
    ```bash
    npm start
@@ -75,7 +81,7 @@ Before you begin, ensure you have met the following requirements:
 
    This command will start your application using the compiled code.
 
-7. Run tests:
+8. Run tests:
 
    ```bash
    npm test
