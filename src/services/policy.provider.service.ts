@@ -1,4 +1,5 @@
-import { AuthorizationPolicy } from './pdp.service';
+import { IAuthorisationPolicy } from 'interfaces/policy.interface';
+import PolicyReferenceRegistry from 'models/policy.reference.registry.model';
 import { logger } from 'utils/logger';
 import contractConfig, {
   IConstraints,
@@ -8,11 +9,15 @@ import contractConfig, {
 // Policy Provider Service
 class PolicyProviderService {
   private static instance: PolicyProviderService;
-  private policies: AuthorizationPolicy[];
+  private policies: IAuthorisationPolicy[];
 
   private constructor() {
-    // Initialize the singleton, if needed
-    this.policies = [
+    this.policies = [];
+    this.fetchAuthorisationPolicies().then((policies) => {
+      this.policies = policies;
+    });
+    /*
+    [
       // Temporary default static policies for testing
       {
         subject: 'is-it-alive',
@@ -82,6 +87,7 @@ class PolicyProviderService {
         },
       },
     ];
+    */
   }
 
   public static getInstance(): PolicyProviderService {
@@ -91,12 +97,27 @@ class PolicyProviderService {
     return PolicyProviderService.instance;
   }
 
+  public async fetchAuthorisationPolicies(): Promise<IAuthorisationPolicy[]> {
+    try {
+      // Find the PolicyReferenceRegistry document
+      const policyRegistry = await PolicyReferenceRegistry.findOne();
+      if (!policyRegistry) {
+        throw new Error('PolicyReferenceRegistry not found');
+      }
+      // Extract policies array from the document
+      const authorisationPolicies = policyRegistry.policies;
+      return authorisationPolicies as IAuthorisationPolicy[];
+    } catch (error: any) {
+      throw new Error(`Error fetching authorizations: ${error.message}`);
+    }
+  }
+
   // Generate policies based on permissions and constraint configuration.
-  public genPolicies(permissions: any): AuthorizationPolicy[] {
-    const policies: AuthorizationPolicy[] = [];
+  public genPolicies(permissions: any): IAuthorisationPolicy[] {
+    const policies: IAuthorisationPolicy[] = [];
     // Iterate through each permission provided.
     for (const permission of permissions) {
-      const policy: AuthorizationPolicy = {
+      const policy: IAuthorisationPolicy = {
         // Set the subject of the policy to the '@type' property of the permission.
         subject: permission['@type'],
         // Set the action of the policy to the 'action' property of the permission.
@@ -176,8 +197,10 @@ class PolicyProviderService {
   // Update an existing policy in the policy list by dbId
   public update(id: string, data: any): void {
     // Find the policy in the list based on its ID
-    const index = this.policies.findIndex((policy: AuthorizationPolicy) => {
-      return policy.dbId === id;
+    const index = this.policies.findIndex((policy: IAuthorisationPolicy) => {
+      // Todo
+      return false;
+      // return policy.dbId === id;
     });
     if (index !== -1) {
       // Update the policy in the list
@@ -188,8 +211,10 @@ class PolicyProviderService {
   // Remove a policy from the policy list by dbId
   public remove(id: string): void {
     // Find the policy in the list based on its dbId
-    const index = this.policies.findIndex((policy: AuthorizationPolicy) => {
-      return policy.dbId === id;
+    const index = this.policies.findIndex((policy: IAuthorisationPolicy) => {
+      // Todo
+      return false;
+      // return policy.dbId === id;
     });
     if (index !== -1) {
       // Remove the policy from the list
@@ -198,7 +223,7 @@ class PolicyProviderService {
   }
 
   // Fetch all policies from the policy list
-  public fetch(): AuthorizationPolicy[] {
+  public fetch(): IAuthorisationPolicy[] {
     return this.policies;
   }
 }

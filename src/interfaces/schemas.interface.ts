@@ -553,6 +553,127 @@ export type PolicyDocument = mongoose.Document<
   };
 
 /**
+ * Lean version of PolicyReferenceRegistryPolicieDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `PolicyReferenceRegistryDocument.toObject()`.
+ * ```
+ * const policyreferenceregistryObject = policyreferenceregistry.toObject();
+ * ```
+ */
+export type PolicyReferenceRegistryPolicie = {
+  subject: string;
+  action: string;
+  conditions?: any;
+};
+
+/**
+ * Lean version of PolicyReferenceRegistryDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `PolicyReferenceRegistryDocument.toObject()`. To avoid conflicts with model names, use the type alias `PolicyReferenceRegistryObject`.
+ * ```
+ * const policyreferenceregistryObject = policyreferenceregistry.toObject();
+ * ```
+ */
+export type PolicyReferenceRegistry = {
+  policies: PolicyReferenceRegistryPolicie[];
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of PolicyReferenceRegistryDocument (type alias of `PolicyReferenceRegistry`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { PolicyReferenceRegistry } from "../models"
+ * import { PolicyReferenceRegistryObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const policyreferenceregistryObject: PolicyReferenceRegistryObject = policyreferenceregistry.toObject();
+ * ```
+ */
+export type PolicyReferenceRegistryObject = PolicyReferenceRegistry;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type PolicyReferenceRegistryQuery = mongoose.Query<
+  any,
+  PolicyReferenceRegistryDocument,
+  PolicyReferenceRegistryQueries
+> &
+  PolicyReferenceRegistryQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `PolicyReferenceRegistrySchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type PolicyReferenceRegistryQueries = {};
+
+export type PolicyReferenceRegistryMethods = {};
+
+export type PolicyReferenceRegistryStatics = {};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const PolicyReferenceRegistry = mongoose.model<PolicyReferenceRegistryDocument, PolicyReferenceRegistryModel>("PolicyReferenceRegistry", PolicyReferenceRegistrySchema);
+ * ```
+ */
+export type PolicyReferenceRegistryModel = mongoose.Model<
+  PolicyReferenceRegistryDocument,
+  PolicyReferenceRegistryQueries
+> &
+  PolicyReferenceRegistryStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new PolicyReferenceRegistry schema instances:
+ * ```
+ * const PolicyReferenceRegistrySchema: PolicyReferenceRegistrySchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type PolicyReferenceRegistrySchema = mongoose.Schema<
+  PolicyReferenceRegistryDocument,
+  PolicyReferenceRegistryModel,
+  PolicyReferenceRegistryMethods,
+  PolicyReferenceRegistryQueries
+>;
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `PolicyReferenceRegistryDocument["policies"]` element.
+ */
+export type PolicyReferenceRegistryPolicieDocument =
+  mongoose.Types.Subdocument & {
+    subject: string;
+    action: string;
+    conditions?: any;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const PolicyReferenceRegistry = mongoose.model<PolicyReferenceRegistryDocument, PolicyReferenceRegistryModel>("PolicyReferenceRegistry", PolicyReferenceRegistrySchema);
+ * ```
+ */
+export type PolicyReferenceRegistryDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  PolicyReferenceRegistryQueries
+> &
+  PolicyReferenceRegistryMethods & {
+    policies: mongoose.Types.DocumentArray<PolicyReferenceRegistryPolicieDocument>;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
  * Check if a property on a document is populated:
  * ```
  * import { IsPopulated } from "../interfaces/mongoose.gen.ts"

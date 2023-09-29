@@ -3,7 +3,7 @@ import mongoose, { Schema } from 'mongoose';
 import { IContractDB } from '../interfaces/contract.interface';
 
 // Purpose mongoose schema
-const PurposeSchema = new mongoose.Schema({
+const PurposeSchema = new Schema({
   uid: String,
   purpose: String,
   action: String,
@@ -18,7 +18,7 @@ const PurposeSchema = new mongoose.Schema({
   thirdPartyName: String,
 });
 // Constraints mongoose schemas
-const DefaultConstraintSchema = new mongoose.Schema(
+const DefaultConstraintSchema = new Schema(
   {
     '@type': String,
     leftOperand: String,
@@ -27,12 +27,12 @@ const DefaultConstraintSchema = new mongoose.Schema(
   },
   { _id: false },
 );
-const UnknownConstraintSchema = new mongoose.Schema(
+const UnknownConstraintSchema = new Schema(
   { '@type': String },
   { strict: false, _id: false },
 );
 // Signature mongoose schema
-const SignatureSchema = new mongoose.Schema(
+const SignatureSchema = new Schema(
   {
     party: { type: String, required: true },
     value: { type: String, required: true },

@@ -1,4 +1,4 @@
-import { PDPAction, AuthorizationPolicy } from './pdp.service';
+import { PDPAction, IAuthorisationPolicy } from 'interfaces/policy.interface';
 import { Request } from 'express';
 
 // Policy Information Point
@@ -16,11 +16,11 @@ class PIPService {
     return PIPService.instance;
   }
 
-  public buildAuthenticationPolicy(req: Request): AuthorizationPolicy {
+  public buildAuthenticationPolicy(req: Request): IAuthorisationPolicy {
     // Get URL segments to build the policy
     const urlSegments = req.url.split('/');
     // Create an authorization policy based on request information
-    const policy: AuthorizationPolicy = {
+    const policy: IAuthorisationPolicy = {
       subject: urlSegments[1],
       action: req.method as PDPAction,
       conditions: {},

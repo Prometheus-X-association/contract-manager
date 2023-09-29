@@ -1,8 +1,9 @@
 import { IContract, IContractDB } from 'interfaces/contract.interface';
+import { IAuthorisationPolicy } from 'interfaces/policy.interface';
 import { config } from 'config/config';
 import Contract from 'models/contract.model';
 import { checkFieldsMatching, loadModel } from 'utils/utils';
-import pdp, { AuthorizationPolicy } from './pdp.service';
+import pdp from './pdp.service';
 import policyProviderService from './policy.provider.service';
 import { logger } from 'utils/logger';
 
@@ -160,7 +161,7 @@ class ContractService {
       // Retrieve permissions from the contract
       const permissions = contract.permission;
       // Create an authorization policy based on contract permissions
-      const policies: AuthorizationPolicy[] =
+      const policies: IAuthorisationPolicy[] =
         policyProviderService.genPolicies(permissions);
       // Use the PDP to evaluate the authorization policy
       pdp.defineReferencePolicies(policies);

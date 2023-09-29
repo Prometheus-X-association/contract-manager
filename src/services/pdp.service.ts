@@ -5,17 +5,7 @@ import {
   SubjectType,
   mongoQueryMatcher,
 } from '@casl/ability';
-
-// Define custom types and interfaces
-export type PDPAction = 'write' | 'POST' | 'GET' | 'PUT' | 'DELETE';
-
-export interface AuthorizationPolicy {
-  dbId?: string;
-  subject: string;
-  action: PDPAction;
-  conditions: Record<string, unknown>;
-  fields?: [];
-}
+import { PDPAction, IAuthorisationPolicy } from 'interfaces/policy.interface';
 
 // Define an Ability type
 type Ability = PureAbility<
@@ -31,7 +21,7 @@ const lambdaMatcher = (matchConditions: MatchConditions) => {
 // Policy Decision Point
 class PDPService {
   private static instance: PDPService;
-  private referencePolicies: AuthorizationPolicy[] = [];
+  private referencePolicies: IAuthorisationPolicy[] = [];
 
   private constructor() {
     // Initialize the singleton instance
@@ -44,12 +34,12 @@ class PDPService {
     return PDPService.instance;
   }
 
-  defineReferencePolicies(policies: AuthorizationPolicy[]): void {
+  defineReferencePolicies(policies: IAuthorisationPolicy[]): void {
     //
     this.referencePolicies = policies;
   }
 
-  evalPolicy(policy: AuthorizationPolicy): boolean {
+  evalPolicy(policy: IAuthorisationPolicy): boolean {
     // Define the ability based on policies
     const ability = this.defineAbility(this.referencePolicies);
     // Check if the given policy has permission
@@ -62,11 +52,11 @@ class PDPService {
     return hasPermission;
   }
 
-  private defineAbility(policies: AuthorizationPolicy[]): Ability {
+  private defineAbility(policies: IAuthorisationPolicy[]): Ability {
     // Create an AbilityBuilder instance
     const { can: allow, build } = new AbilityBuilder<Ability>(PureAbility);
     // Define permissions based on policies
-    policies.forEach((item: AuthorizationPolicy) => {
+    policies.forEach((item: IAuthorisationPolicy) => {
       const matchConditions = mongoQueryMatcher(item.conditions);
       allow(
         item.action,
