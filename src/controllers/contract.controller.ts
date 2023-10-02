@@ -120,6 +120,7 @@ export const getAllContratFor = async (
     );
     res.status(200).json({ contracts: contracts });
   } catch (error: any) {
+    logger.error('Error while fetching all contract:', { error });
     res.status(500).json({ error: error.message });
   }
 };
