@@ -73,11 +73,10 @@ export const deleteContract = async (req: Request, res: Response) => {
 export const signContract = async (req: Request, res: Response) => {
   try {
     const contractId: string = req.params.id;
-    const { party, value }: ContractSignature = req.body;
+    const signature: ContractSignature = req.body;
     const updatedContract = await contractService.signContract(
       contractId,
-      party,
-      value,
+      signature,
     );
     logger.info('Signed contract:', updatedContract);
     return res.json(updatedContract);
@@ -107,3 +106,19 @@ export const checkDataExploitation = async (req: Request, res: Response) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+/*
+// Get all contrat for a participant
+export const getAllContratFor = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const did: string = req.params.did;
+    const signedContracts =
+      await contractService.getAllSignedContractsByDid(did);
+    res.status(200).json({ contracts: signedContracts });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
+*/

@@ -2,6 +2,7 @@ import {
   IBilateralContract,
   IBilateralContractDB,
 } from 'interfaces/contract.interface';
+import { BilateralContractSignature } from 'interfaces/schemas.interface';
 import { config } from 'config/config';
 import BilateralContract from 'models/bilateral.contract.model';
 import { checkFieldsMatching, loadModel } from 'utils/utils';
@@ -101,8 +102,7 @@ class BilateralContractService {
   // sign contract
   public async signContract(
     contractId: string,
-    party: string,
-    value: string,
+    inputSignature: BilateralContractSignature,
   ): Promise<IBilateralContract> {
     try {
       // Find the contract by its ID
@@ -117,20 +117,20 @@ class BilateralContractService {
         const parties = existingContract.signatures.map(
           (signature) => signature.party,
         );
-        if (!parties.includes(party)) {
+        if (!parties.includes(inputSignature.party)) {
           throw new Error('Cannot add a third participant.');
         }
       }
       // Find the party's existing signature
       const existingSignature = existingContract.signatures.find(
-        (signature) => signature.party === party,
+        (signature) => signature.party === inputSignature.party,
       );
       if (existingSignature) {
         // Update the value of an existing signature
-        existingSignature.value = value;
+        existingSignature.value = inputSignature.value;
       } else {
         // Add a new signature if it doesn't exist
-        existingContract.signatures.push({ party, value });
+        existingContract.signatures.push(inputSignature);
       }
       // Check if both parties have signed
       if (existingContract.signatures.length === 2) {
@@ -144,7 +144,7 @@ class BilateralContractService {
       throw error;
     }
   }
-
+  //
   // Check if data is authorized for exploitation
   // according to the contract permission
   public async checkPermission(
@@ -169,6 +169,35 @@ class BilateralContractService {
       return isAuthorized;
     } catch (error) {
       throw error;
+    }
+  }
+  //
+  // Get all contracts, filter by DID and if the participant has signed or not
+  public async getAllContracts(
+    did?: string,
+    hasSigned?: boolean,
+  ): Promise<IBilateralContractDB[]> {
+    try {
+      const filter: Record<string, any> = {};
+      if (did) {
+        filter['participants.did'] = did;
+      }
+      if (hasSigned !== undefined) {
+        if (hasSigned) {
+          // Participant must appear in signatures
+          filter.signatures = { $elemMatch: { did: did } };
+        } else {
+          // Participant must not appear in signatures
+          filter.$or = [
+            { 'signatures.did': { $exists: false } },
+            { signatures: { $not: { $elemMatch: { did: did } } } },
+          ];
+        }
+      }
+      const contracts = await BilateralContract.find(filter);
+      return contracts;
+    } catch (error: any) {
+      throw new Error(`Error while retrieving contracts: ${error.message}`);
     }
   }
 }

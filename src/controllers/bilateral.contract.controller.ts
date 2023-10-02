@@ -77,11 +77,10 @@ export const deleteContract = async (req: Request, res: Response) => {
 export const signContract = async (req: Request, res: Response) => {
   try {
     const contractId: string = req.params.id;
-    const { party, value }: BilateralContractSignature = req.body;
+    const signature: BilateralContractSignature = req.body;
     const updatedContract = await bilateralContractService.signContract(
       contractId,
-      party,
-      value,
+      signature,
     );
     logger.info('Signed contract:', updatedContract);
     return res.json(updatedContract);
@@ -110,5 +109,29 @@ export const checkDataExploitation = async (req: Request, res: Response) => {
   } catch (error) {
     logger.error(error);
     return res.status(500).json({ message: 'Internal server error' });
+  }
+};
+// Get all contrat according to the filter
+export const getAllContratFor = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const did: string | undefined = req.query.did as string | undefined;
+    const hasSigned: boolean | undefined = req.query.hasSigned === 'true';
+    let contracts: IBilateralContractDB[];
+    if (did && hasSigned !== undefined) {
+      contracts = await bilateralContractService.getAllContracts(
+        did,
+        hasSigned,
+      );
+    } else if (did) {
+      contracts = await bilateralContractService.getAllContracts(did);
+    } else {
+      contracts = await bilateralContractService.getAllContracts();
+    }
+    res.status(200).json({ contracts });
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
   }
 };

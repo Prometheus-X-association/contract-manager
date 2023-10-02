@@ -7,6 +7,7 @@ import {
   deleteContract,
   signContract,
   checkDataExploitation,
+  getAllContratFor,
 } from '../controllers/contract.controller';
 
 const router = express.Router();
@@ -57,5 +58,7 @@ router.delete('/:id', deleteContract);
 router.put('/sign/:id', signContract);
 // Check data exploitation
 router.put('/:id', checkDataExploitation);
+// Get all contracts for a specific DID
+router.get('/contract/all/:did', getAllContratFor);
 
 export default router;

@@ -6,6 +6,7 @@ import { checkFieldsMatching, loadModel } from 'utils/utils';
 import pdp from './pdp.service';
 import policyProviderService from './policy.provider.service';
 import { logger } from 'utils/logger';
+import { ContractSignature } from 'interfaces/schemas.interface';
 
 // Ecosystem Contract Service
 class ContractService {
@@ -97,8 +98,7 @@ class ContractService {
   // sign contract
   public async signContract(
     contractId: string,
-    party: string,
-    value: string,
+    inputSignature: ContractSignature,
   ): Promise<IContract> {
     try {
       // Find the contract by its ID
@@ -112,16 +112,16 @@ class ContractService {
         throw new Error('The contract does not exist.');
       }
       // Check if the party is the orchestrator
-      const isOrchestrator = party === 'orchestrator';
+      const isOrchestrator = inputSignature.party === 'orchestrator';
       const currentSignature = contract.signatures.find(
-        (signature) => signature.party === party,
+        (signature) => signature.party === signature.party,
       );
       if (currentSignature) {
         // Update the value of an existing signature
-        currentSignature.value = value;
+        currentSignature.value = inputSignature.value;
       } else {
         // Add a new signature if it doesn't exist
-        contract.signatures.push({ party, value });
+        contract.signatures.push(inputSignature);
       }
       // Check if both parties have signed, including the orchestrator
       const totalSignatures = contract.signatures.length;
