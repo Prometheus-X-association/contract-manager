@@ -114,7 +114,7 @@ class ContractService {
       // Check if the party is the orchestrator
       const isOrchestrator = inputSignature.party === 'orchestrator';
       const currentSignature = contract.signatures.find(
-        (signature) => signature.party === signature.party,
+        (signature) => signature.party === inputSignature.party,
       );
       if (currentSignature) {
         // Update the value of an existing signature

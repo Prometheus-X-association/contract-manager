@@ -88,81 +88,115 @@ describe('Routes for Bilateral Contract API', () => {
 
   // Test case: Sign a contract for party A twice and party B once
   it('should sign a bilateral contract for party A twice, then party B once, and finally set signed to true', async () => {
-    // Define the signature data for party A for a first time
+    // Define the DID for each party
+    const didPartyA: string = 'did:partyA';
+    const didPartyB: string = 'did:partyB';
+
+    // Define the signature data for party A for the first time
     const signatureDataPartyA1: BilateralContractSignature = {
+      did: didPartyA,
       party: 'partyA',
       value: 'partyASignature1',
     };
+
     // Send a PUT request to sign the contract for party A the first time
     const responsePartyA1 = await supertest(app.router)
       .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
       .set('Authorization', `Bearer ${authToken}`)
       .send(signatureDataPartyA1);
+
     // Check if the response status for party A's first signature is OK (200)
     expect(responsePartyA1.status).to.equal(200);
-    // Define the signature data for party A for a second time
+
+    // Define the signature data for party A for the second time
     const signatureDataPartyA2: BilateralContractSignature = {
+      did: didPartyA,
       party: 'partyA',
       value: 'partyASignature2',
     };
+
     // Send a PUT request to sign the contract for party A the second time
     await supertest(app.router)
       .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
       .set('Authorization', `Bearer ${authToken}`)
       .send(signatureDataPartyA2);
+
     // Define the signature data for party B
     const signatureDataPartyB: BilateralContractSignature = {
+      did: didPartyB,
       party: 'partyB',
       value: 'partyBSignature',
     };
+
     // Send a PUT request to sign the contract for party B
     const response = await supertest(app.router)
       .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
       .set('Authorization', `Bearer ${authToken}`)
       .send(signatureDataPartyB);
+
     // Check if the response status is OK (200)
     expect(response.status).to.equal(200);
+
     // Check if the response contains the updated contract with the signature
     expect(response.body).to.have.property('signatures');
     const signatures = response.body.signatures;
+
     // Check if party A's second signature exists in the updated contract
     const partyASignature2 = signatures.find(
       (signature: BilateralContractSignature) =>
-        signature.party === 'partyA' && signature.value === 'partyASignature2',
+        signature.party === 'partyA' &&
+        signature.value === 'partyASignature2' &&
+        signature.did === didPartyA,
     );
+
     // Check if party B's signature exists in the updated contract
     const partyBSignature = signatures.find(
       (signature: BilateralContractSignature) =>
-        signature.party === 'partyB' && signature.value === 'partyBSignature',
+        signature.party === 'partyB' &&
+        signature.value === 'partyBSignature' &&
+        signature.did === didPartyB,
     );
+
     // Check if party A's first signature does NOT exist in the updated contract
     const partyASignature1 = signatures.find(
       (signature: BilateralContractSignature) =>
-        signature.party === 'partyA' && signature.value === 'partyASignature1',
+        signature.party === 'partyA' &&
+        signature.value === 'partyASignature1' &&
+        signature.did === didPartyA,
     );
+
     // Check if both of party A's second signature and party B's signature exist
     expect(partyASignature2).to.exist;
     expect(partyBSignature).to.exist;
+
     // Check if party A's first signature does NOT exist
     expect(partyASignature1).to.not.exist;
+
     // Check if the 'signed' field is set to true
     expect(response.body.signed).to.equal(true);
   });
 
   // Test case: Try to add a third participant and expect an error
   it('should return an error when trying to add a third participant', async () => {
+    // Define the DID for party C
+    const didPartyC: string = 'did:partyC';
+
     // Define the signature data for party C
     const signatureDataPartyC: BilateralContractSignature = {
+      did: didPartyC,
       party: 'partyC',
       value: 'partyCSignature',
     };
+
     // Send a PUT request to sign the contract for party C
     const responsePartyC = await supertest(app.router)
       .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
       .set('Authorization', `Bearer ${authToken}`)
       .send(signatureDataPartyC);
+
     // Check if the response status is not OK (expecting an error)
     expect(responsePartyC.status).to.not.equal(200);
+
     // Check if the response contains an error message
     // indicating that a third participant is not allowed
     expect(responsePartyC.body).to.have.property('error');

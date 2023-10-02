@@ -116,6 +116,9 @@ describe('Routes for Contract API', () => {
       .send(signatureDataPartyA1);
 
     // Check if the response status for party A's first signature is OK (200)
+    console.log(
+      "Check if the response status for party A's first signature is OK (200)",
+    );
     expect(responsePartyA1.status).to.equal(200);
 
     // Define the signature data for party A for the second time
@@ -145,6 +148,9 @@ describe('Routes for Contract API', () => {
       .send(signatureDataPartyB);
 
     // Check if the response status for party B's signature is OK (200)
+    console.log(
+      "Check if the response status for party B's signature is OK (200)",
+    );
     expect(responsePartyB.status).to.equal(200);
 
     // Define the signature data for the orchestrator
@@ -161,6 +167,9 @@ describe('Routes for Contract API', () => {
       .send(signatureDataOrchestrator);
 
     // Check if the response status for the orchestrator's signature is OK (200)
+    console.log(
+      "Check if the response status for the orchestrator's signature is OK (200)",
+    );
     expect(responseOrchestrator.status).to.equal(200);
 
     // Check if the response contains the updated contract with the signatures
@@ -196,7 +205,6 @@ describe('Routes for Contract API', () => {
     expect(responseOrchestrator.body.signed).to.equal(true);
   });
 
-  /*
   // Test case: Delete a contract by ID
   it('should delete a contract by ID', async () => {
     // Send a DELETE request to delete the contract by its ID
@@ -211,5 +219,4 @@ describe('Routes for Contract API', () => {
       'Contract deleted successfully.',
     );
   });
-  */
 });
