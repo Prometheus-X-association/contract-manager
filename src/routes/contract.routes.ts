@@ -58,7 +58,8 @@ router.delete('/:id', deleteContract);
 router.put('/sign/:id', signContract);
 // Check data exploitation
 router.put('/:id', checkDataExploitation);
-// Get all contracts for a specific DID
-router.get('/contract/all/:did', getAllContratFor);
-
+// Get all contracts for a specific filter
+//    /contract/all/?did=participantFakeTokenDID
+//    /contract/all/?did=participantFakeTokenDID&hasSigned=true
+router.get('/contract/all/', getAllContratFor);
 export default router;

@@ -106,19 +106,20 @@ export const checkDataExploitation = async (req: Request, res: Response) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
-/*
-// Get all contrat for a participant
+// Get all contrat according to the filter
 export const getAllContratFor = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
   try {
-    const did: string = req.params.did;
-    const signedContracts =
-      await contractService.getAllSignedContractsByDid(did);
-    res.status(200).json({ contracts: signedContracts });
+    const did: string | undefined = req.query.did?.toString();
+    const hasSigned: boolean = req.query.hasSigned === 'true' || true;
+    const contracts: IContractDB[] = await contractService.getAllContracts(
+      did,
+      hasSigned,
+    );
+    res.status(200).json({ contracts: contracts });
   } catch (error: any) {
     res.status(500).json({ error: error.message });
   }
 };
-*/

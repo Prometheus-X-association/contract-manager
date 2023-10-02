@@ -144,7 +144,6 @@ class ContractService {
       throw error;
     }
   }
-
   // Check if data is authorized for exploitation
   // according to the contract permission
   public async checkPermission(
@@ -169,6 +168,31 @@ class ContractService {
       return isAuthorized;
     } catch (error) {
       throw error;
+    }
+  }
+  //
+  // Get all ecosystem contracts according to the filter
+  public async getAllContracts(
+    did?: string,
+    hasSigned?: boolean,
+  ): Promise<IContractDB[]> {
+    try {
+      const filter: Record<string, any> = {};
+      if (did !== undefined) {
+        if (hasSigned) {
+          // Participant must appear in signatures
+          filter.signatures = { $elemMatch: { did: did } };
+        } else if (hasSigned === false) {
+          // Participant must not appear in signatures
+          filter.signatures = { $not: { $elemMatch: { did: did } } };
+        }
+      }
+      const contracts = await Contract.find(filter);
+      return contracts;
+    } catch (error: any) {
+      throw new Error(
+        `Error while retrieving ecosystem contracts: ${error.message}`,
+      );
     }
   }
 }

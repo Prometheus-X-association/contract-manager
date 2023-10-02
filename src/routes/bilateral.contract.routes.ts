@@ -25,9 +25,7 @@ router.put('/contract/sign/:id', signContract);
 // Check data exploitation
 router.put('/contract/:id', checkDataExploitation);
 // Get all contracts for a specific filter
-//    /contract/all/?signed=true
 //    /contract/all/?did=participantFakeTokenDID
-//    /contract/all/?did=participantFakeTokenDID&hasSigned=true
-
+//    /contract/all/?did=participantFakeTokenDID&hasSigned=false
 router.get('/contract/all/', getAllContratFor);
 export default router;

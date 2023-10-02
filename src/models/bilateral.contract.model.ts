@@ -58,7 +58,7 @@ const BilateralContractSchema: Schema = new Schema({
   ],
   purpose: [BilateralPurposeSchema],
   signatures: [BilateralSignatureSchema],
-  participants: [{ did: String }],
+  negotiators: [{ did: String }],
   signed: {
     type: Boolean,
     default: false,

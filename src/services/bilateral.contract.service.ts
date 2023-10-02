@@ -180,7 +180,7 @@ class BilateralContractService {
     try {
       const filter: Record<string, any> = {};
       if (did) {
-        filter['participants.did'] = did;
+        filter['negotiators.did'] = did;
       }
       if (hasSigned !== undefined) {
         if (hasSigned) {

@@ -69,9 +69,23 @@ export type BilateralContractPurpose = {
  * ```
  */
 export type BilateralContractSignature = {
+  did: string;
   party: string;
   value: string;
   date?: Date;
+};
+
+/**
+ * Lean version of BilateralContractNegotiatorDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BilateralContractDocument.toObject()`.
+ * ```
+ * const bilateralcontractObject = bilateralcontract.toObject();
+ * ```
+ */
+export type BilateralContractNegotiator = {
+  did?: string;
+  _id: mongoose.Types.ObjectId;
 };
 
 /**
@@ -88,6 +102,7 @@ export type BilateralContract = {
   permission: BilateralContractPermission[];
   purpose: BilateralContractPurpose[];
   signatures: BilateralContractSignature[];
+  negotiators: BilateralContractNegotiator[];
   signed?: boolean;
   createdAt?: Date;
   _id: mongoose.Types.ObjectId;
@@ -209,9 +224,20 @@ export type BilateralContractPurposeDocument = mongoose.Types.Subdocument & {
  * Type of `BilateralContractDocument["signatures"]` element.
  */
 export type BilateralContractSignatureDocument = mongoose.Types.Subdocument & {
+  did: string;
   party: string;
   value: string;
   date?: Date;
+};
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `BilateralContractDocument["negotiators"]` element.
+ */
+export type BilateralContractNegotiatorDocument = mongoose.Types.Subdocument & {
+  did?: string;
+  _id: mongoose.Types.ObjectId;
 };
 
 /**
@@ -232,6 +258,7 @@ export type BilateralContractDocument = mongoose.Document<
     permission: mongoose.Types.DocumentArray<BilateralContractPermissionDocument>;
     purpose: mongoose.Types.DocumentArray<BilateralContractPurposeDocument>;
     signatures: mongoose.Types.DocumentArray<BilateralContractSignatureDocument>;
+    negotiators: mongoose.Types.DocumentArray<BilateralContractNegotiatorDocument>;
     signed?: boolean;
     createdAt?: Date;
     _id: mongoose.Types.ObjectId;
@@ -298,6 +325,7 @@ export type ContractPurpose = {
  * ```
  */
 export type ContractSignature = {
+  did: string;
   party: string;
   value: string;
   date?: Date;
@@ -434,6 +462,7 @@ export type ContractPurposeDocument = mongoose.Types.Subdocument & {
  * Type of `ContractDocument["signatures"]` element.
  */
 export type ContractSignatureDocument = mongoose.Types.Subdocument & {
+  did: string;
   party: string;
   value: string;
   date?: Date;

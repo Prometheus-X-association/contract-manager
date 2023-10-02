@@ -23,11 +23,11 @@
   "version": "1.0.0",
   "main": "src/start.ts",
   "scripts": {
-    "gen-types": "mongoose-tsgen --config mtgen.config.json",
+    "gen-types": "npx mongoose-tsgen --config mtgen.config.json",
     "build": "npx rimraf -rf build/ && tsc && tsc-alias",
     "start": "node build/start.js",
     "test": "mocha --require ts-node/register --exit ./src/tests/**/*.test.ts",
-    "watch": "nodemon",
+    "watch": "npx nodemon",
     "seed": "ts-node src/seeds/start.ts"
   },
   "author": "",

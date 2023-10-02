@@ -34,6 +34,7 @@ const UnknownConstraintSchema = new Schema(
 // Signature mongoose schema
 const SignatureSchema = new Schema(
   {
+    did: { type: String, required: true },
     party: { type: String, required: true },
     value: { type: String, required: true },
     date: {
