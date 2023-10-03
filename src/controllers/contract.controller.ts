@@ -87,6 +87,10 @@ export const signContract = async (req: Request, res: Response) => {
       .json({ error: 'An error occurred while signing the contract.' });
   }
 };
+// Revoke a signature on a contract for a given contract id and party did
+export const revokeContractSignature = async (req: Request, res: Response) => {
+  return res.json({ message: 'revoke' });
+};
 // Check if data is authorized for exploitation
 export const checkDataExploitation = async (req: Request, res: Response) => {
   const contractId = req.params.id;

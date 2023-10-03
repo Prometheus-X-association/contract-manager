@@ -3,9 +3,13 @@ import supertest from 'supertest';
 import { expect } from 'chai';
 import app from 'server';
 import { ContractSignature } from 'interfaces/schemas.interface';
+import contractService from 'services/contract.service';
 
 const SERVER_PORT = 9999;
 const API_ROUTE_BASE = '/contract/';
+const _logObject = (data: any) => {
+  console.log(`\x1b[90m${JSON.stringify(data, null, 2)}\x1b[37m`);
+};
 beforeEach(() => {
   console.log('\n');
 });
@@ -20,19 +24,23 @@ describe('Routes for Contract API', () => {
         resolve(true);
       });
     });
-
     const authResponse = await supertest(app.router).get('/user/login');
     expect(authResponse.status).to.equal(200);
     authToken = authResponse.body.token;
   });
 
-  after(() => {
+  after(async () => {
+    try {
+      await contractService.deleteContract(createdContractId);
+    } catch (error: any) {
+      console.log(error);
+    }
     server.close();
     console.log('Test server stopped.');
   });
 
   // Variable to store the ID of the created contract
-  let createdContractId: String;
+  let createdContractId: string;
   // Test case: Create a new contract
   it('should create a new contract', async () => {
     const contractData = {
@@ -51,7 +59,7 @@ describe('Routes for Contract API', () => {
       .set('Authorization', `Bearer ${authToken}`)
       .send(contractData);
     // log
-    console.log(`\x1b[90m${JSON.stringify(response.body, null, 2)}\x1b[37m`);
+    _logObject(response.body);
     // Check if the response status is 201 (Created)
     expect(response.status).to.equal(201);
     // Check if the response has a 'id' property
@@ -67,7 +75,7 @@ describe('Routes for Contract API', () => {
       .get(`${API_ROUTE_BASE}${createdContractId}`)
       .set('Authorization', `Bearer ${authToken}`);
     // log
-    console.log(`\x1b[90m${JSON.stringify(response.body, null, 2)}\x1b[37m`);
+    _logObject(response.body);
     // Check if the response status is 200 (OK)
     expect(response.status).to.equal(200);
     // Check if the response has a 'id' property
@@ -85,7 +93,7 @@ describe('Routes for Contract API', () => {
       .set('Authorization', `Bearer ${authToken}`)
       .send(updatedContractData);
     // log
-    console.log(`\x1b[90m${JSON.stringify(response.body, null, 2)}\x1b[37m`);
+    _logObject(response.body);
     // Check if the response status is 200 (OK)
     expect(response.status).to.equal(200);
     // Check if the response has the expected 'message'
@@ -112,9 +120,7 @@ describe('Routes for Contract API', () => {
       .set('Authorization', `Bearer ${authToken}`)
       .send(signatureDataPartyA1);
     // log
-    console.log(
-      `\x1b[90m${JSON.stringify(responsePartyA1.body, null, 2)}\x1b[37m`,
-    );
+    _logObject(responsePartyA1.body);
     // Check if the response status for party A's first signature is OK (200)
     console.log(
       "Check if the response status for party A's first signature is OK (200)",
@@ -134,9 +140,7 @@ describe('Routes for Contract API', () => {
       .set('Authorization', `Bearer ${authToken}`)
       .send(signatureDataPartyA2);
     // log
-    console.log(
-      `\x1b[90m${JSON.stringify(responsePartyA2.body, null, 2)}\x1b[37m`,
-    );
+    _logObject(responsePartyA2.body);
     // Define the signature data for party B
     const signatureDataPartyB: ContractSignature = {
       did: didPartyB,
@@ -150,9 +154,7 @@ describe('Routes for Contract API', () => {
       .set('Authorization', `Bearer ${authToken}`)
       .send(signatureDataPartyB);
     // log
-    console.log(
-      `\x1b[90m${JSON.stringify(responsePartyB.body, null, 2)}\x1b[37m`,
-    );
+    _logObject(responsePartyB.body);
     // Check if the response status for party B's signature is OK (200)
     console.log(
       "Check if the response status for party B's signature is OK (200)",
@@ -172,9 +174,7 @@ describe('Routes for Contract API', () => {
       .set('Authorization', `Bearer ${authToken}`)
       .send(signatureDataOrchestrator);
     // log
-    console.log(
-      `\x1b[90m${JSON.stringify(responseOrchestrator.body, null, 2)}\x1b[37m`,
-    );
+    _logObject(responseOrchestrator.body);
     // Check if the response status for the orchestrator's signature is OK (200)
     console.log(
       "Check if the response status for the orchestrator's signature is OK (200)",
@@ -214,11 +214,12 @@ describe('Routes for Contract API', () => {
     expect(responseOrchestrator.body.signed).to.equal(true);
   });
 
+  /*
   // Test case: Delete a contract by ID
   it('should delete a contract by ID', async () => {
     // Send a DELETE request to delete the contract by its ID
     const response = await supertest(app.router)
-      .delete(`${API_ROUTE_BASE}${createdContractId}`)
+      .delete(`${API_ROUTE_BASE}delete/${createdContractId}`)
       .set('Authorization', `Bearer ${authToken}`);
     // Check if the response status is 200 (OK)
     expect(response.status).to.equal(200);
@@ -228,4 +229,5 @@ describe('Routes for Contract API', () => {
       'Contract deleted successfully.',
     );
   });
+  */
 });

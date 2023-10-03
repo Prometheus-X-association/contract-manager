@@ -4,13 +4,19 @@ import {
   createContract,
   getContract,
   updateContract,
-  deleteContract,
+  // deleteContract,
   signContract,
   checkDataExploitation,
   getAllContratFor,
+  revokeContractSignature,
 } from '../controllers/contract.controller';
 
 const router = express.Router();
+
+// Get all contracts for a specific filter
+//    /all/?did=participantFakeTokenDID
+//    /all/?did=participantFakeTokenDID&hasSigned=true
+router.get('/all/', getAllContratFor);
 
 /**
  * @swagger
@@ -47,20 +53,18 @@ const router = express.Router();
  */
 router.post('/', createContract);
 
-// Get all contracts for a specific filter
-//    /all/?did=participantFakeTokenDID
-//    /all/?did=participantFakeTokenDID&hasSigned=true
-router.get('/all/', getAllContratFor);
-
 // Read
 router.get('/:id', getContract);
 // Update
 router.put('/:id', updateContract);
 // Delete
-router.delete('/:id', deleteContract);
+// .delete('/:id', deleteContract);
 //
 // Sign contract
 router.put('/sign/:id', signContract);
+// Revoque signature
+router.delete('/sign/revoke/:id/:did', revokeContractSignature);
 // Check data exploitation
 router.put('/:id', checkDataExploitation);
+
 export default router;

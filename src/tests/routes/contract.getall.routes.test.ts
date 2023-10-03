@@ -3,6 +3,7 @@ import { expect } from 'chai';
 import app from 'server';
 import { IContractDB } from 'interfaces/contract.interface';
 import { ContractSignature } from 'interfaces/schemas.interface';
+import contractService from 'services/contract.service';
 
 const SERVER_PORT = 9999;
 const API_ROUTE_BASE = '/contract/';
@@ -61,13 +62,20 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
 
   after(async () => {
     // Delete the created contracts
+    /*
     await supertest(app.router)
       .delete(`/contract/${signedContractId}`)
       .set('Authorization', `Bearer ${authToken}`);
     await supertest(app.router)
       .delete(`/contract/${unsignedContractId}`)
       .set('Authorization', `Bearer ${authToken}`);
-
+    */
+    try {
+      await contractService.deleteContract(signedContractId);
+      await contractService.deleteContract(unsignedContractId);
+    } catch (error: any) {
+      console.log(error);
+    }
     // Stop the test server
     server.close();
     console.log('Test server stopped.');
