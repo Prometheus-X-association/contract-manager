@@ -1,12 +1,13 @@
 import supertest from 'supertest';
 import { expect } from 'chai';
 import app from 'server';
+import { config } from 'config/config';
 
 const SERVER_PORT = 9999;
 describe('Test route to Ping the API', () => {
   let server: any;
   before(async () => {
-    server = await app.startServer();
+    server = await app.startServer(config.mongo.testUrl);
     await new Promise((resolve) => {
       server.listen(SERVER_PORT, () => {
         console.log(`Test server is running on port ${SERVER_PORT}`);

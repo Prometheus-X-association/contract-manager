@@ -195,31 +195,39 @@ class BilateralContractService {
   public async getAllContracts(
     did?: string,
     isParticipant?: boolean,
+    // Optional parameter indicating whether the contract is signed
     hasSigned?: boolean,
   ): Promise<IBilateralContractDB[]> {
     try {
-      const filter: Record<string, any> = {};
-      console.log(
-        `did:${did}, isParticipant:${isParticipant}, hasSigned:${hasSigned}`,
-      );
+      let filter: Record<string, any> = {};
       if (did) {
-        if (isParticipant === undefined || isParticipant) {
-          filter['negotiators.did'] = did;
-        } else {
-          filter['negotiators.did'] = { $ne: did };
-        }
-      }
-      if (hasSigned !== undefined) {
+        let negotiator = {};
+        let signed = {};
+        // Include negotiator filter for the specified DID by default
+        negotiator = { 'negotiators.did': did };
         if (hasSigned) {
-          filter.$and = [{ 'negotiators.did': did }, { 'signatures.did': did }];
-        } else {
-          filter.$and = [
-            { 'signatures.did': { $exists: false } },
-            { 'signatures.did': { $ne: did } },
-          ];
+          // Include signed filter for the specified DID if hasSigned is true
+          signed = { 'signatures.did': did };
         }
+        //
+        if (hasSigned === false) {
+          // Exclude negotiator filter if hasSigned is false
+          negotiator = {};
+          // Exclude signed filter for the specified DID
+          signed = { 'signatures.did': { $ne: did } };
+        }
+        //
+        if (isParticipant === false) {
+          // Exclude negotiator filter if isParticipant is false
+          negotiator = { 'negotiators.did': { $ne: did } };
+        } else if (isParticipant === true) {
+          // Include negotiator filter for the specified DID if isParticipant is true
+          negotiator = { 'negotiators.did': did };
+        }
+        // Combine negotiator and signed filters
+        filter = { ...negotiator, ...signed };
       }
-      console.log(JSON.stringify(filter, null, 2), '<<<');
+      // Retrieve contracts based on the filter
       const contracts = await BilateralContract.find(filter);
       return contracts;
     } catch (error: any) {
