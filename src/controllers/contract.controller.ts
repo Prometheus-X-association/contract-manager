@@ -113,7 +113,7 @@ export const getAllContratFor = async (
 ): Promise<void> => {
   try {
     const did: string | undefined = req.query.did?.toString();
-    const hasSigned: boolean = req.query.hasSigned === 'true' || true;
+    const hasSigned: boolean = req.query.hasSigned !== 'false';
     const contracts: IContractDB[] = await contractService.getAllContracts(
       did,
       hasSigned,
