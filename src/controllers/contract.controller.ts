@@ -8,7 +8,7 @@ import { ContractSignature } from 'interfaces/schemas.interface';
 export const createContract = async (req: Request, res: Response) => {
   try {
     const contract: IContract = await contractService.genContract(req.body);
-    logger.info(contract);
+    logger.info('[Contract/Controller: createContract] Successfully called.');
     return res.status(201).json(contract);
   } catch (error: any) {
     res.status(500).json({
@@ -25,7 +25,7 @@ export const getContract = async (req: Request, res: Response) => {
     if (!contract) {
       return res.status(404).json({ error: 'Contract not found.' });
     }
-    logger.info('Retrieved contract:', contract);
+    logger.info('[Contract/Controller: getContract] Successfully called.');
     return res.json(contract);
   } catch (error) {
     logger.error('Error retrieving the contract:', error);
@@ -46,7 +46,7 @@ export const updateContract = async (req: Request, res: Response) => {
     if (!updatedContract) {
       return res.status(404).json({ error: 'Contract not found.' });
     }
-    logger.info('Updated contract:', updatedContract);
+    logger.info('[Contract/Controller: updateContract] Successfully called.');
     return res.json(updatedContract);
   } catch (error) {
     logger.error('Error updating the contract:', error);
@@ -60,7 +60,7 @@ export const deleteContract = async (req: Request, res: Response) => {
   try {
     const contractId: string = req.params.id;
     await contractService.deleteContract(contractId);
-    logger.info('Contract deleted successfully.');
+    logger.info('[Contract/Controller: deleteContract] Successfully called.');
     return res.json({ message: 'Contract deleted successfully.' });
   } catch (error) {
     logger.error('Error deleting the contract:', error);
@@ -78,7 +78,7 @@ export const signContract = async (req: Request, res: Response) => {
       contractId,
       signature,
     );
-    logger.info('Signed contract:', updatedContract);
+    logger.info('[Contract/Controller: signContract] Successfully called.');
     return res.json(updatedContract);
   } catch (error) {
     logger.error('Error signing the contract:', error);
@@ -118,6 +118,7 @@ export const getAllContratFor = async (
       did,
       hasSigned,
     );
+    logger.info('[Contract/Controller: getAllContratFor] Successfully called.');
     res.status(200).json({ contracts: contracts });
   } catch (error: any) {
     logger.error('Error while fetching all contract:', { error });

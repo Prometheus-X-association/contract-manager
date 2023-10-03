@@ -21,16 +21,7 @@ describe('Routes for Contract API', () => {
       });
     });
 
-    const authResponse = await supertest(app.router)
-      // .post('/user/login')
-      .get('/user/login');
-    /*
-      .send({
-        username: 'username',
-        password: 'password',
-      });
-      */
-
+    const authResponse = await supertest(app.router).get('/user/login');
     expect(authResponse.status).to.equal(200);
     authToken = authResponse.body.token;
   });
@@ -59,6 +50,8 @@ describe('Routes for Contract API', () => {
       .post('/contract')
       .set('Authorization', `Bearer ${authToken}`)
       .send(contractData);
+    // log
+    console.log(`\x1b[90m${JSON.stringify(response.body, null, 2)}\x1b[37m`);
     // Check if the response status is 201 (Created)
     expect(response.status).to.equal(201);
     // Check if the response has a 'id' property
@@ -73,6 +66,8 @@ describe('Routes for Contract API', () => {
     const response = await supertest(app.router)
       .get(`${API_ROUTE_BASE}${createdContractId}`)
       .set('Authorization', `Bearer ${authToken}`);
+    // log
+    console.log(`\x1b[90m${JSON.stringify(response.body, null, 2)}\x1b[37m`);
     // Check if the response status is 200 (OK)
     expect(response.status).to.equal(200);
     // Check if the response has a 'id' property
@@ -89,6 +84,8 @@ describe('Routes for Contract API', () => {
       .put(`${API_ROUTE_BASE}${createdContractId}`)
       .set('Authorization', `Bearer ${authToken}`)
       .send(updatedContractData);
+    // log
+    console.log(`\x1b[90m${JSON.stringify(response.body, null, 2)}\x1b[37m`);
     // Check if the response status is 200 (OK)
     expect(response.status).to.equal(200);
     // Check if the response has the expected 'message'
@@ -114,7 +111,10 @@ describe('Routes for Contract API', () => {
       .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
       .set('Authorization', `Bearer ${authToken}`)
       .send(signatureDataPartyA1);
-
+    // log
+    console.log(
+      `\x1b[90m${JSON.stringify(responsePartyA1.body, null, 2)}\x1b[37m`,
+    );
     // Check if the response status for party A's first signature is OK (200)
     console.log(
       "Check if the response status for party A's first signature is OK (200)",
@@ -129,11 +129,14 @@ describe('Routes for Contract API', () => {
     };
 
     // Send a PUT request to sign the contract for party A the second time
-    await supertest(app.router)
+    const responsePartyA2 = await supertest(app.router)
       .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
       .set('Authorization', `Bearer ${authToken}`)
       .send(signatureDataPartyA2);
-
+    // log
+    console.log(
+      `\x1b[90m${JSON.stringify(responsePartyA2.body, null, 2)}\x1b[37m`,
+    );
     // Define the signature data for party B
     const signatureDataPartyB: ContractSignature = {
       did: didPartyB,
@@ -146,7 +149,10 @@ describe('Routes for Contract API', () => {
       .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
       .set('Authorization', `Bearer ${authToken}`)
       .send(signatureDataPartyB);
-
+    // log
+    console.log(
+      `\x1b[90m${JSON.stringify(responsePartyB.body, null, 2)}\x1b[37m`,
+    );
     // Check if the response status for party B's signature is OK (200)
     console.log(
       "Check if the response status for party B's signature is OK (200)",
@@ -165,7 +171,10 @@ describe('Routes for Contract API', () => {
       .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
       .set('Authorization', `Bearer ${authToken}`)
       .send(signatureDataOrchestrator);
-
+    // log
+    console.log(
+      `\x1b[90m${JSON.stringify(responseOrchestrator.body, null, 2)}\x1b[37m`,
+    );
     // Check if the response status for the orchestrator's signature is OK (200)
     console.log(
       "Check if the response status for the orchestrator's signature is OK (200)",
