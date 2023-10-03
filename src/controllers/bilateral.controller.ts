@@ -4,7 +4,7 @@ import {
   IBilateralContract,
   IBilateralContractDB,
 } from 'interfaces/contract.interface';
-import bilateralContractService from 'services/bilateral.contract.service';
+import bilateralContractService from 'services/bilateral.service';
 import { logger } from 'utils/logger';
 import { BilateralContractSignature } from 'interfaces/schemas.interface';
 // Create

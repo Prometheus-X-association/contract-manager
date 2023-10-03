@@ -1,4 +1,4 @@
-import PolicyReferenceRegistry from 'models/policy.reference.registry.model';
+import PolicyReferenceRegistry from 'models/policy.registry.model';
 import { IAuthorisationPolicy } from 'interfaces/policy.interface';
 
 const policySeedling: IAuthorisationPolicy[] = [

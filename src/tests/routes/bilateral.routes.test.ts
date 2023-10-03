@@ -3,8 +3,8 @@ import supertest from 'supertest';
 import { expect } from 'chai';
 import app from 'server';
 import { BilateralContractSignature } from 'interfaces/schemas.interface';
-import { deleteContract } from 'controllers/bilateral.contract.controller';
-import bilateralContractService from 'services/bilateral.contract.service';
+import { deleteContract } from 'controllers/bilateral.controller';
+import bilateralContractService from 'services/bilateral.service';
 
 const SERVER_PORT = 9999;
 const API_ROUTE_BASE = '/bilateral/contract/';

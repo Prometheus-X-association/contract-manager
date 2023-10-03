@@ -8,7 +8,7 @@ import {
   checkDataExploitation,
   getAllContratFor,
   revokeContractSignature,
-} from '../controllers/bilateral.contract.controller';
+} from '../controllers/bilateral.controller';
 
 const router = express.Router();
 

@@ -1,5 +1,5 @@
 import { IAuthorisationPolicy } from 'interfaces/policy.interface';
-import PolicyReferenceRegistry from 'models/policy.reference.registry.model';
+import PolicyReferenceRegistry from 'models/policy.registry.model';
 import { logger } from 'utils/logger';
 import contractConfig, {
   IConstraints,
