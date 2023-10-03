@@ -61,15 +61,6 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
   });
 
   after(async () => {
-    // Delete the created contracts
-    /*
-    await supertest(app.router)
-      .delete(`/contract/${signedContractId}`)
-      .set('Authorization', `Bearer ${authToken}`);
-    await supertest(app.router)
-      .delete(`/contract/${unsignedContractId}`)
-      .set('Authorization', `Bearer ${authToken}`);
-    */
     try {
       await contractService.deleteContract(signedContractId);
       await contractService.deleteContract(unsignedContractId);
@@ -87,11 +78,11 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
       const response = await supertest(app.router)
         .get(`${API_ROUTE_BASE}all/`)
         .set('Authorization', `Bearer ${authToken}`);
-
+      //
+      _logObject(response.body);
+      //
       expect(response.status).to.equal(200);
       const contracts: IContractDB[] = response.body.contracts;
-      _logObject(response.body);
-
       // Compare with the IDs created at the beginning
       const contractIds = contracts.map((contract) => contract._id);
       expect(contractIds).to.include.members([
@@ -106,10 +97,11 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
       const response = await supertest(app.router)
         .get(`${API_ROUTE_BASE}/all?did=${did}`)
         .set('Authorization', `Bearer ${authToken}`);
-
+      //
+      _logObject(response.body);
+      //
       expect(response.status).to.equal(200);
       const contracts: IContractDB[] = response.body.contracts;
-      _logObject(response.body);
       // Only the signed contract should be returned
       expect(contracts.length).to.equal(1);
       expect(contracts[0]._id).to.equal(signedContractId);
@@ -122,10 +114,11 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
       const response = await supertest(app.router)
         .get(`${API_ROUTE_BASE}/all?did=${did}&hasSigned=${hasSigned}`)
         .set('Authorization', `Bearer ${authToken}`);
-
+      //
+      _logObject(response.body);
+      //
       expect(response.status).to.equal(200);
       const contracts: IContractDB[] = response.body.contracts;
-      _logObject(response.body);
       // Only the unsigned contract should be returned
       expect(contracts.length).to.equal(1);
       expect(contracts[0]._id).to.equal(unsignedContractId);

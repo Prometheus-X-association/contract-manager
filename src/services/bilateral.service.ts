@@ -4,7 +4,7 @@ import {
 } from 'interfaces/contract.interface';
 import { BilateralContractSignature } from 'interfaces/schemas.interface';
 import { config } from 'config/config';
-import BilateralContract from 'models/bilateral.contract.model';
+import BilateralContract from 'models/bilateral.model';
 import { checkFieldsMatching, loadModel } from 'utils/utils';
 import pdp from './pdp.service';
 import policyProviderService from './policy.provider.service';
@@ -175,19 +175,27 @@ class BilateralContractService {
   // Get all contracts, filter by DID and if the participant has signed or not
   public async getAllContracts(
     did?: string,
+    isParticipant?: boolean,
     hasSigned?: boolean,
   ): Promise<IBilateralContractDB[]> {
     try {
       const filter: Record<string, any> = {};
       if (did) {
-        filter['negotiators.did'] = did;
+        if (isParticipant === undefined || isParticipant) {
+          // Include contracts where the participant is a negotiator
+          filter['negotiators.did'] = did;
+        }
+        if (!isParticipant) {
+          // Exclude contracts where the participant is a negotiator
+          filter['negotiators.did'] = { $ne: did };
+        }
       }
       if (hasSigned !== undefined) {
         if (hasSigned) {
-          // Participant must appear in signatures
+          // Include contracts where the participant appears in signatures
           filter.signatures = { $elemMatch: { did: did } };
         } else {
-          // Participant must not appear in signatures
+          // Exclude contracts where the participant appears in signatures
           filter.$or = [
             { 'signatures.did': { $exists: false } },
             { signatures: { $not: { $elemMatch: { did: did } } } },
