@@ -13,9 +13,9 @@ import swaggerUi from 'swagger-ui-express';
 import swaggerSpec from './swagger';
 const router = express();
 
-const startServer = async () => {
+const startServer = async (url: string) => {
   try {
-    await mongoose.connect(config.mongo.url, { retryWrites: true });
+    await mongoose.connect(url, { retryWrites: true });
     logger.info('MongoDB connected');
   } catch (error) {
     logger.error('Error connecting to MongoDB:', error);

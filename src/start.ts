@@ -4,7 +4,7 @@ import app from 'server';
 import { logger } from 'utils/logger';
 
 logger.info('Starting server...');
-app.startServer().then((server) => {
+app.startServer(config.mongo.url).then((server) => {
   logger.info('Server created.');
   server.listen(config.server.port, () =>
     logger.info(`Server is running on port ${config.server.port}.`),

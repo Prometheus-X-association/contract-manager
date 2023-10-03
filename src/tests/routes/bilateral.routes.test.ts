@@ -5,6 +5,7 @@ import app from 'server';
 import { BilateralContractSignature } from 'interfaces/schemas.interface';
 import { deleteContract } from 'controllers/bilateral.controller';
 import bilateralContractService from 'services/bilateral.service';
+import { config } from 'config/config';
 
 const SERVER_PORT = 9999;
 const API_ROUTE_BASE = '/bilateral/contract/';
@@ -15,7 +16,7 @@ describe('Routes for Bilateral Contract API', () => {
   let server: any;
   let authToken: string;
   before(async () => {
-    server = await app.startServer();
+    server = await app.startServer(config.mongo.testUrl);
     await new Promise((resolve) => {
       server.listen(SERVER_PORT, () => {
         console.log(`Test server is running on port ${SERVER_PORT}`);

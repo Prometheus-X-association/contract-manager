@@ -4,6 +4,7 @@ import app from 'server';
 import { IContractDB } from 'interfaces/contract.interface';
 import { ContractSignature } from 'interfaces/schemas.interface';
 import contractService from 'services/contract.service';
+import { config } from 'config/config';
 
 const SERVER_PORT = 9999;
 const API_ROUTE_BASE = '/contract/';
@@ -19,7 +20,7 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
   const didPartyA: string = 'DID:partyAFakeTokenForGetAllRoute';
 
   before(async () => {
-    server = await app.startServer();
+    server = await app.startServer(config.mongo.testUrl);
     await new Promise((resolve) => {
       server.listen(SERVER_PORT, () => {
         console.log(`Test server is running on port ${SERVER_PORT}`);

@@ -148,19 +148,24 @@ export const getAllContratFor = async (
   res: Response,
 ): Promise<void> => {
   try {
-    const did: string | undefined = req.query.did as string | undefined;
-    const hasSigned: boolean | undefined = req.query.hasSigned === 'true';
+    const did: string | undefined = req.query.did?.toString();
+    const isParticipant: boolean | undefined =
+      req.query.isParticipant === undefined
+        ? undefined
+        : req.query.isParticipant === 'true';
+
+    const hasSigned: boolean | undefined =
+      req.query.hasSigned === undefined
+        ? undefined
+        : req.query.hasSigned === 'true';
+
     let contracts: IBilateralContractDB[];
-    if (did && hasSigned !== undefined) {
-      contracts = await bilateralContractService.getAllContracts(
-        did,
-        hasSigned,
-      );
-    } else if (did) {
-      contracts = await bilateralContractService.getAllContracts(did);
-    } else {
-      contracts = await bilateralContractService.getAllContracts();
-    }
+    contracts = await bilateralContractService.getAllContracts(
+      did,
+      isParticipant,
+      hasSigned,
+    );
+
     logger.info('[Contract/Bilateral: getAllContratFor] Successfully called.');
     res.status(200).json({ contracts });
   } catch (error: any) {

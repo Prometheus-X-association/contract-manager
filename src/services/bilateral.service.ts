@@ -199,28 +199,27 @@ class BilateralContractService {
   ): Promise<IBilateralContractDB[]> {
     try {
       const filter: Record<string, any> = {};
+      console.log(
+        `did:${did}, isParticipant:${isParticipant}, hasSigned:${hasSigned}`,
+      );
       if (did) {
         if (isParticipant === undefined || isParticipant) {
-          // Include contracts where the participant is a negotiator
           filter['negotiators.did'] = did;
-        }
-        if (!isParticipant) {
-          // Exclude contracts where the participant is a negotiator
+        } else {
           filter['negotiators.did'] = { $ne: did };
         }
       }
       if (hasSigned !== undefined) {
         if (hasSigned) {
-          // Include contracts where the participant appears in signatures
-          filter.signatures = { $elemMatch: { did: did } };
+          filter.$and = [{ 'negotiators.did': did }, { 'signatures.did': did }];
         } else {
-          // Exclude contracts where the participant appears in signatures
-          filter.$or = [
+          filter.$and = [
             { 'signatures.did': { $exists: false } },
-            { signatures: { $not: { $elemMatch: { did: did } } } },
+            { 'signatures.did': { $ne: did } },
           ];
         }
       }
+      console.log(JSON.stringify(filter, null, 2), '<<<');
       const contracts = await BilateralContract.find(filter);
       return contracts;
     } catch (error: any) {
