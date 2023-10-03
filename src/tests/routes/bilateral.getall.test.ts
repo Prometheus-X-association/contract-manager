@@ -17,6 +17,7 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
   let authToken: string;
   let signedContractId: string;
   let unsignedContractId: string;
+  let thirdContractId: string;
   const didPartyA: string = 'DID:partyAFakeTokenForGetAllRoute';
 
   before(async () => {
@@ -41,6 +42,15 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
       .send(signedContractData);
     signedContractId = responseSigned.body._id;
 
+    // Add the party A as negotiator for the signed contract
+    const negotiatorData: { did: string } = {
+      did: didPartyA,
+    };
+    await supertest(app.router)
+      .put(`${API_ROUTE_BASE}negociator/${signedContractId}`)
+      .set('Authorization', `Bearer ${authToken}`)
+      .send(negotiatorData);
+
     // Define the signature data for party A
     const signatureDataPartyA1: BilateralContractSignature = {
       did: didPartyA,
@@ -53,6 +63,20 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
       .put(`${API_ROUTE_BASE}sign/${signedContractId}`)
       .set('Authorization', `Bearer ${authToken}`)
       .send(signatureDataPartyA1);
+
+    // Create a third contract
+    const thirdContractData = {};
+    const responseThird = await supertest(app.router)
+      .post('/contract')
+      .set('Authorization', `Bearer ${authToken}`)
+      .send(thirdContractData);
+    thirdContractId = responseThird.body._id;
+
+    // Add the party A as negotiator for the third contract
+    await supertest(app.router)
+      .put(`${API_ROUTE_BASE}negociator/${thirdContractId}`)
+      .set('Authorization', `Bearer ${authToken}`)
+      .send(negotiatorData);
 
     // Create an unsigned contract
     const unsignedContractData = {};

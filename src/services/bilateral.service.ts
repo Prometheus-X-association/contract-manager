@@ -99,6 +99,25 @@ class BilateralContractService {
       throw error;
     }
   }
+  //
+  public async addContractNegociator(
+    contractId: string,
+    did: string,
+  ): Promise<IBilateralContractDB | null> {
+    try {
+      const updatedContract = await BilateralContract.findByIdAndUpdate(
+        contractId,
+        { $push: { negotiators: { did: did } } },
+        { new: true },
+      );
+      if (!updatedContract) {
+        throw new Error('The contract does not exist.');
+      }
+      return updatedContract;
+    } catch (error: any) {
+      throw error;
+    }
+  }
   // sign contract
   public async signContract(
     contractId: string,

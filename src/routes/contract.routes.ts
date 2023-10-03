@@ -54,6 +54,25 @@ router.get('/all/', getAllContratFor);
 router.post('/', createContract);
 
 // Read
+/**
+ * @swagger
+ * /contracts/{id}:
+ *   get:
+ *     summary: Get a contract by ID
+ *     parameters:
+ *       - name: id
+ *         in: path
+ *         description: ID of the contract to retrieve
+ *         required: true
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: Success - Contract retrieved
+ *         schema:
+ *           $ref: ''
+ *       404:
+ *         description: Contract not found
+ */
 router.get('/:id', getContract);
 // Update
 router.put('/:id', updateContract);

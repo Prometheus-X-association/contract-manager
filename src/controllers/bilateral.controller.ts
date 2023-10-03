@@ -73,6 +73,33 @@ export const deleteContract = async (req: Request, res: Response) => {
       .json({ error: 'An error occurred while deleting the contract.' });
   }
 };
+
+// Add a negociator/participant to a contrat
+export const addContractNegociator = async (req: Request, res: Response) => {
+  try {
+    const contractId: string = req.params.id;
+    const did: string = req.body.did;
+    if (!did) {
+      return res
+        .status(400)
+        .json({ error: 'Did is required in the request body.' });
+    }
+    const updatedContract =
+      await bilateralContractService.addContractNegociator(contractId, did);
+    //
+    logger.info(
+      '[Contract/Bilateral: addContractNegociator] Successfully called.',
+    );
+    return res.json(updatedContract);
+  } catch (error: any) {
+    logger.error('Error adding contract negotiator:', error);
+    res.status(500).json({
+      error: 'An error occurred while adding the contract negotiator:',
+      message: error.message,
+    });
+  }
+};
+
 // Sign for a given party and signature
 export const signContract = async (req: Request, res: Response) => {
   try {
