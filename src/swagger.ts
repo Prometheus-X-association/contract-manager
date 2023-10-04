@@ -1,15 +1,6 @@
-import swaggerJsdoc from 'swagger-jsdoc';
+import swaggerAutogen from 'swagger-autogen';
 
-const options: swaggerJsdoc.Options = {
-  definition: {
-    openapi: '3.0.0',
-    info: {
-      title: 'contract-manager',
-      description: '...',
-      version: '1.0.0',
-    },
-  },
-  apis: [`${__dirname}/routes/*.ts`],
-};
-
-export default swaggerJsdoc(options);
+const outputFile: string = './swagger.json';
+const endpointsFiles: string[] = ['./routes/**/*.ts'];
+const swagger = swaggerAutogen();
+swagger(outputFile, endpointsFiles);

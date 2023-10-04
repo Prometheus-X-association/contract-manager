@@ -10,7 +10,7 @@ import auth from 'middlewares/auth.middleware';
 import pep from 'middlewares/pep.middlewares';
 import { logger } from 'utils/logger';
 import swaggerUi from 'swagger-ui-express';
-import swaggerSpec from './swagger';
+import swaggerJson from './swagger.json';
 const router = express();
 
 const startServer = async (url: string) => {
@@ -47,7 +47,8 @@ const startServer = async (url: string) => {
     next();
   });
   // swagger
-  router.use('/doc-api', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  // router.use('/doc-api', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+  router.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerJson));
 
   // Policy enforcement point
   router.use(pep);

@@ -28,7 +28,8 @@
     "start": "node build/start.js",
     "test": "mocha --require ts-node/register --exit ./src/tests/**/*.test.ts",
     "watch": "npx nodemon",
-    "seed": "ts-node src/seeds/start.ts"
+    "seed": "ts-node src/seeds/start.ts",
+    "gen-swagger": "ts-node src/swagger.ts"
   },
   "author": "",
   "license": "ISC",
@@ -47,6 +48,7 @@
     "mongoose-tsgen": "^9.2.7",
     "rimraf": "^5.0.1",
     "supertest": "^6.3.3",
+    "swagger-autogen": "^2.23.6",
     "tsc-alias": "^1.8.8",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.2.2"

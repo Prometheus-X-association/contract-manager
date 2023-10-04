@@ -19,7 +19,7 @@ Before you begin, ensure you have met the following requirements:
   ls ./your_contract_models_folder
   ```
  
-## Usage
+## Usage for development
 
 1. Use the required Node.js version using nvm:
 
@@ -56,8 +56,10 @@ Before you begin, ensure you have met the following requirements:
    ```
 
    This command will use nodemon to watch for changes and restart your application when changes are detected.
-   
-5. Generate TypeScript types for Mongoose using mongoose-tsgen:
+
+## Generators
+
+1. Generate TypeScript types for Mongoose using mongoose-tsgen:
 
    ```bash
    npm run gen-types
@@ -65,7 +67,17 @@ Before you begin, ensure you have met the following requirements:
 
    This command will generate TypeScript types based on your Mongoose models.
 
-6. Build the project:
+2. Generate Swagger API doc with:
+
+   ```bash
+   npm run gen-swagger
+   ```
+
+  This command will generate Swagger documentation, accessible at http://localhost:{port}/api-docs/#/
+
+## Building the project for production
+
+1. Build the project:
 
    ```bash
    npm run build
@@ -73,7 +85,7 @@ Before you begin, ensure you have met the following requirements:
 
    This command will clean the `build/` directory and compile your TypeScript code.
 
-7. Start your Node.js application:
+2. Start your Node.js application:
 
    ```bash
    npm start
@@ -81,7 +93,9 @@ Before you begin, ensure you have met the following requirements:
 
    This command will start your application using the compiled code.
 
-8. Run tests:
+## Tests
+
+1. Run tests:
 
    ```bash
    npm test
