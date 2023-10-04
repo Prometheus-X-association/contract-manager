@@ -9,6 +9,9 @@ import { config } from 'config/config';
 
 const SERVER_PORT = 9999;
 const API_ROUTE_BASE = '/bilateral/contract/';
+const _logObject = (data: any) => {
+  console.log(`\x1b[90m${JSON.stringify(data, null, 2)}\x1b[37m`);
+};
 beforeEach(() => {
   console.log('\n');
 });
@@ -59,6 +62,8 @@ describe('Routes for Bilateral Contract API', () => {
       .post(`${API_ROUTE_BASE}`)
       .set('Authorization', `Bearer ${authToken}`)
       .send(contractData);
+    //
+    _logObject(response.body);
     // Check if the response status is 201 (Created)
     expect(response.status).to.equal(201);
     // Check if the response has a 'id' property
@@ -73,6 +78,8 @@ describe('Routes for Bilateral Contract API', () => {
     const response = await supertest(app.router)
       .get(`${API_ROUTE_BASE}${createdContractId}`)
       .set('Authorization', `Bearer ${authToken}`);
+    //
+    _logObject(response.body);
     // Check if the response status is 200 (OK)
     expect(response.status).to.equal(200);
     // Check if the response has a 'id' property
@@ -89,6 +96,8 @@ describe('Routes for Bilateral Contract API', () => {
       .put(`${API_ROUTE_BASE}${createdContractId}`)
       .set('Authorization', `Bearer ${authToken}`)
       .send(updatedContractData);
+    //
+    _logObject(response.body);
     // Check if the response status is 200 (OK)
     expect(response.status).to.equal(200);
     // Check if the response has the expected 'message'
@@ -113,7 +122,8 @@ describe('Routes for Bilateral Contract API', () => {
       .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
       .set('Authorization', `Bearer ${authToken}`)
       .send(signatureDataPartyA1);
-
+    //
+    _logObject(responsePartyA1.body);
     // Check if the response status for party A's first signature is OK (200)
     expect(responsePartyA1.status).to.equal(200);
 
@@ -125,11 +135,12 @@ describe('Routes for Bilateral Contract API', () => {
     };
 
     // Send a PUT request to sign the contract for party A the second time
-    await supertest(app.router)
+    const responsePartyA2 = await supertest(app.router)
       .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
       .set('Authorization', `Bearer ${authToken}`)
       .send(signatureDataPartyA2);
-
+    //
+    _logObject(responsePartyA2.body);
     // Define the signature data for party B
     const signatureDataPartyB: BilateralContractSignature = {
       did: didPartyB,
@@ -142,14 +153,13 @@ describe('Routes for Bilateral Contract API', () => {
       .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
       .set('Authorization', `Bearer ${authToken}`)
       .send(signatureDataPartyB);
-
+    //
+    _logObject(response.body);
     // Check if the response status is OK (200)
     expect(response.status).to.equal(200);
-
     // Check if the response contains the updated contract with the signature
     expect(response.body).to.have.property('signatures');
     const signatures = response.body.signatures;
-
     // Check if party A's second signature exists in the updated contract
     const partyASignature2 = signatures.find(
       (signature: BilateralContractSignature) =>
@@ -157,7 +167,6 @@ describe('Routes for Bilateral Contract API', () => {
         signature.value === 'partyASignature2' &&
         signature.did === didPartyA,
     );
-
     // Check if party B's signature exists in the updated contract
     const partyBSignature = signatures.find(
       (signature: BilateralContractSignature) =>
@@ -165,7 +174,6 @@ describe('Routes for Bilateral Contract API', () => {
         signature.value === 'partyBSignature' &&
         signature.did === didPartyB,
     );
-
     // Check if party A's first signature does NOT exist in the updated contract
     const partyASignature1 = signatures.find(
       (signature: BilateralContractSignature) =>
@@ -173,14 +181,11 @@ describe('Routes for Bilateral Contract API', () => {
         signature.value === 'partyASignature1' &&
         signature.did === didPartyA,
     );
-
     // Check if both of party A's second signature and party B's signature exist
     expect(partyASignature2).to.exist;
     expect(partyBSignature).to.exist;
-
     // Check if party A's first signature does NOT exist
     expect(partyASignature1).to.not.exist;
-
     // Check if the 'signed' field is set to true
     expect(response.body.signed).to.equal(true);
   });
@@ -189,23 +194,21 @@ describe('Routes for Bilateral Contract API', () => {
   it('should return an error when trying to add a third participant', async () => {
     // Define the DID for party C
     const didPartyC: string = 'did:partyC';
-
     // Define the signature data for party C
     const signatureDataPartyC: BilateralContractSignature = {
       did: didPartyC,
       party: 'partyC',
       value: 'partyCSignature',
     };
-
     // Send a PUT request to sign the contract for party C
     const responsePartyC = await supertest(app.router)
       .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
       .set('Authorization', `Bearer ${authToken}`)
       .send(signatureDataPartyC);
-
+    //
+    _logObject(responsePartyC.body);
     // Check if the response status is not OK (expecting an error)
     expect(responsePartyC.status).to.not.equal(200);
-
     // Check if the response contains an error message
     // indicating that a third participant is not allowed
     expect(responsePartyC.body).to.have.property('error');
@@ -214,20 +217,37 @@ describe('Routes for Bilateral Contract API', () => {
     );
   });
 
-  /*
-  // Test case: Delete a contract by ID
-  it('should delete a bilateral contract by ID', async () => {
-    // Send a DELETE request to delete the contract by its ID
+  // Test case: Revoke a signature
+  it('should revoke a signature and move it to revokedSignatures', async () => {
+    // Define the DID for party B
+    const didPartyB: string = 'did:partyB';
+    // Revoke the signature for party B
     const response = await supertest(app.router)
-      .delete(`${API_ROUTE_BASE}${createdContractId}`)
+      .delete(`${API_ROUTE_BASE}sign/revoke/${createdContractId}/${didPartyB}`)
       .set('Authorization', `Bearer ${authToken}`);
-    // Check if the response status is 200 (OK)
+    //
+    _logObject(response.body);
+    // Check if the response status is OK (200)
     expect(response.status).to.equal(200);
-    // Check if the response has the expected 'message'
-    expect(response.body).to.have.property(
-      'message',
-      'Contract deleted successfully.',
+    // Check if the response contains the updated contract with revokedSignatures
+    expect(response.body).to.have.property('revokedSignatures');
+    const revokedSignatures = response.body.revokedSignatures;
+    // Check if the revoked signature exists in the revokedSignatures array
+    const partyBRevokedSignature = revokedSignatures.find(
+      (signature: BilateralContractSignature) =>
+        signature.party === 'partyB' &&
+        signature.value === 'partyBSignature' &&
+        signature.did === didPartyB,
     );
+    // Check if the revoked signature exists in revokedSignatures
+    expect(partyBRevokedSignature).to.exist;
+    // Check if the revoked signature does NOT exist in signatures
+    const partyBSignatureInSignatures = response.body.signatures.find(
+      (signature: BilateralContractSignature) =>
+        signature.party === 'partyB' &&
+        signature.value === 'partyBSignature' &&
+        signature.did === didPartyB,
+    );
+    expect(partyBSignatureInSignatures).to.not.exist;
   });
-  */
 });

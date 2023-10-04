@@ -58,6 +58,7 @@ const BilateralContractSchema: Schema = new Schema({
   ],
   purpose: [BilateralPurposeSchema],
   signatures: [BilateralSignatureSchema],
+  revokedSignatures: [BilateralSignatureSchema],
   negotiators: [{ did: String }],
   signed: {
     type: Boolean,
@@ -67,6 +68,7 @@ const BilateralContractSchema: Schema = new Schema({
     type: Date,
     default: Date.now,
   },
+  // jsonLD:
 });
 // Create a MongoDB model based on the schema
 export default mongoose.model<IBilateralContractDB>(

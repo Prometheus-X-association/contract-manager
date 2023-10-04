@@ -76,6 +76,21 @@ export type BilateralContractSignature = {
 };
 
 /**
+ * Lean version of BilateralContractRevokedSignatureDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BilateralContractDocument.toObject()`.
+ * ```
+ * const bilateralcontractObject = bilateralcontract.toObject();
+ * ```
+ */
+export type BilateralContractRevokedSignature = {
+  did: string;
+  party: string;
+  value: string;
+  date?: Date;
+};
+
+/**
  * Lean version of BilateralContractNegotiatorDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `BilateralContractDocument.toObject()`.
@@ -101,7 +116,8 @@ export type BilateralContract = {
   profile?: string;
   permission: BilateralContractPermission[];
   purpose: BilateralContractPurpose[];
-  signatures: BilateralContractSignature[];
+  signatures: BilateralContractRevokedSignature[];
+  revokedSignatures: BilateralContractRevokedSignature[];
   negotiators: BilateralContractNegotiator[];
   signed?: boolean;
   createdAt?: Date;
@@ -233,6 +249,19 @@ export type BilateralContractSignatureDocument = mongoose.Types.Subdocument & {
 /**
  * Mongoose Subdocument type
  *
+ * Type of `BilateralContractDocument["revokedSignatures"]` element.
+ */
+export type BilateralContractRevokedSignatureDocument =
+  mongoose.Types.Subdocument & {
+    did: string;
+    party: string;
+    value: string;
+    date?: Date;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
  * Type of `BilateralContractDocument["negotiators"]` element.
  */
 export type BilateralContractNegotiatorDocument = mongoose.Types.Subdocument & {
@@ -257,7 +286,8 @@ export type BilateralContractDocument = mongoose.Document<
     profile?: string;
     permission: mongoose.Types.DocumentArray<BilateralContractPermissionDocument>;
     purpose: mongoose.Types.DocumentArray<BilateralContractPurposeDocument>;
-    signatures: mongoose.Types.DocumentArray<BilateralContractSignatureDocument>;
+    signatures: mongoose.Types.DocumentArray<BilateralContractRevokedSignatureDocument>;
+    revokedSignatures: mongoose.Types.DocumentArray<BilateralContractRevokedSignatureDocument>;
     negotiators: mongoose.Types.DocumentArray<BilateralContractNegotiatorDocument>;
     signed?: boolean;
     createdAt?: Date;

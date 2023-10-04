@@ -121,7 +121,18 @@ export const signContract = async (req: Request, res: Response) => {
 };
 // Revoke a signature on a contract for a given contract id and party did
 export const revokeContractSignature = async (req: Request, res: Response) => {
-  return res.json({ message: 'revoke' });
+  const { id, did } = req.params;
+  try {
+    const revokedSignature =
+      await bilateralContractService.revokeSignatureService(id, did);
+    logger.info(
+      '[Contract/Bilateral: revokeContractSignature] Successfully called.',
+    );
+    return res.status(200).json(revokedSignature);
+  } catch (error) {
+    logger.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
 };
 // Check if data is authorized for exploitation
 export const checkDataExploitation = async (req: Request, res: Response) => {
@@ -165,7 +176,6 @@ export const getAllContratFor = async (
       isParticipant,
       hasSigned,
     );
-
     logger.info('[Contract/Bilateral: getAllContratFor] Successfully called.');
     res.status(200).json({ contracts });
   } catch (error: any) {

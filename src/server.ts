@@ -47,7 +47,6 @@ const startServer = async (url: string) => {
     next();
   });
   // swagger
-  // router.use('/doc-api', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
   router.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerJson));
 
   // Policy enforcement point
