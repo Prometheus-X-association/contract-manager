@@ -12,7 +12,7 @@ export const createContract = async (req: Request, res: Response) => {
   try {
     const contract: IBilateralContract =
       await bilateralContractService.genContract(req.body);
-    logger.info('[Contract/Bilateral: createContract] Successfully called.');
+    logger.info('[Bilateral/Controller: createContract] Successfully called.');
     return res.status(201).json(contract);
   } catch (error: any) {
     res.status(500).json({
@@ -29,7 +29,7 @@ export const getContract = async (req: Request, res: Response) => {
     if (!contract) {
       return res.status(404).json({ error: 'Contract not found.' });
     }
-    logger.info('[Contract/Bilateral: getContract] Successfully called.');
+    logger.info('[Bilateral/Controller: getContract] Successfully called.');
     return res.json(contract);
   } catch (error) {
     logger.error('Error retrieving the contract:', error);
@@ -50,7 +50,7 @@ export const updateContract = async (req: Request, res: Response) => {
     if (!updatedContract) {
       return res.status(404).json({ error: 'Contract not found.' });
     }
-    logger.info('[Contract/Bilateral: updateContract] Successfully called.');
+    logger.info('[Bilateral/Controller: updateContract] Successfully called.');
     return res.json(updatedContract);
   } catch (error) {
     logger.error('Error updating the contract:', error);
@@ -64,7 +64,7 @@ export const deleteContract = async (req: Request, res: Response) => {
   try {
     const contractId: string = req.params.id;
     await bilateralContractService.deleteContract(contractId);
-    logger.info('[Contract/Bilateral: deleteContract] Successfully called.');
+    logger.info('[Bilateral/Controller: deleteContract] Successfully called.');
     return res.json({ message: 'Contract deleted successfully.' });
   } catch (error) {
     logger.error('Error deleting the contract:', error);
@@ -88,7 +88,7 @@ export const addContractNegociator = async (req: Request, res: Response) => {
       await bilateralContractService.addContractNegociator(contractId, did);
     //
     logger.info(
-      '[Contract/Bilateral: addContractNegociator] Successfully called.',
+      '[Bilateral/Controller: addContractNegociator] Successfully called.',
     );
     return res.json(updatedContract);
   } catch (error: any) {
@@ -109,7 +109,7 @@ export const signContract = async (req: Request, res: Response) => {
       contractId,
       signature,
     );
-    logger.info('[Contract/Bilateral: signContract] Successfully called.');
+    logger.info('[Bilateral/Controller: signContract] Successfully called.');
     return res.json(updatedContract);
   } catch (error: any) {
     logger.error('Error signing the contract:', error);
@@ -126,7 +126,7 @@ export const revokeContractSignature = async (req: Request, res: Response) => {
     const revokedSignature =
       await bilateralContractService.revokeSignatureService(id, did);
     logger.info(
-      '[Contract/Bilateral: revokeContractSignature] Successfully called.',
+      '[Bilateral/Controller: revokeContractSignature] Successfully called.',
     );
     return res.status(200).json(revokedSignature);
   } catch (error) {
@@ -176,7 +176,9 @@ export const getAllContratFor = async (
       isParticipant,
       hasSigned,
     );
-    logger.info('[Contract/Bilateral: getAllContratFor] Successfully called.');
+    logger.info(
+      '[Bilateral/Controller: getAllContratFor] Successfully called.',
+    );
     res.status(200).json({ contracts });
   } catch (error: any) {
     res.status(500).json({ error: error.message });

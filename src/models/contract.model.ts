@@ -57,6 +57,7 @@ const ContractSchema: Schema = new Schema({
   ],
   purpose: [PurposeSchema],
   signatures: [SignatureSchema],
+  revokedSignatures: [SignatureSchema],
   signed: {
     type: Boolean,
     default: false,
@@ -64,6 +65,9 @@ const ContractSchema: Schema = new Schema({
   createdAt: {
     type: Date,
     default: Date.now,
+  },
+  jsonLD: {
+    type: String,
   },
 });
 // Create a MongoDB model based on the schema

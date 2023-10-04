@@ -68,7 +68,9 @@ const BilateralContractSchema: Schema = new Schema({
     type: Date,
     default: Date.now,
   },
-  // jsonLD:
+  jsonLD: {
+    type: String,
+  },
 });
 // Create a MongoDB model based on the schema
 export default mongoose.model<IBilateralContractDB>(

@@ -215,20 +215,37 @@ describe('Routes for Contract API', () => {
     expect(responseOrchestrator.body.signed).to.equal(true);
   });
 
-  /*
-  // Test case: Delete a contract by ID
-  it('should delete a contract by ID', async () => {
-    // Send a DELETE request to delete the contract by its ID
+  // Test case: Revoke a signature
+  it('should revoke a signature and move it to revokedSignatures', async () => {
+    // Define the DID for party B
+    const didPartyB: string = 'did:partyB';
+    // Revoke the signature for party B
     const response = await supertest(app.router)
-      .delete(`${API_ROUTE_BASE}delete/${createdContractId}`)
+      .delete(`${API_ROUTE_BASE}sign/revoke/${createdContractId}/${didPartyB}`)
       .set('Authorization', `Bearer ${authToken}`);
-    // Check if the response status is 200 (OK)
+    //
+    _logObject(response.body);
+    // Check if the response status is OK (200)
     expect(response.status).to.equal(200);
-    // Check if the response has the expected 'message'
-    expect(response.body).to.have.property(
-      'message',
-      'Contract deleted successfully.',
+    // Check if the response contains the updated contract with revokedSignatures
+    expect(response.body).to.have.property('revokedSignatures');
+    const revokedSignatures = response.body.revokedSignatures;
+    // Check if the revoked signature exists in the revokedSignatures array
+    const partyBRevokedSignature = revokedSignatures.find(
+      (signature: ContractSignature) =>
+        signature.party === 'partyB' &&
+        signature.value === 'partyBSignature' &&
+        signature.did === didPartyB,
     );
+    // Check if the revoked signature exists in revokedSignatures
+    expect(partyBRevokedSignature).to.exist;
+    // Check if the revoked signature does NOT exist in signatures
+    const partyBSignatureInSignatures = response.body.signatures.find(
+      (signature: ContractSignature) =>
+        signature.party === 'partyB' &&
+        signature.value === 'partyBSignature' &&
+        signature.did === didPartyB,
+    );
+    expect(partyBSignatureInSignatures).to.not.exist;
   });
-  */
 });

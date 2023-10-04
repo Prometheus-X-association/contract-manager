@@ -144,6 +144,39 @@ class ContractService {
       throw error;
     }
   }
+  // Revoke a signature
+  public async revokeSignatureService(
+    contractId: string,
+    did: string,
+  ): Promise<IContract> {
+    try {
+      // Find the contract by ID
+      const contract = await Contract.findById(contractId);
+      // Check if the contract exists
+      if (!contract) {
+        throw new Error('Contract not found');
+      }
+      // Find the signature in the signatures array
+      const signatureIndex = contract.signatures.findIndex(
+        (signature) => signature.did === did,
+      );
+      // Check if the signature was found
+      if (signatureIndex === -1) {
+        throw new Error('Signature not found');
+      }
+      // Retrieve the signature from the signatures array
+      const revokedSignature = contract.signatures[signatureIndex];
+      // Move the signature from the signatures array to the revokedSignatures array
+      contract.signatures.splice(signatureIndex, 1);
+      contract.revokedSignatures.push(revokedSignature);
+      // Save the changes to the database
+      await contract.save();
+      // Return the updated contract
+      return contract;
+    } catch (error) {
+      throw error;
+    }
+  }
   // Check if data is authorized for exploitation
   // according to the contract permission
   public async checkPermission(

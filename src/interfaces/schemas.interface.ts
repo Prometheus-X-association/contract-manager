@@ -121,6 +121,7 @@ export type BilateralContract = {
   negotiators: BilateralContractNegotiator[];
   signed?: boolean;
   createdAt?: Date;
+  jsonLD?: string;
   _id: mongoose.Types.ObjectId;
 };
 
@@ -291,6 +292,7 @@ export type BilateralContractDocument = mongoose.Document<
     negotiators: mongoose.Types.DocumentArray<BilateralContractNegotiatorDocument>;
     signed?: boolean;
     createdAt?: Date;
+    jsonLD?: string;
     _id: mongoose.Types.ObjectId;
   };
 
@@ -362,6 +364,21 @@ export type ContractSignature = {
 };
 
 /**
+ * Lean version of ContractRevokedSignatureDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ContractDocument.toObject()`.
+ * ```
+ * const contractObject = contract.toObject();
+ * ```
+ */
+export type ContractRevokedSignature = {
+  did: string;
+  party: string;
+  value: string;
+  date?: Date;
+};
+
+/**
  * Lean version of ContractDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `ContractDocument.toObject()`. To avoid conflicts with model names, use the type alias `ContractObject`.
@@ -374,9 +391,11 @@ export type Contract = {
   profile?: string;
   permission: ContractPermission[];
   purpose: ContractPurpose[];
-  signatures: ContractSignature[];
+  signatures: ContractRevokedSignature[];
+  revokedSignatures: ContractRevokedSignature[];
   signed?: boolean;
   createdAt?: Date;
+  jsonLD?: string;
   _id: mongoose.Types.ObjectId;
 };
 
@@ -499,6 +518,18 @@ export type ContractSignatureDocument = mongoose.Types.Subdocument & {
 };
 
 /**
+ * Mongoose Subdocument type
+ *
+ * Type of `ContractDocument["revokedSignatures"]` element.
+ */
+export type ContractRevokedSignatureDocument = mongoose.Types.Subdocument & {
+  did: string;
+  party: string;
+  value: string;
+  date?: Date;
+};
+
+/**
  * Mongoose Document type
  *
  * Pass this type to the Mongoose Model constructor:
@@ -515,9 +546,11 @@ export type ContractDocument = mongoose.Document<
     profile?: string;
     permission: mongoose.Types.DocumentArray<ContractPermissionDocument>;
     purpose: mongoose.Types.DocumentArray<ContractPurposeDocument>;
-    signatures: mongoose.Types.DocumentArray<ContractSignatureDocument>;
+    signatures: mongoose.Types.DocumentArray<ContractRevokedSignatureDocument>;
+    revokedSignatures: mongoose.Types.DocumentArray<ContractRevokedSignatureDocument>;
     signed?: boolean;
     createdAt?: Date;
+    jsonLD?: string;
     _id: mongoose.Types.ObjectId;
   };
 
