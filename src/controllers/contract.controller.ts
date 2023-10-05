@@ -123,19 +123,35 @@ export const checkDataExploitation = async (req: Request, res: Response) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
-// Get all contrat according to the filter
-export const getAllContratFor = async (
+// Get contrats for a specific DID with optional filter
+export const getContractsFor = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
   try {
-    const did: string | undefined = req.query.did?.toString();
+    const did: string | undefined = req.params.did;
     const hasSigned: boolean = req.query.hasSigned !== 'false';
-    const contracts: IContractDB[] = await contractService.getAllContracts(
+    const contracts: IContractDB[] = await contractService.getContractsFor(
       did,
       hasSigned,
     );
-    logger.info('[Contract/Controller: getAllContratFor] Successfully called.');
+    logger.info('[Contract/Controller: getContractsFor] Successfully called.');
+    res.status(200).json({ contracts: contracts });
+  } catch (error: any) {
+    logger.error('Error while fetching contracts for the given DID:', {
+      error,
+    });
+    res.status(500).json({ error: error.message });
+  }
+};
+// Get all contrats
+export const getAllContracts = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const contracts: IContractDB[] = await contractService.getAllContracts();
+    logger.info('[Contract/Controller: getAllContracts] Successfully called.');
     res.status(200).json({ contracts: contracts });
   } catch (error: any) {
     logger.error('Error while fetching all contract:', { error });

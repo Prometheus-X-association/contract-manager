@@ -7,16 +7,20 @@ import {
   // deleteContract,
   signContract,
   checkDataExploitation,
-  getAllContratFor,
+  getAllContracts,
+  getContractsFor,
+  // getContractsByStatus,
   revokeContractSignature,
 } from '../controllers/contract.controller';
 
 const router = express.Router();
 
-// Get all contracts for a specific filter
-//    /all/?did=participantFakeTokenDID
-//    /all/?did=participantFakeTokenDID&hasSigned=true
-router.get('/all/', getAllContratFor);
+// Get all contracts
+router.get('/all', getAllContracts);
+// Get contracts for a specific DID with an optional filter
+router.get('/for/:did', getContractsFor);
+// Get contracts for a specific status
+// router.get('/status/:status', getContractsByStatus);
 
 // Create
 router.post('/', createContract);
@@ -24,13 +28,12 @@ router.post('/', createContract);
 router.get('/:id', getContract);
 // Update
 router.put('/:id', updateContract);
-// Delete
-// .delete('/:id', deleteContract);
-//
+
 // Sign contract
 router.put('/sign/:id', signContract);
 // Revoque signature
 router.delete('/sign/revoke/:id/:did', revokeContractSignature);
+
 // Check data exploitation
 router.put('/:id', checkDataExploitation);
 

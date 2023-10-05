@@ -225,44 +225,52 @@ class BilateralContractService {
     }
   }
   //
-  // Get all contracts, filter by DID and if the participant has signed or not
-  public async getAllContracts(
-    did?: string,
+  // Get contracts for a specific DID and an optionnal filter
+  public async getContractsFor(
+    did: string,
+    // An optional parameter that indicates whether a DID is a participant.
     isParticipant?: boolean,
     // Optional parameter indicating whether the contract is signed
     hasSigned?: boolean,
   ): Promise<IBilateralContractDB[]> {
     try {
       let filter: Record<string, any> = {};
-      if (did) {
-        let negotiator = {};
-        let signed = {};
-        // Include negotiator filter for the specified DID by default
-        negotiator = { 'negotiators.did': did };
-        if (hasSigned) {
-          // Include signed filter for the specified DID if hasSigned is true
-          signed = { 'signatures.did': did };
-        }
-        //
-        if (hasSigned === false) {
-          // Exclude negotiator filter if hasSigned is false
-          negotiator = {};
-          // Exclude signed filter for the specified DID
-          signed = { 'signatures.did': { $ne: did } };
-        }
-        //
-        if (isParticipant === false) {
-          // Exclude negotiator filter if isParticipant is false
-          negotiator = { 'negotiators.did': { $ne: did } };
-        } else if (isParticipant === true) {
-          // Include negotiator filter for the specified DID if isParticipant is true
-          negotiator = { 'negotiators.did': did };
-        }
-        // Combine negotiator and signed filters
-        filter = { ...negotiator, ...signed };
+      let negotiator = {};
+      let signed = {};
+      // Include negotiator filter for the specified DID by default
+      negotiator = { 'negotiators.did': did };
+      if (hasSigned) {
+        // Include signed filter for the specified DID if hasSigned is true
+        signed = { 'signatures.did': did };
       }
+      //
+      if (hasSigned === false) {
+        // Exclude negotiator filter if hasSigned is false
+        negotiator = {};
+        // Exclude signed filter for the specified DID
+        signed = { 'signatures.did': { $ne: did } };
+      }
+      //
+      if (isParticipant === false) {
+        // Exclude negotiator filter if isParticipant is false
+        negotiator = { 'negotiators.did': { $ne: did } };
+      } else if (isParticipant === true) {
+        // Include negotiator filter for the specified DID if isParticipant is true
+        negotiator = { 'negotiators.did': did };
+      }
+      // Combine negotiator and signed filters
+      filter = { ...negotiator, ...signed };
       // Retrieve contracts based on the filter
       const contracts = await BilateralContract.find(filter);
+      return contracts;
+    } catch (error: any) {
+      throw new Error(`Error while retrieving contracts: ${error.message}`);
+    }
+  }
+  // Get all contracts
+  public async getAllContracts(): Promise<IBilateralContractDB[]> {
+    try {
+      const contracts = await BilateralContract.find();
       return contracts;
     } catch (error: any) {
       throw new Error(`Error while retrieving contracts: ${error.message}`);

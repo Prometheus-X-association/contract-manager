@@ -206,21 +206,19 @@ class ContractService {
     }
   }
   //
-  // Get all ecosystem contracts according to the filter
-  public async getAllContracts(
-    did?: string,
+  // Get ecosystem contracts for a specific DID with optional filter
+  public async getContractsFor(
+    did: string,
     hasSigned?: boolean,
   ): Promise<IContractDB[]> {
     try {
       const filter: Record<string, any> = {};
-      if (did !== undefined) {
-        if (hasSigned) {
-          // Participant must appear in signatures
-          filter.signatures = { $elemMatch: { did: did } };
-        } else if (hasSigned === false) {
-          // Participant must not appear in signatures
-          filter.signatures = { $not: { $elemMatch: { did: did } } };
-        }
+      if (hasSigned) {
+        // Participant must appear in signatures
+        filter.signatures = { $elemMatch: { did: did } };
+      } else if (hasSigned === false) {
+        // Participant must not appear in signatures
+        filter.signatures = { $not: { $elemMatch: { did: did } } };
       }
       const contracts = await Contract.find(filter);
       return contracts;
@@ -228,6 +226,15 @@ class ContractService {
       throw new Error(
         `Error while retrieving ecosystem contracts: ${error.message}`,
       );
+    }
+  }
+  // Get all contracts
+  public async getAllContracts(): Promise<IContractDB[]> {
+    try {
+      const contracts = await Contract.find();
+      return contracts;
+    } catch (error: any) {
+      throw new Error(`Error while retrieving contracts: ${error.message}`);
     }
   }
 }

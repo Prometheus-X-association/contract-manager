@@ -73,7 +73,7 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
     console.log('Test server stopped.');
   });
 
-  // Test case for getting all contracts without filters
+  // Test case for getting all contracts
   describe(`GET ${API_ROUTE_BASE}all/`, () => {
     it('should return all contracts', async () => {
       const response = await supertest(app.router)
@@ -96,7 +96,7 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
     it('should return contracts for a specific DID in signatures', async () => {
       const did = didPartyA;
       const response = await supertest(app.router)
-        .get(`${API_ROUTE_BASE}/all?did=${did}`)
+        .get(`${API_ROUTE_BASE}for/${did}`)
         .set('Authorization', `Bearer ${authToken}`);
       //
       _logObject(response.body);
@@ -113,7 +113,7 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
       const did = didPartyA;
       const hasSigned = false;
       const response = await supertest(app.router)
-        .get(`${API_ROUTE_BASE}/all?did=${did}&hasSigned=${hasSigned}`)
+        .get(`${API_ROUTE_BASE}for/${did}?hasSigned=${hasSigned}`)
         .set('Authorization', `Bearer ${authToken}`);
       //
       _logObject(response.body);

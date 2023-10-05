@@ -102,8 +102,8 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
     console.log('Test server stopped.');
   });
 
-  // Test suite for the route to get all contracts with filters
-  describe('Routes for Contract API - GetAllContractsFor', () => {
+  // Test suite for the route to get all contracts
+  describe('Routes for Contract API - GetAllContracts', () => {
     // Test case for getting all contracts without filters
     //    /bilateral/contract/all/
     it('should return all contracts', async () => {
@@ -123,13 +123,13 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
     });
 
     // Test case for getting contracts with a specific DID in participants
-    //    /bilateral/contract/all/?did=participantFakeTokenDID or
-    //    /bilateral/contract/all/?did=participantFakeTokenDID&isParticipant=true
+    //    /bilateral/contract/for/participantFakeTokenDID or
+    //    /bilateral/contract/for/participantFakeTokenDID?isParticipant=true
     it('should return contracts where DID is in participants', async () => {
       const did = didPartyA;
       const isParticipant = true;
       const response = await supertest(app.router)
-        .get(`${API_ROUTE_BASE}all?did=${did}&isParticipant=${isParticipant}`)
+        .get(`${API_ROUTE_BASE}for/${did}?isParticipant=${isParticipant}`)
         .set('Authorization', `Bearer ${authToken}`);
       _logObject(response.body);
       expect(response.status).to.equal(200);
@@ -143,12 +143,12 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
     });
 
     // Test case for getting contracts where DID in the same time in signatures and participants
-    //    /bilateral/contract/all/?did=participantFakeTokenDID&hasSigned=true
+    //    /bilateral/contract/for/participantFakeTokenDID?hasSigned=true
     it('should return contracts where DID in the same time in signatures and participants', async () => {
       const did = didPartyA;
       const hasSigned = true;
       const response = await supertest(app.router)
-        .get(`${API_ROUTE_BASE}all?did=${did}&hasSigned=${hasSigned}`)
+        .get(`${API_ROUTE_BASE}for/${did}?hasSigned=${hasSigned}`)
         .set('Authorization', `Bearer ${authToken}`);
       _logObject(response.body);
       expect(response.status).to.equal(200);
@@ -159,15 +159,15 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
     });
 
     // Test case for getting contracts where DID is not a participant nor in signatures
-    //    /bilateral/contract/all/?did=participantFakeTokenDID&isParticipant=false ou
-    //    /bilateral/contract/all/?did=participantFakeTokenDID&isParticipant=false&hasSigned=false
+    //    /bilateral/contract/for/participantFakeTokenDID?isParticipant=false ou
+    //    /bilateral/contract/for/participantFakeTokenDID?isParticipant=false&hasSigned=false
     it('should return contracts where DID is not a participant nor in signatures', async () => {
       const did = didPartyA;
       const isParticipant = false;
       const hasSigned = false;
       const response = await supertest(app.router)
         .get(
-          `${API_ROUTE_BASE}all?did=${did}&isParticipant=${isParticipant}&hasSigned=${hasSigned}`,
+          `${API_ROUTE_BASE}for/${did}?isParticipant=${isParticipant}&hasSigned=${hasSigned}`,
         )
         .set('Authorization', `Bearer ${authToken}`);
       _logObject(response.body);
@@ -179,14 +179,14 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
     });
 
     // Test case for getting contracts where DID is in participants but not in signatures
-    //    /bilateral/contract/all/?did=participantFakeTokenDID&isParticipant=true&hasSigned=false
+    //    /bilateral/contract/for/participantFakeTokenDID?isParticipant=true&hasSigned=false
     it('should return contracts where DID is in participants but not in signatures', async () => {
       const did = didPartyA;
       const isParticipant = true;
       const hasSigned = false;
       const response = await supertest(app.router)
         .get(
-          `${API_ROUTE_BASE}all?did=${did}&isParticipant=${isParticipant}&hasSigned=${hasSigned}`,
+          `${API_ROUTE_BASE}for/${did}?isParticipant=${isParticipant}&hasSigned=${hasSigned}`,
         )
         .set('Authorization', `Bearer ${authToken}`);
       _logObject(response.body);
@@ -198,12 +198,12 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
     });
 
     // Test case for getting contracts where DID is not in signatures with hasSigned equal false
-    //    /bilateral/contract/all/?did=participantFakeTokenDID&hasSigned=false
+    //    /bilateral/contract/for/participantFakeTokenDID?hasSigned=false
     it('should return contracts where DID is not in signatures with hasSigned equal false', async () => {
       const did = didPartyA;
       const hasSigned = false;
       const response = await supertest(app.router)
-        .get(`${API_ROUTE_BASE}all?did=${did}&hasSigned=${hasSigned}`)
+        .get(`${API_ROUTE_BASE}for/${did}?hasSigned=${hasSigned}`)
         .set('Authorization', `Bearer ${authToken}`);
       _logObject(response.body);
       expect(response.status).to.equal(200);
@@ -217,15 +217,15 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
     });
 
     // Test case for getting contracts where DID is in participants and in signatures
-    //    /bilateral/contract/all/?did=participantFakeTokenDID&hasSigned=true ou
-    //    /bilateral/contract/all/?did=participantFakeTokenDID&isParticipant=true&hasSigned=true
+    //    /bilateral/contract/for/participantFakeTokenDID?hasSigned=true ou
+    //    /bilateral/contract/for/participantFakeTokenDID?isParticipant=true&hasSigned=true
     it('should return contracts where DID is in participants and in signatures', async () => {
       const did = didPartyA;
       const isParticipant = true;
       const hasSigned = true;
       const response = await supertest(app.router)
         .get(
-          `${API_ROUTE_BASE}all?did=${did}&isParticipant=${isParticipant}&hasSigned=${hasSigned}`,
+          `${API_ROUTE_BASE}for/${did}?isParticipant=${isParticipant}&hasSigned=${hasSigned}`,
         )
         .set('Authorization', `Bearer ${authToken}`);
       _logObject(response.body);
