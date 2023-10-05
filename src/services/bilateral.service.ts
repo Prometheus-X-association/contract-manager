@@ -153,8 +153,8 @@ class BilateralContractService {
       }
       // Check if both parties have signed
       if (existingContract.signatures.length === 2) {
-        // Set signed to true if both parties have signed
-        existingContract.signed = true;
+        // set the contract status to 'revoked' if both parties have signed
+        existingContract.status = 'signed';
       }
       // Save the changes to the database
       await existingContract.save();
@@ -188,6 +188,8 @@ class BilateralContractService {
       // Move the signature from the signatures array to the revokedSignatures array
       contract.signatures.splice(signatureIndex, 1);
       contract.revokedSignatures.push(revokedSignature);
+      // Set the contract status to 'revoked'
+      contract.status = 'revoked';
       // Save the changes to the database
       await contract.save();
       // Return the updated contract

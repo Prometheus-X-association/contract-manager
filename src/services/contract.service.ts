@@ -126,9 +126,9 @@ class ContractService {
       // Check if both parties have signed, including the orchestrator
       const totalSignatures = contract.signatures.length;
       if (totalSignatures >= 2 && isOrchestrator) {
-        // Set signed to true if there are at least
-        // two parties and the orchestrator who signed
-        contract.signed = true;
+        // Set the contract status to 'revoked' if there are
+        // at least two parties and the orchestrator who signed
+        contract.status = 'signed';
       }
       // Update the contract in the database
       const updatedContract = await Contract.findByIdAndUpdate(
@@ -169,6 +169,8 @@ class ContractService {
       // Move the signature from the signatures array to the revokedSignatures array
       contract.signatures.splice(signatureIndex, 1);
       contract.revokedSignatures.push(revokedSignature);
+      // Set the contract status to 'revoked'
+      contract.status = 'revoked';
       // Save the changes to the database
       await contract.save();
       // Return the updated contract

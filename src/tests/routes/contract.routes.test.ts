@@ -211,8 +211,8 @@ describe('Routes for Contract API', () => {
     expect(partyBSignature).to.exist;
     expect(orchestratorSignature).to.exist;
 
-    // Check if the 'signed' field is set to true
-    expect(responseOrchestrator.body.signed).to.equal(true);
+    // Check if the 'status' field is set to 'signed'
+    expect(responseOrchestrator.body.status).to.equal('signed');
   });
 
   // Test case: Revoke a signature
@@ -247,5 +247,7 @@ describe('Routes for Contract API', () => {
         signature.did === didPartyB,
     );
     expect(partyBSignatureInSignatures).to.not.exist;
+    // Check if the 'status' field is set to 'revoked'
+    expect(response.body.status).to.equal('revoked');
   });
 });

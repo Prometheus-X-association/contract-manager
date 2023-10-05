@@ -119,8 +119,8 @@ export type BilateralContract = {
   signatures: BilateralContractRevokedSignature[];
   revokedSignatures: BilateralContractRevokedSignature[];
   negotiators: BilateralContractNegotiator[];
-  signed?: boolean;
   createdAt?: Date;
+  status: 'signed' | 'revoked' | 'under_negotiation' | 'pending';
   jsonLD?: string;
   _id: mongoose.Types.ObjectId;
 };
@@ -290,8 +290,8 @@ export type BilateralContractDocument = mongoose.Document<
     signatures: mongoose.Types.DocumentArray<BilateralContractRevokedSignatureDocument>;
     revokedSignatures: mongoose.Types.DocumentArray<BilateralContractRevokedSignatureDocument>;
     negotiators: mongoose.Types.DocumentArray<BilateralContractNegotiatorDocument>;
-    signed?: boolean;
     createdAt?: Date;
+    status: 'signed' | 'revoked' | 'under_negotiation' | 'pending';
     jsonLD?: string;
     _id: mongoose.Types.ObjectId;
   };
@@ -393,7 +393,7 @@ export type Contract = {
   purpose: ContractPurpose[];
   signatures: ContractRevokedSignature[];
   revokedSignatures: ContractRevokedSignature[];
-  signed?: boolean;
+  status: 'signed' | 'revoked' | 'pending';
   createdAt?: Date;
   jsonLD?: string;
   _id: mongoose.Types.ObjectId;
@@ -548,7 +548,7 @@ export type ContractDocument = mongoose.Document<
     purpose: mongoose.Types.DocumentArray<ContractPurposeDocument>;
     signatures: mongoose.Types.DocumentArray<ContractRevokedSignatureDocument>;
     revokedSignatures: mongoose.Types.DocumentArray<ContractRevokedSignatureDocument>;
-    signed?: boolean;
+    status: 'signed' | 'revoked' | 'pending';
     createdAt?: Date;
     jsonLD?: string;
     _id: mongoose.Types.ObjectId;

@@ -186,8 +186,8 @@ describe('Routes for Bilateral Contract API', () => {
     expect(partyBSignature).to.exist;
     // Check if party A's first signature does NOT exist
     expect(partyASignature1).to.not.exist;
-    // Check if the 'signed' field is set to true
-    expect(response.body.signed).to.equal(true);
+    // Check if the 'status' field is set to 'signed'
+    expect(response.body.status).to.equal('signed');
   });
 
   // Test case: Try to add a third participant and expect an error
@@ -249,5 +249,7 @@ describe('Routes for Bilateral Contract API', () => {
         signature.did === didPartyB,
     );
     expect(partyBSignatureInSignatures).to.not.exist;
+    // Check if the 'status' field is set to 'revoked'
+    expect(response.body.status).to.equal('revoked');
   });
 });

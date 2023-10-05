@@ -60,13 +60,14 @@ const BilateralContractSchema: Schema = new Schema({
   signatures: [BilateralSignatureSchema],
   revokedSignatures: [BilateralSignatureSchema],
   negotiators: [{ did: String }],
-  signed: {
-    type: Boolean,
-    default: false,
-  },
   createdAt: {
     type: Date,
     default: Date.now,
+  },
+  status: {
+    type: String,
+    enum: ['signed', 'revoked', 'under_negotiation', 'pending'],
+    default: 'pending',
   },
   jsonLD: {
     type: String,

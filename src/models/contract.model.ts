@@ -58,9 +58,10 @@ const ContractSchema: Schema = new Schema({
   purpose: [PurposeSchema],
   signatures: [SignatureSchema],
   revokedSignatures: [SignatureSchema],
-  signed: {
-    type: Boolean,
-    default: false,
+  status: {
+    type: String,
+    enum: ['signed', 'revoked', 'pending'],
+    default: 'pending',
   },
   createdAt: {
     type: Date,
