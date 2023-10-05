@@ -158,3 +158,22 @@ export const getAllContracts = async (
     res.status(500).json({ error: error.message });
   }
 };
+// Get contracts by status
+export const getContractsByStatus = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  const { status } = req.params;
+  try {
+    const contracts = await contractService.getContractsByStatus(status);
+    logger.info(
+      '[Contract/Controller: getContractsByStatus] Successfully called.',
+    );
+    res.json({ contracts });
+  } catch (error: any) {
+    logger.error('Error while fetching contracts by status:', { error });
+    res
+      .status(500)
+      .json({ error: 'Error while fetching contracts by status.' });
+  }
+};

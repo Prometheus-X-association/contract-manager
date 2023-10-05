@@ -4,6 +4,7 @@ import app from 'server';
 import { IContractDB } from 'interfaces/contract.interface';
 import { ContractSignature } from 'interfaces/schemas.interface';
 import contractService from 'services/contract.service';
+import Contract from 'models/contract.model';
 import { config } from 'config/config';
 
 const SERVER_PORT = 9999;
@@ -28,6 +29,7 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
       });
     });
 
+    await Contract.deleteMany({});
     // Get authentication token
     const authResponse = await supertest(app.router).get('/user/login');
     expect(authResponse.status).to.equal(200);

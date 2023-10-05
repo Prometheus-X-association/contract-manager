@@ -5,6 +5,7 @@ import app from 'server';
 import { BilateralContractSignature } from 'interfaces/schemas.interface';
 import { deleteContract } from 'controllers/bilateral.controller';
 import bilateralContractService from 'services/bilateral.service';
+import BilateralContract from 'models/bilateral.model';
 import { config } from 'config/config';
 
 const SERVER_PORT = 9999;
@@ -26,7 +27,7 @@ describe('Routes for Bilateral Contract API', () => {
         resolve(true);
       });
     });
-
+    await BilateralContract.deleteMany({});
     app.router.delete(`${API_ROUTE_BASE}:id`, deleteContract);
     const authResponse = await supertest(app.router).get('/user/login');
     expect(authResponse.status).to.equal(200);

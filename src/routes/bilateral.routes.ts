@@ -7,7 +7,7 @@ import {
   checkDataExploitation,
   getAllContracts,
   getContractsFor,
-  // getContractsByStatus,
+  getContractsByStatus,
   revokeContractSignature,
   addContractNegociator,
 } from '../controllers/bilateral.controller';
@@ -19,7 +19,7 @@ router.get('/contract/all', getAllContracts);
 // Get contracts for a specific DID with an optional filter
 router.get('/contract/for/:did', getContractsFor);
 // Get contracts for a specific status
-// router.get('/contract/status/:status', getContractsByStatus);
+router.get('/contract/status/:status', getContractsByStatus);
 
 // Create
 router.post('/contract/', createContract);

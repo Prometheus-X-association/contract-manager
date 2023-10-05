@@ -4,6 +4,7 @@ import { expect } from 'chai';
 import app from 'server';
 import { ContractSignature } from 'interfaces/schemas.interface';
 import contractService from 'services/contract.service';
+import Contract from 'models/contract.model';
 import { config } from 'config/config';
 
 const SERVER_PORT = 9999;
@@ -25,6 +26,7 @@ describe('Routes for Contract API', () => {
         resolve(true);
       });
     });
+    Contract.deleteMany({});
     const authResponse = await supertest(app.router).get('/user/login');
     expect(authResponse.status).to.equal(200);
     authToken = authResponse.body.token;

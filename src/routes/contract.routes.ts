@@ -4,12 +4,11 @@ import {
   createContract,
   getContract,
   updateContract,
-  // deleteContract,
   signContract,
   checkDataExploitation,
   getAllContracts,
   getContractsFor,
-  // getContractsByStatus,
+  getContractsByStatus,
   revokeContractSignature,
 } from '../controllers/contract.controller';
 
@@ -20,7 +19,7 @@ router.get('/all', getAllContracts);
 // Get contracts for a specific DID with an optional filter
 router.get('/for/:did', getContractsFor);
 // Get contracts for a specific status
-// router.get('/status/:status', getContractsByStatus);
+router.get('/status/:status', getContractsByStatus);
 
 // Create
 router.post('/', createContract);

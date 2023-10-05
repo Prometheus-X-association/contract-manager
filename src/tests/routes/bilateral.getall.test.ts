@@ -3,6 +3,7 @@ import { expect } from 'chai';
 import app from 'server';
 import { IBilateralContractDB } from 'interfaces/contract.interface';
 import { BilateralContractSignature } from 'interfaces/schemas.interface';
+import BilateralContract from 'models/bilateral.model';
 import bilateralContractService from 'services/bilateral.service';
 import { config } from 'config/config';
 
@@ -20,6 +21,7 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
   let unsignedContractId: string;
   let thirdContractId: string;
   const didPartyA: string = 'DID:partyAFakeTokenForGetAllRoute';
+  const didPartyB: string = 'DID:partyBFakeTokenForGetAllRoute';
 
   before(async () => {
     server = await app.startServer(config.mongo.testUrl);
@@ -30,6 +32,7 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
       });
     });
 
+    await BilateralContract.deleteMany({});
     // Get authentication token
     const authResponse = await supertest(app.router).get('/user/login');
     expect(authResponse.status).to.equal(200);
@@ -44,26 +47,45 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
     signedContractId = responseSigned.body._id;
 
     // Add the party A as negotiator for the signed contract
-    const negotiatorData: { did: string } = {
+    const negotiatorDataA: { did: string } = {
       did: didPartyA,
     };
     await supertest(app.router)
       .put(`${API_ROUTE_BASE}negociator/${signedContractId}`)
       .set('Authorization', `Bearer ${authToken}`)
-      .send(negotiatorData);
+      .send(negotiatorDataA);
+    // Add the party B as negotiator for the signed contract
+    const negotiatorDataB: { did: string } = {
+      did: didPartyB,
+    };
+    await supertest(app.router)
+      .put(`${API_ROUTE_BASE}negociator/${signedContractId}`)
+      .set('Authorization', `Bearer ${authToken}`)
+      .send(negotiatorDataB);
 
     // Define the signature data for party A
-    const signatureDataPartyA1: BilateralContractSignature = {
+    // Then send a PUT request to sign the contract for party A
+    const signatureDataPartyA: BilateralContractSignature = {
       did: didPartyA,
       party: 'partyA',
       value: 'partyASignature1',
     };
-
-    // Send a PUT request to sign the contract for party A
     await supertest(app.router)
       .put(`${API_ROUTE_BASE}sign/${signedContractId}`)
       .set('Authorization', `Bearer ${authToken}`)
-      .send(signatureDataPartyA1);
+      .send(signatureDataPartyA);
+
+    // Define the signature data for party B
+    // Then send a PUT request to sign the contract for party B
+    const signatureDataPartyB: BilateralContractSignature = {
+      did: didPartyB,
+      party: 'partyB',
+      value: 'partyBSignature',
+    };
+    await supertest(app.router)
+      .put(`${API_ROUTE_BASE}sign/${signedContractId}`)
+      .set('Authorization', `Bearer ${authToken}`)
+      .send(signatureDataPartyB);
 
     // Create a third contract
     const thirdContractData = {};
@@ -77,7 +99,7 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
     await supertest(app.router)
       .put(`${API_ROUTE_BASE}negociator/${thirdContractId}`)
       .set('Authorization', `Bearer ${authToken}`)
-      .send(negotiatorData);
+      .send(negotiatorDataA);
 
     // Create an unsigned contract
     const unsignedContractData = {};
@@ -236,6 +258,20 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
       expect(contracts[0]._id).to.equal(signedContractId);
     });
 
-    //
+    // Test case to retrieve the list of contracts with status 'signed'
+    it('should return contracts with status "signed"', async () => {
+      // Define the status to filter by
+      const status = 'signed';
+      const response = await supertest(app.router)
+        .get(`${API_ROUTE_BASE}status/${status}`)
+        .set('Authorization', `Bearer ${authToken}`);
+      _logObject(response.body);
+      expect(response.status).to.equal(200);
+      const contracts: Array<any> = response.body.contracts;
+      expect(contracts.length).to.equal(1);
+      // Ensure that the signed contract is present in the list
+      expect(contracts.some((contract) => contract._id === signedContractId)).to
+        .be.true;
+    });
   });
 });

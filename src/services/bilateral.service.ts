@@ -276,6 +276,19 @@ class BilateralContractService {
       throw new Error(`Error while retrieving contracts: ${error.message}`);
     }
   }
+  // Get contracts by status
+  public async getContractsByStatus(
+    status: string,
+  ): Promise<IBilateralContract[]> {
+    try {
+      const contracts = await BilateralContract.find({ status });
+      return contracts;
+    } catch (error: any) {
+      throw new Error(
+        `Error while retrieving contracts by status: ${error.message}`,
+      );
+    }
+  }
 }
 
 export default BilateralContractService.getInstance();

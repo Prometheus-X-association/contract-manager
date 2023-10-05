@@ -195,10 +195,30 @@ export const getAllContracts = async (
   try {
     const contracts: IBilateralContractDB[] =
       await bilateralContractService.getAllContracts();
-    logger.info('[Contract/Controller: getAllContracts] Successfully called.');
+    logger.info('[Bilateral/Controller: getAllContracts] Successfully called.');
     res.status(200).json({ contracts: contracts });
   } catch (error: any) {
     logger.error('Error while fetching all contracts:', { error });
     res.status(500).json({ error: error.message });
+  }
+};
+// Get contracts by status
+export const getContractsByStatus = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  const { status } = req.params;
+  try {
+    const contracts =
+      await bilateralContractService.getContractsByStatus(status);
+    logger.info(
+      '[Bilateral/Controller: getContractsByStatus] Successfully called.',
+    );
+    res.json({ contracts });
+  } catch (error: any) {
+    logger.error('Error while fetching contracts by status:', { error });
+    res
+      .status(500)
+      .json({ error: 'Error while fetching contracts by status.' });
   }
 };
