@@ -3,6 +3,7 @@ import express from 'express';
 import {
   createContract,
   getContract,
+  getODRLContract,
   updateContract,
   signContract,
   checkDataExploitation,
@@ -25,6 +26,7 @@ router.get('/contract/status/:status', getContractsByStatus);
 router.post('/contract/', createContract);
 // Read
 router.get('/contract/:id', getContract);
+router.get('/contract/odrl/:id', getODRLContract);
 // Update
 router.put('/contract/:id', updateContract);
 

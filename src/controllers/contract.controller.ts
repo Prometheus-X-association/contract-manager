@@ -177,3 +177,20 @@ export const getContractsByStatus = async (
       .json({ error: 'Error while fetching contracts by status.' });
   }
 };
+// get ODRL contract
+export const getODRLContract = async (req: Request, res: Response) => {
+  try {
+    const contractId: string = req.params.id;
+    const contract = await contractService.getODRLContract(contractId, false);
+    if (!contract) {
+      return res.status(404).json({ error: 'Contract not found.' });
+    }
+    logger.info('[Contract/Controller: getODRLContract] Successfully called.');
+    return res.json(contract);
+  } catch (error) {
+    logger.error('Error retrieving the ODRL contract:', error);
+    res
+      .status(500)
+      .json({ error: 'An error occurred while retrieving the ODRL contract.' });
+  }
+};

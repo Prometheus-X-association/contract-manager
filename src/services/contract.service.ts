@@ -272,7 +272,9 @@ class ContractService {
         const contract = await Contract.findById(contractId)
           .select('-jsonLD')
           .lean();
-        this.convertContract(contract);
+        if (contract) {
+          this.convertContract(contract);
+        }
       }
     } catch (error: any) {
       throw new Error(
