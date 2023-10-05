@@ -60,7 +60,9 @@ class ContractService {
   // get contract
   public async getContract(contractId: string): Promise<IContractDB | null> {
     try {
-      const contract = await Contract.findById(contractId).lean();
+      const contract = await Contract.findById(contractId)
+        .select('-jsonLD')
+        .lean();
       return contract;
     } catch (error) {
       throw error;
@@ -77,6 +79,7 @@ class ContractService {
         updates,
         {
           new: true,
+          select: '-jsonLD',
         },
       ).lean();
       return updatedContract;
@@ -87,7 +90,8 @@ class ContractService {
   // delete contract
   public async deleteContract(contractId: string): Promise<void> {
     try {
-      const deletedContract = await Contract.findByIdAndDelete(contractId);
+      const deletedContract =
+        await Contract.findByIdAndDelete(contractId).select('-jsonLD');
       if (!deletedContract) {
         throw new Error('Contract not found.');
       }
@@ -106,6 +110,7 @@ class ContractService {
         // Exclude useless meta data
         _id: 0,
         __v: 0,
+        jsonLD: 0,
       }).lean();
 
       if (!contract) {
@@ -134,7 +139,7 @@ class ContractService {
       const updatedContract = await Contract.findByIdAndUpdate(
         contractId,
         contract,
-        { new: true, _id: 0, __v: 0 },
+        { new: true, _id: 0, __v: 0, jsonLD: 0 },
       );
       if (!updatedContract) {
         throw new Error('Error occured while updating contract signature.');
@@ -151,7 +156,7 @@ class ContractService {
   ): Promise<IContract> {
     try {
       // Find the contract by ID
-      const contract = await Contract.findById(contractId);
+      const contract = await Contract.findById(contractId).select('-jsonLD');
       // Check if the contract exists
       if (!contract) {
         throw new Error('Contract not found');
@@ -187,7 +192,7 @@ class ContractService {
   ): Promise<boolean> {
     try {
       // Retrieve contract data by ID
-      const contract = await Contract.findById(contractId);
+      const contract = await Contract.findById(contractId).select('-jsonLD');
       if (!contract) {
         // Contract not found
         return false;
@@ -220,7 +225,7 @@ class ContractService {
         // Participant must not appear in signatures
         filter.signatures = { $not: { $elemMatch: { did: did } } };
       }
-      const contracts = await Contract.find(filter);
+      const contracts = await Contract.find(filter).select('-jsonLD');
       return contracts;
     } catch (error: any) {
       throw new Error(
@@ -231,7 +236,7 @@ class ContractService {
   // Get all contracts
   public async getAllContracts(): Promise<IContractDB[]> {
     try {
-      const contracts = await Contract.find();
+      const contracts = await Contract.find().select('jsonLD');
       return contracts;
     } catch (error: any) {
       throw new Error(`Error while retrieving contracts: ${error.message}`);
@@ -240,13 +245,43 @@ class ContractService {
   // Get contracts by status
   public async getContractsByStatus(status: string): Promise<IContract[]> {
     try {
-      const contracts = await Contract.find({ status });
+      const contracts = await Contract.find({ status }).select('-jsonLD');
       return contracts;
     } catch (error: any) {
       throw new Error(
         `Error while retrieving contracts by status: ${error.message}`,
       );
     }
+  }
+  // Get ORDL contract version by id
+  public async getODRLContract(
+    contractId: string,
+    generate: boolean,
+  ): Promise<any> {
+    try {
+      if (!generate) {
+        const data = await Contract.findById(contractId)
+          .select('jsonLD')
+          .lean();
+        if (!data?.jsonLD) {
+          throw new Error('ODRL contract not found.');
+        }
+        const contract = JSON.parse(data.jsonLD);
+        return contract;
+      } else {
+        const contract = await Contract.findById(contractId)
+          .select('-jsonLD')
+          .lean();
+        this.convertContract(contract);
+      }
+    } catch (error: any) {
+      throw new Error(
+        `Error while retrieving the ODRL contract: ${error.message}`,
+      );
+    }
+  }
+  private convertContract(contract: IContractDB): any {
+    return {};
   }
 }
 
