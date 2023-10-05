@@ -10,14 +10,14 @@ const router = express.Router();
 
 // CRUD routes for policy managment
 // Create a new policy
-router.post('/policies', createPolicy);
+router.post('/pap/policies', createPolicy);
 // List all policies
-router.get('/policies', listPolicies);
+router.get('/pap/policies', listPolicies);
 // Get a policy by ID
-router.get('/policies/:id', getPolicy);
+router.get('/pap/policies/:id', getPolicy);
 // Update a policy by ID
-router.put('/policies/:id', updatePolicy);
+router.put('/pap/policies/:id', updatePolicy);
 // Delete a policy by ID
-router.delete('/policies/:id', deletePolicy);
+router.delete('/pap/policies/:id', deletePolicy);
 
 export default router;

@@ -1,23 +1,37 @@
 {
   "swagger": "2.0",
   "info": {
-    "version": "1.0.0",
-    "title": "REST API",
-    "description": ""
+    "title": "Contract Manager API",
+    "description": "...",
+    "version": "1.0.0"
   },
-  "host": "localhost:3000",
+  "host": "8888",
   "basePath": "/",
   "schemes": [
     "http"
   ],
   "paths": {
-    "/bilateral/contract/all/": {
+    "/bilateral/contract/all": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/bilateral/contract/for/{did}": {
       "get": {
         "description": "",
         "parameters": [
           {
             "name": "did",
-            "in": "query",
+            "in": "path",
+            "required": true,
             "type": "string"
           },
           {
@@ -28,6 +42,27 @@
           {
             "name": "hasSigned",
             "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/bilateral/contract/status/{status}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "path",
+            "required": true,
             "type": "string"
           }
         ],
@@ -177,22 +212,60 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
     },
-    "/contract/all/": {
+    "/contract/all": {
+      "get": {
+        "description": "",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/contract/for/{did}": {
       "get": {
         "description": "",
         "parameters": [
           {
             "name": "did",
-            "in": "query",
+            "in": "path",
+            "required": true,
             "type": "string"
           },
           {
             "name": "hasSigned",
             "in": "query",
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/contract/status/{status}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "path",
+            "required": true,
             "type": "string"
           }
         ],
@@ -306,11 +379,14 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
     },
-    "/policies/": {
+    "/pap/policies": {
       "post": {
         "description": "",
         "responses": {
@@ -328,7 +404,7 @@
         }
       }
     },
-    "/policies/{id}": {
+    "/pap/policies/{id}": {
       "get": {
         "description": "",
         "responses": {
@@ -354,7 +430,7 @@
         }
       }
     },
-    "/login": {
+    "/user/login": {
       "get": {
         "description": "",
         "responses": {

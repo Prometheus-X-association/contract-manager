@@ -16,6 +16,6 @@ const router = express.Router();
  *       200:
  *         description: Success - authentication token retrieved successfully.
  */
-router.get('/login', logUser);
+router.get('/user/login', logUser);
 
 export default router;

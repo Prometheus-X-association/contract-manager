@@ -15,25 +15,25 @@ import {
 const router = express.Router();
 
 // Get all contracts
-router.get('/all', getAllContracts);
+router.get('/contract/all', getAllContracts);
 // Get contracts for a specific DID with an optional filter
-router.get('/for/:did', getContractsFor);
+router.get('/contract/for/:did', getContractsFor);
 // Get contracts for a specific status
-router.get('/status/:status', getContractsByStatus);
+router.get('/contract/status/:status', getContractsByStatus);
 
 // Create
-router.post('/', createContract);
+router.post('/contract/', createContract);
 // Read
-router.get('/:id', getContract);
+router.get('/contract/:id', getContract);
 // Update
-router.put('/:id', updateContract);
+router.put('/contract/:id', updateContract);
 
 // Sign contract
-router.put('/sign/:id', signContract);
+router.put('/contract/sign/:id', signContract);
 // Revoque signature
-router.delete('/sign/revoke/:id/:did', revokeContractSignature);
+router.delete('/contract/sign/revoke/:id/:did', revokeContractSignature);
 
 // Check data exploitation
-router.put('/:id', checkDataExploitation);
+router.put('/contract/:id', checkDataExploitation);
 
 export default router;

@@ -15,27 +15,30 @@ import {
 const router = express.Router();
 
 // Get all contracts
-router.get('/contract/all', getAllContracts);
+router.get('/bilateral/contract/all', getAllContracts);
 // Get contracts for a specific DID with an optional filter
-router.get('/contract/for/:did', getContractsFor);
+router.get('/bilateral/contract/for/:did', getContractsFor);
 // Get contracts for a specific status
-router.get('/contract/status/:status', getContractsByStatus);
+router.get('/bilateral/contract/status/:status', getContractsByStatus);
 
 // Create
-router.post('/contract/', createContract);
+router.post('/bilateral/contract/', createContract);
 // Read
-router.get('/contract/:id', getContract);
+router.get('/bilateral/contract/:id', getContract);
 // Update
-router.put('/contract/:id', updateContract);
+router.put('/bilateral/contract/:id', updateContract);
 
 // Add a negociator for a contract
-router.put('/contract/negociator/:id', addContractNegociator);
+router.put('/bilateral/contract/negociator/:id', addContractNegociator);
 // Sign contract
-router.put('/contract/sign/:id', signContract);
+router.put('/bilateral/contract/sign/:id', signContract);
 // Revoke signature
-router.delete('/contract/sign/revoke/:id/:did', revokeContractSignature);
+router.delete(
+  '/bilateral/contract/sign/revoke/:id/:did',
+  revokeContractSignature,
+);
 
 // Check data exploitation
-router.put('/contract/:id', checkDataExploitation);
+router.put('/bilateral/contract/:id', checkDataExploitation);
 
 export default router;
