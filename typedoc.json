@@ -1,0 +1,17 @@
+{
+  "entryPoints": [
+    "src/**/*.ts"
+  ],
+  "exclude": ["./node_modules"],
+  "excludePrivate": false,
+  "includeVersion": true,
+  "out": "docs",
+  "readme": "README.md",
+  "name": "Contract-manager",
+  "tsconfig": "./tsconfig.json",
+  "entryPointStrategy": "Expand",
+  "markedOptions": {
+    "breaks": true,
+    "gfm": true
+  }
+}

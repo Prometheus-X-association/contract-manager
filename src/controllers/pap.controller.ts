@@ -1,6 +1,38 @@
 import { Request, Response } from 'express';
 import pap from 'services/pap.service';
 import Policy from 'models/policy.model';
+import policyProviderService from 'services/policy.provider.service';
+
+/**
+ * Validates an ODRL policy.
+ *
+ * @param {Request} req - The Express Request object.
+ * @param {Response} res - The Express Response object.
+ */
+export const verifyOdrlPolicy = (req: Request, res: Response) => {
+  // Extract the ODRL policy from the request body
+  const odrlPolicy = req.body;
+  try {
+    // Verify the ODRL policy using the policyProviderService
+    const isValid: boolean = policyProviderService.verifyOdrlPolicy(odrlPolicy);
+    // Respond with a success message if the policy is valid
+    if (isValid) {
+      return res.json({
+        success: true,
+        message: 'The ODRL policy has been successfully validated.',
+      });
+    } else {
+      // Respond with an error message if the policy is not valid
+      res.status(400).json({
+        success: false,
+        errors: 'The ODRL policy is not valid.',
+      });
+    }
+  } catch (error: any) {
+    // Respond with an error message if an exception occurs during validation
+    res.status(400).json({ success: false, error: error.message });
+  }
+};
 
 // C.UD using PAP service
 // Create a new policy

@@ -1,6 +1,41 @@
 import { IAuthorisationPolicy } from 'interfaces/policy.interface';
 import PolicyReferenceRegistry from 'models/policy.registry.model';
+import Ajv, { ValidateFunction } from 'ajv';
 import { logger } from 'utils/logger';
+
+// temporary odrl policy schema to put in data base
+const OdrlPolicy = {
+  type: 'object',
+  properties: {
+    target: { type: 'string' },
+    action: { type: 'string' },
+    constraint: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          leftOperand: { type: 'string' },
+          operator: { type: 'string' },
+          rightOperand: {
+            oneOf: [
+              {
+                type: 'object',
+                properties: {
+                  '@value': { type: 'string' },
+                  '@type': { type: 'string' },
+                },
+                required: ['@value', '@type'],
+              },
+            ],
+          },
+        },
+        required: ['leftOperand', 'operator', 'rightOperand'],
+      },
+    },
+  },
+  required: ['target', 'action', 'constraint'],
+  additionalProperties: false,
+};
 
 const operators: any = Object.freeze({
   eq: '$eq',
@@ -18,10 +53,13 @@ class PolicyProviderService {
   private static instance: PolicyProviderService;
   private policies: IAuthorisationPolicy[];
   private policiesPromise: Promise<IAuthorisationPolicy[]>;
+  private validate: ValidateFunction;
 
   private constructor() {
     this.policies = [];
     this.policiesPromise = this.fetchAuthorisationPolicies();
+    const ajv = new Ajv();
+    this.validate = ajv.compile(OdrlPolicy);
   }
 
   public static getInstance(): PolicyProviderService {
@@ -29,6 +67,16 @@ class PolicyProviderService {
       PolicyProviderService.instance = new PolicyProviderService();
     }
     return PolicyProviderService.instance;
+  }
+
+  /**
+   * Verifies the validity of an ODRL policy.
+   *
+   * @param {any} policy - The ODRL policy to verify.
+   * @returns {boolean} True if the policy is valid, otherwise false.
+   */
+  public verifyOdrlPolicy(policy: any): boolean {
+    return this.validate(policy);
   }
 
   public async fetchAuthorisationPolicies(): Promise<IAuthorisationPolicy[]> {
