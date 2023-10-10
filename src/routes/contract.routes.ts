@@ -7,20 +7,20 @@ import {
   updateContract,
   signContract,
   checkDataExploitation,
-  getAllContracts,
+  getContracts,
   getContractsFor,
-  getContractsByStatus,
+  // getContractsByStatus,
   revokeContractSignature,
 } from '../controllers/contract.controller';
 
 const router = express.Router();
 
 // Get all contracts
-router.get('/contract/all', getAllContracts);
+router.get('/contract/all/', getContracts);
 // Get contracts for a specific DID with an optional filter
 router.get('/contract/for/:did', getContractsFor);
 // Get contracts for a specific status
-router.get('/contract/status/:status', getContractsByStatus);
+// router.get('/contract/status/:status', getContractsByStatus);
 
 // Create
 router.post('/contract/', createContract);

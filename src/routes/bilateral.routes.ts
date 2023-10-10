@@ -5,9 +5,9 @@ import {
   updateContract,
   signContract,
   checkDataExploitation,
-  getAllContracts,
+  getContracts,
   getContractsFor,
-  getContractsByStatus,
+  // getContractsByStatus,
   revokeContractSignature,
   addContractNegociator,
 } from '../controllers/bilateral.controller';
@@ -15,11 +15,11 @@ import {
 const router = express.Router();
 
 // Get all contracts
-router.get('/bilateral/contract/all', getAllContracts);
+router.get('/bilateral/contract/all/', getContracts);
 // Get contracts for a specific DID with an optional filter
 router.get('/bilateral/contract/for/:did', getContractsFor);
 // Get contracts for a specific status
-router.get('/bilateral/contract/status/:status', getContractsByStatus);
+// router.get('/bilateral/contract/status/:status', getContractsByStatus);
 
 // Create
 router.post('/bilateral/contract/', createContract);

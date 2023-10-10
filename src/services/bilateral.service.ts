@@ -268,14 +268,27 @@ class BilateralContractService {
     }
   }
   // Get all contracts
-  public async getAllContracts(): Promise<IBilateralContractDB[]> {
+  public async getContracts(status?: string): Promise<IBilateralContractDB[]> {
     try {
-      const contracts = await BilateralContract.find();
+      let filter: any = {};
+      if (status) {
+        if (status.slice(0, 3) !== 'not') {
+          filter.status = status;
+        } else {
+          filter = {
+            status: {
+              $ne: status.substring(3).toLowerCase(),
+            },
+          };
+        }
+      }
+      const contracts = await BilateralContract.find(filter).select('-jsonLD');
       return contracts;
     } catch (error: any) {
       throw new Error(`Error while retrieving contracts: ${error.message}`);
     }
   }
+  /*
   // Get contracts by status
   public async getContractsByStatus(
     status: string,
@@ -288,6 +301,39 @@ class BilateralContractService {
         `Error while retrieving contracts by status: ${error.message}`,
       );
     }
+  }
+  */
+  // Get ORDL contract version by id
+  public async getODRLContract(
+    contractId: string,
+    generate: boolean,
+  ): Promise<any> {
+    try {
+      if (!generate) {
+        const data = await BilateralContract.findById(contractId)
+          .select('jsonLD')
+          .lean();
+        if (!data?.jsonLD) {
+          throw new Error('ODRL contract not found.');
+        }
+        const contract = JSON.parse(data.jsonLD);
+        return contract;
+      } else {
+        const contract = await BilateralContract.findById(contractId)
+          .select('-jsonLD')
+          .lean();
+        if (contract) {
+          this.convertContract(contract);
+        }
+      }
+    } catch (error: any) {
+      throw new Error(
+        `Error while retrieving the ODRL contract: ${error.message}`,
+      );
+    }
+  }
+  private convertContract(contract: IBilateralContractDB): any {
+    return {};
   }
 }
 

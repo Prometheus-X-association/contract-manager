@@ -145,12 +145,13 @@ export const getContractsFor = async (
   }
 };
 // Get all contrats
-export const getAllContracts = async (
+export const getContracts = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
   try {
-    const contracts: IContractDB[] = await contractService.getAllContracts();
+    const status = req.query.status ? String(req.query.status) : undefined;
+    const contracts: IContractDB[] = await contractService.getContracts(status);
     logger.info('[Contract/Controller: getAllContracts] Successfully called.');
     res.status(200).json({ contracts: contracts });
   } catch (error: any) {
@@ -158,6 +159,7 @@ export const getAllContracts = async (
     res.status(500).json({ error: error.message });
   }
 };
+/*
 // Get contracts by status
 export const getContractsByStatus = async (
   req: Request,
@@ -177,6 +179,7 @@ export const getContractsByStatus = async (
       .json({ error: 'Error while fetching contracts by status.' });
   }
 };
+*/
 // get ODRL contract
 export const getODRLContract = async (req: Request, res: Response) => {
   try {

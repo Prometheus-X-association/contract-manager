@@ -263,7 +263,7 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
       // Define the status to filter by
       const status = 'signed';
       const response = await supertest(app.router)
-        .get(`${API_ROUTE_BASE}status/${status}`)
+        .get(`${API_ROUTE_BASE}all?status=${status}`)
         .set('Authorization', `Bearer ${authToken}`);
       _logObject(response.body);
       expect(response.status).to.equal(200);

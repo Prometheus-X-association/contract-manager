@@ -126,5 +126,24 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
       expect(contracts.length).to.equal(1);
       expect(contracts[0]._id).to.equal(unsignedContractId);
     });
+
+    // Test case to retrieve the list of contracts with status 'pending'
+    it('should return contracts with status "pending"', async () => {
+      // Define the status to filter by
+      const status = 'pending';
+      const response = await supertest(app.router)
+        .get(`${API_ROUTE_BASE}all?status=${status}`)
+        .set('Authorization', `Bearer ${authToken}`);
+      _logObject(response.body);
+      expect(response.status).to.equal(200);
+      const contracts: Array<any> = response.body.contracts;
+      expect(contracts.length).to.equal(2);
+      // Ensure that the pending contracts are present in the list
+      const contractIds = contracts.map((contract) => contract._id);
+      expect(contractIds).to.include.members([
+        signedContractId,
+        unsignedContractId,
+      ]);
+    });
   });
 });

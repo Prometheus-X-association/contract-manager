@@ -234,14 +234,27 @@ class ContractService {
     }
   }
   // Get all contracts
-  public async getAllContracts(): Promise<IContractDB[]> {
+  public async getContracts(status?: string): Promise<IContractDB[]> {
     try {
-      const contracts = await Contract.find().select('jsonLD');
+      let filter: any = {};
+      if (status) {
+        if (status.slice(0, 3) !== 'not') {
+          filter.status = status;
+        } else {
+          filter = {
+            status: {
+              $ne: status.substring(3).toLowerCase(),
+            },
+          };
+        }
+      }
+      const contracts = await Contract.find(filter).select('-jsonLD');
       return contracts;
     } catch (error: any) {
       throw new Error(`Error while retrieving contracts: ${error.message}`);
     }
   }
+  /*
   // Get contracts by status
   public async getContractsByStatus(status: string): Promise<IContract[]> {
     try {
@@ -253,6 +266,7 @@ class ContractService {
       );
     }
   }
+  */
   // Get ORDL contract version by id
   public async getODRLContract(
     contractId: string,
