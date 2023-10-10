@@ -1,5 +1,4 @@
-import { config } from 'config/config';
-import express from 'express';
+import express, { Router } from 'express';
 import http from 'http';
 import mongoose from 'mongoose';
 import contractRoutes from 'routes/contract.routes';
@@ -73,4 +72,7 @@ const startServer = async (url: string) => {
   return http.createServer(router);
 };
 
-export default { router, startServer };
+export default { router, startServer } as {
+  router: Router;
+  startServer: (url: string) => Promise<http.Server>;
+};

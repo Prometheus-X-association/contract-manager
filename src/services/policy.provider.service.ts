@@ -48,8 +48,10 @@ const operators: any = Object.freeze({
   ne: '$ne',
 });
 
-// Policy Provider Service
-class PolicyProviderService {
+/**
+ * Policy Provider Service.
+ */
+export class PolicyProviderService {
   private static instance: PolicyProviderService;
   private policies: IAuthorisationPolicy[];
   private policiesPromise: Promise<IAuthorisationPolicy[]>;

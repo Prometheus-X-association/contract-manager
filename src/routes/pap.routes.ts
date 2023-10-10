@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Router } from 'express';
 import {
   createPolicy,
   listPolicies,
@@ -6,7 +6,7 @@ import {
   updatePolicy,
   deletePolicy,
 } from 'controllers/pap.controller';
-const router = express.Router();
+const router: Router = express.Router();
 
 // CRUD routes for policy managment
 // Create a new policy

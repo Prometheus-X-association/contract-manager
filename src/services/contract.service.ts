@@ -9,7 +9,7 @@ import { logger } from 'utils/logger';
 import { ContractSignature } from 'interfaces/schemas.interface';
 
 // Ecosystem Contract Service
-class ContractService {
+export class ContractService {
   private contractModel: any;
   private static instance: ContractService;
 

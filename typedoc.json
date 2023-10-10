@@ -1,6 +1,7 @@
 {
+  "$schema": "https://typedoc.org/schema.json",
   "entryPoints": [
-    "src/**/*.ts"
+    "src/services/*.ts"
   ],
   "exclude": ["./node_modules"],
   "excludePrivate": false,

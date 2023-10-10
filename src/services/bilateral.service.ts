@@ -11,7 +11,7 @@ import policyProviderService from './policy.provider.service';
 import { IAuthorisationPolicy } from 'interfaces/policy.interface';
 
 // Bilateral Contract Service
-class BilateralContractService {
+export class BilateralContractService {
   private contractModel: any;
   private static instance: BilateralContractService;
 

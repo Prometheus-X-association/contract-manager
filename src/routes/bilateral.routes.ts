@@ -1,4 +1,4 @@
-import express from 'express';
+import express, { Router } from 'express';
 import {
   createContract,
   getContract,
@@ -12,7 +12,7 @@ import {
   addContractNegociator,
 } from '../controllers/bilateral.controller';
 
-const router = express.Router();
+const router: Router = express.Router();
 
 // Get all contracts
 router.get('/bilateral/contract/all/', getContracts);
