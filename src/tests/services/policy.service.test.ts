@@ -80,6 +80,72 @@ describe('genPolicies', () => {
     expect(isValid).to.be.true;
   });
 
+  it('Should verify if a policy with permissions sharing common constraint is valid', () => {
+    const validPolicyB = {
+      '@context': 'https://www.w3.org/ns/odrl.jsonld',
+      '@type': 'Offer',
+      permission: [
+        {
+          action: 'use',
+          target: 'http://provider/service/formatProfile',
+          profile: 'sharedConstraint',
+        },
+        {
+          action: 'use',
+          target: 'http://provider/service/guessAge',
+          profile: 'sharedConstraint',
+        },
+      ],
+      constraint: [
+        {
+          profile: 'sharedConstraint',
+          constraints: [
+            {
+              leftOperand: 'machineReadable',
+              operator: 'eq',
+              rightOperand: { '@value': 'true', '@type': 'xsd:boolean' },
+            },
+          ],
+        },
+      ],
+    };
+    const isValidB = policyProviderService.verifyOdrlPolicy(validPolicyB);
+    expect(isValidB).to.be.true;
+  });
+
+  it('Should verify if a policy including more than one permission is valid', () => {
+    const validPolicyC = {
+      '@context': 'https://www.w3.org/ns/odrl.jsonld',
+      '@type': 'Offer',
+      permission: [
+        {
+          action: 'use',
+          target: 'http://provider/gallery/getLastModificationTime',
+          constraint: [
+            {
+              leftOperand: 'userIsRegistered',
+              operator: 'eq',
+              rightOperand: { '@value': 'true', '@type': 'xsd:boolean' },
+            },
+          ],
+        },
+        {
+          action: 'use',
+          target: 'http://provider/gallery/removeLastPicture',
+          constraint: [
+            {
+              leftOperand: 'userCanRemove',
+              operator: 'eq',
+              rightOperand: { '@value': 'true', '@type': 'xsd:boolean' },
+            },
+          ],
+        },
+      ],
+    };
+    const isValidC = policyProviderService.verifyOdrlPolicy(validPolicyC);
+    expect(isValidC).to.be.true;
+  });
+
   /*
   // Ensure unsupported constraint types trigger a warning.
   it('should handle unsupported constraint types', () => {

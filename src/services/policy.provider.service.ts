@@ -4,43 +4,136 @@ import Ajv, { ValidateFunction } from 'ajv';
 import { logger } from 'utils/logger';
 
 // temporary odrl policy schema to put in data base
-const odrlPolicy = {
-  type: 'object',
-  properties: {
-    '@context': { type: 'string' },
-    '@type': { type: 'string' },
-    permission: {
-      type: 'object',
-      properties: {
-        action: { type: 'string' },
-        target: { type: 'string' },
-        constraint: {
-          type: 'array',
-          items: {
-            type: 'object',
-            properties: {
-              leftOperand: { type: 'string' },
-              operator: { type: 'string' },
-              rightOperand: {
-                type: 'object',
-                properties: {
-                  '@value': { type: 'string' },
-                  '@type': { type: 'string' },
+const odrlSchemas = [
+  {
+    type: 'object',
+    properties: {
+      '@context': { type: 'string' },
+      '@type': { type: 'string' },
+      permission: {
+        type: 'object',
+        properties: {
+          action: { type: 'string' },
+          target: { type: 'string' },
+          constraint: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                leftOperand: { type: 'string' },
+                operator: { type: 'string' },
+                rightOperand: {
+                  type: 'object',
+                  properties: {
+                    '@value': { type: 'string' },
+                    '@type': { type: 'string' },
+                  },
+                  required: ['@value', '@type'],
                 },
-                required: ['@value', '@type'],
               },
+              required: ['leftOperand', 'operator', 'rightOperand'],
             },
-            required: ['leftOperand', 'operator', 'rightOperand'],
           },
         },
+        required: ['action', 'target', 'constraint'],
+        additionalProperties: false,
       },
-      required: ['action', 'target'],
-      additionalProperties: false,
     },
+    required: ['@context', '@type', 'permission'],
+    additionalProperties: false,
   },
-  required: ['@context', '@type', 'permission'],
-  additionalProperties: false,
-};
+  {
+    type: 'object',
+    properties: {
+      '@context': { type: 'string' },
+      '@type': { type: 'string' },
+      permission: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            action: { type: 'string' },
+            target: { type: 'string' },
+            profile: { type: 'string' },
+          },
+          required: ['action', 'target', 'profile'],
+          additionalProperties: false,
+        },
+      },
+      constraint: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            profile: { type: 'string' },
+            constraints: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  leftOperand: { type: 'string' },
+                  operator: { type: 'string' },
+                  rightOperand: {
+                    type: 'object',
+                    properties: {
+                      '@value': { type: 'string' },
+                      '@type': { type: 'string' },
+                    },
+                    required: ['@value', '@type'],
+                  },
+                },
+                required: ['leftOperand', 'operator', 'rightOperand'],
+              },
+            },
+          },
+          required: ['profile', 'constraints'],
+          additionalProperties: false,
+        },
+      },
+    },
+    required: ['@context', '@type', 'permission'],
+    additionalProperties: false,
+  },
+  {
+    type: 'object',
+    properties: {
+      '@context': { type: 'string' },
+      '@type': { type: 'string' },
+      permission: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            action: { type: 'string' },
+            target: { type: 'string' },
+            constraint: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  leftOperand: { type: 'string' },
+                  operator: { type: 'string' },
+                  rightOperand: {
+                    type: 'object',
+                    properties: {
+                      '@value': { type: 'string' },
+                      '@type': { type: 'string' },
+                    },
+                    required: ['@value', '@type'],
+                  },
+                },
+                required: ['leftOperand', 'operator', 'rightOperand'],
+              },
+            },
+          },
+          required: ['action', 'target', 'constraint'],
+        },
+      },
+    },
+    required: ['@context', '@type', 'permission'],
+    additionalProperties: false,
+  },
+];
 
 const operators: any = Object.freeze({
   eq: '$eq',
@@ -60,13 +153,13 @@ export class PolicyProviderService {
   private static instance: PolicyProviderService;
   private policies: IAuthorisationPolicy[];
   private policiesPromise: Promise<IAuthorisationPolicy[]>;
-  private validate: ValidateFunction;
+  private validateFunctions: Function[];
 
   private constructor() {
     this.policies = [];
     this.policiesPromise = this.fetchAuthorisationPolicies();
     const ajv = new Ajv();
-    this.validate = ajv.compile(odrlPolicy);
+    this.validateFunctions = odrlSchemas.map((schema) => ajv.compile(schema));
   }
 
   public static getInstance(): PolicyProviderService {
@@ -83,7 +176,9 @@ export class PolicyProviderService {
    * @returns {boolean} True if the policy is valid, otherwise false.
    */
   public verifyOdrlPolicy(policy: any): boolean {
-    return this.validate(policy);
+    return this.validateFunctions.some((validateFunction) =>
+      validateFunction(policy),
+    );
   }
 
   public async fetchAuthorisationPolicies(): Promise<IAuthorisationPolicy[]> {

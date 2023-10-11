@@ -1,12 +1,15 @@
 import DataRegistry from 'models/data.registry.model';
 
-export async function seedPolicyReferenceRegistry() {
+const bilateralModelSeedling: any = {};
+const ecoSystemModelSeedling: any = {};
+
+export async function seedDataRegistry() {
   try {
     await DataRegistry.deleteMany({});
     const seedDocument = new DataRegistry({
       contracts: {
-        bilateral: bilateralModelSeedling,
-        ecosystem: ecoSystemModelSeedling,
+        bilateral: JSON.stringify(bilateralModelSeedling),
+        ecosystem: JSON.stringify(ecoSystemModelSeedling),
       },
     });
     await seedDocument.save();
