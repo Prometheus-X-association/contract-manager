@@ -120,7 +120,7 @@ export type BilateralContract = {
   revokedSignatures: BilateralContractRevokedSignature[];
   negotiators: BilateralContractNegotiator[];
   createdAt?: Date;
-  status: 'signed' | 'revoked' | 'under_negotiation' | 'pending';
+  status?: 'signed' | 'revoked' | 'under_negotiation' | 'pending';
   jsonLD?: string;
   _id: mongoose.Types.ObjectId;
 };
@@ -291,7 +291,7 @@ export type BilateralContractDocument = mongoose.Document<
     revokedSignatures: mongoose.Types.DocumentArray<BilateralContractRevokedSignatureDocument>;
     negotiators: mongoose.Types.DocumentArray<BilateralContractNegotiatorDocument>;
     createdAt?: Date;
-    status: 'signed' | 'revoked' | 'under_negotiation' | 'pending';
+    status?: 'signed' | 'revoked' | 'under_negotiation' | 'pending';
     jsonLD?: string;
     _id: mongoose.Types.ObjectId;
   };
@@ -393,7 +393,7 @@ export type Contract = {
   purpose: ContractPurpose[];
   signatures: ContractRevokedSignature[];
   revokedSignatures: ContractRevokedSignature[];
-  status: 'signed' | 'revoked' | 'pending';
+  status?: 'signed' | 'revoked' | 'pending';
   createdAt?: Date;
   jsonLD?: string;
   _id: mongoose.Types.ObjectId;
@@ -548,9 +548,131 @@ export type ContractDocument = mongoose.Document<
     purpose: mongoose.Types.DocumentArray<ContractPurposeDocument>;
     signatures: mongoose.Types.DocumentArray<ContractRevokedSignatureDocument>;
     revokedSignatures: mongoose.Types.DocumentArray<ContractRevokedSignatureDocument>;
-    status: 'signed' | 'revoked' | 'pending';
+    status?: 'signed' | 'revoked' | 'pending';
     createdAt?: Date;
     jsonLD?: string;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Lean version of DataRegistryContractDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `DataRegistryDocument.toObject()`.
+ * ```
+ * const dataregistryObject = dataregistry.toObject();
+ * ```
+ */
+export type DataRegistryContract = {
+  bilateral?: string;
+  ecosystem?: string;
+};
+
+/**
+ * Lean version of DataRegistryDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `DataRegistryDocument.toObject()`. To avoid conflicts with model names, use the type alias `DataRegistryObject`.
+ * ```
+ * const dataregistryObject = dataregistry.toObject();
+ * ```
+ */
+export type DataRegistry = {
+  contracts: DataRegistryContract;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of DataRegistryDocument (type alias of `DataRegistry`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { DataRegistry } from "../models"
+ * import { DataRegistryObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const dataregistryObject: DataRegistryObject = dataregistry.toObject();
+ * ```
+ */
+export type DataRegistryObject = DataRegistry;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type DataRegistryQuery = mongoose.Query<
+  any,
+  DataRegistryDocument,
+  DataRegistryQueries
+> &
+  DataRegistryQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `DataRegistrySchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type DataRegistryQueries = {};
+
+export type DataRegistryMethods = {};
+
+export type DataRegistryStatics = {};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const DataRegistry = mongoose.model<DataRegistryDocument, DataRegistryModel>("DataRegistry", DataRegistrySchema);
+ * ```
+ */
+export type DataRegistryModel = mongoose.Model<
+  DataRegistryDocument,
+  DataRegistryQueries
+> &
+  DataRegistryStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new DataRegistry schema instances:
+ * ```
+ * const DataRegistrySchema: DataRegistrySchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type DataRegistrySchema = mongoose.Schema<
+  DataRegistryDocument,
+  DataRegistryModel,
+  DataRegistryMethods,
+  DataRegistryQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const DataRegistry = mongoose.model<DataRegistryDocument, DataRegistryModel>("DataRegistry", DataRegistrySchema);
+ * ```
+ */
+export type DataRegistryContractDocument =
+  mongoose.Document<mongoose.Types.ObjectId> & {
+    bilateral?: string;
+    ecosystem?: string;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const DataRegistry = mongoose.model<DataRegistryDocument, DataRegistryModel>("DataRegistry", DataRegistrySchema);
+ * ```
+ */
+export type DataRegistryDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  DataRegistryQueries
+> &
+  DataRegistryMethods & {
+    contracts: DataRegistryContractDocument;
     _id: mongoose.Types.ObjectId;
   };
 

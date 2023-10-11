@@ -4,13 +4,13 @@ import {
 } from 'interfaces/contract.interface';
 import { BilateralContractSignature } from 'interfaces/schemas.interface';
 import BilateralContract from 'models/bilateral.model';
-import DataRegistry from 'models/bilateral.model';
+import DataRegistry from 'models/data.registry.model';
 import { checkFieldsMatching } from 'utils/utils';
 import pdp from './pdp.service';
 import policyProviderService from './policy.provider.service';
 import { IAuthorisationPolicy } from 'interfaces/policy.interface';
 import { logger } from 'utils/logger';
-import { IDataRegistry } from 'interfaces/global.interface';
+import { IDataRegistry, IDataRegistryDB } from 'interfaces/global.interface';
 
 // Bilateral Contract Service
 export class BilateralContractService {
@@ -31,12 +31,18 @@ export class BilateralContractService {
 
   private async getContractModel(): Promise<IDataRegistry[]> {
     try {
-      const dataRegistry = await DataRegistry.findOne();
+      const dataRegistry: IDataRegistryDB | null = await DataRegistry.findOne();
       if (dataRegistry) {
-        // this.contractModel =
-        return JSON.parse(dataRegistry.contracts.bilateral);
+        const contractModel = dataRegistry.contracts?.bilateral;
+        if (contractModel) {
+          return JSON.parse(contractModel);
+        } else {
+          throw new Error('No contract model found in database');
+        }
       } else {
-        throw new Error('No contract model found in database');
+        throw new Error(
+          '[Bilateral/Service, getContractModel]: Something went wrong while fetching data from registry',
+        );
       }
     } catch (error: any) {
       logger.error(error.message);
@@ -53,7 +59,7 @@ export class BilateralContractService {
     // Perform validation
     const matching = checkFieldsMatching(contract, contractModel);
     if (!matching.success) {
-      throw new Error(`${matching.success} is an invalid field.`);
+      throw new Error(`${matching.field} is an invalid field.`);
     }
     return matching.success;
   }
@@ -62,12 +68,18 @@ export class BilateralContractService {
   public async genContract(
     contractData: IBilateralContract,
   ): Promise<IBilateralContract> {
-    // Validate the contract input data against the contract model
-    this.isValid(contractData);
-    // Generate the contrat after validation
-    const newContract = new BilateralContract(contractData);
-    return newContract.save();
+    try {
+      // Validate the contract input data against the contract model
+      await this.isValid(contractData);
+      // Generate the contrat after validation
+      const newContract = new BilateralContract(contractData);
+      return newContract.save();
+    } catch (error: any) {
+      logger.error('[bilateral/Service, genContract]:', error);
+      throw error;
+    }
   }
+
   // get contract
   public async getContract(
     contractId: string,
@@ -298,21 +310,7 @@ export class BilateralContractService {
       throw new Error(`Error while retrieving contracts: ${error.message}`);
     }
   }
-  /*
-  // Get contracts by status
-  public async getContractsByStatus(
-    status: string,
-  ): Promise<IBilateralContract[]> {
-    try {
-      const contracts = await BilateralContract.find({ status });
-      return contracts;
-    } catch (error: any) {
-      throw new Error(
-        `Error while retrieving contracts by status: ${error.message}`,
-      );
-    }
-  }
-  */
+
   // Get ORDL contract version by id
   public async getODRLContract(
     contractId: string,

@@ -1,20 +1,21 @@
 import { IContract, IContractDB } from 'interfaces/contract.interface';
 import { IAuthorisationPolicy } from 'interfaces/policy.interface';
-import { config } from 'config/config';
 import Contract from 'models/contract.model';
-import { checkFieldsMatching, loadJsonFromFile } from 'utils/utils';
+import DataRegistry from 'models/data.registry.model';
+import { checkFieldsMatching } from 'utils/utils';
 import pdp from './pdp.service';
 import policyProviderService from './policy.provider.service';
 import { logger } from 'utils/logger';
 import { ContractSignature } from 'interfaces/schemas.interface';
+import { IDataRegistry, IDataRegistryDB } from 'interfaces/global.interface';
 
 // Ecosystem Contract Service
 export class ContractService {
-  private contractModel: any;
   private static instance: ContractService;
+  private contractModelPromise: Promise<IDataRegistry[]>;
 
   private constructor() {
-    this.initContractModel();
+    this.contractModelPromise = this.getContractModel();
   }
 
   public static getInstance(): ContractService {
@@ -24,16 +25,35 @@ export class ContractService {
     return ContractService.instance;
   }
 
-  private initContractModel() {
-    console.time('initContractModel');
-    this.contractModel = loadJsonFromFile(config.contract.modelPath);
-    console.timeEnd('initContractModel');
+  private async getContractModel(): Promise<IDataRegistry[]> {
+    try {
+      const dataRegistry: IDataRegistryDB | null = await DataRegistry.findOne();
+      if (dataRegistry) {
+        const contractModel = dataRegistry.contracts?.ecosystem;
+        if (contractModel) {
+          return JSON.parse(contractModel);
+        } else {
+          throw new Error('No contract model found in database');
+        }
+      } else {
+        throw new Error(
+          '[Contract/Service, getContractModel]: Something went wrong while fetching data from registry',
+        );
+      }
+    } catch (error: any) {
+      logger.error(error.message);
+      throw error;
+    }
   }
 
   // Validate the contract input data against the contract model
-  public isValid(contract: IContract): boolean {
+  public async isValid(contract: IContract): Promise<boolean> {
+    const contractModel = await this.contractModelPromise;
+    if (!contractModel) {
+      throw new Error('No contract model found.');
+    }
     // Perform validation
-    const matching = checkFieldsMatching(contract, this.contractModel);
+    const matching = checkFieldsMatching(contract, contractModel);
     if (!matching.success) {
       throw new Error(`${matching.field} is an invalid field.`);
     }
@@ -41,22 +61,19 @@ export class ContractService {
   }
 
   // Generate a contract based on the contract data
-  public genContract(contractData: IContract): Promise<IContract> {
-    if (!this.contractModel) {
-      logger.error('No contract model found.');
-      throw new Error('No contract model found.');
-    }
+  public async genContract(contractData: IContract): Promise<IContract> {
     try {
       // Validate the contract input data against the contract model
-      this.isValid(contractData);
+      await this.isValid(contractData);
       // Generate the contrat after validation
       const newContract = new Contract(contractData);
       return newContract.save();
     } catch (error: any) {
-      logger.error(error.message);
+      logger.error('[Contract/Service, genContract]:', error);
       throw error;
     }
   }
+
   // get contract
   public async getContract(contractId: string): Promise<IContractDB | null> {
     try {
@@ -254,19 +271,7 @@ export class ContractService {
       throw new Error(`Error while retrieving contracts: ${error.message}`);
     }
   }
-  /*
-  // Get contracts by status
-  public async getContractsByStatus(status: string): Promise<IContract[]> {
-    try {
-      const contracts = await Contract.find({ status }).select('-jsonLD');
-      return contracts;
-    } catch (error: any) {
-      throw new Error(
-        `Error while retrieving contracts by status: ${error.message}`,
-      );
-    }
-  }
-  */
+
   // Get ORDL contract version by id
   public async getODRLContract(
     contractId: string,
