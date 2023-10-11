@@ -1,10 +1,10 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
-export const loadModel = (modelPath: string) => {
+export const loadJsonFromFile = (jsonPath: string) => {
   try {
     // Read the contract model configuration file
-    const resolvedModelPath = path.resolve(process.cwd(), modelPath);
+    const resolvedModelPath = path.resolve(process.cwd(), jsonPath);
     const modelData = fs.readFileSync(resolvedModelPath, 'utf8');
     return JSON.parse(modelData);
   } catch (error) {

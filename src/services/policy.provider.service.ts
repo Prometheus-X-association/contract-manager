@@ -1,6 +1,6 @@
 import { IAuthorisationPolicy } from 'interfaces/policy.interface';
 import PolicyReferenceRegistry from 'models/policy.registry.model';
-import Ajv, { ValidateFunction } from 'ajv';
+import Ajv from 'ajv';
 import { logger } from 'utils/logger';
 
 // temporary odrl policy schema to put in data base

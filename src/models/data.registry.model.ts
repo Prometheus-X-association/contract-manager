@@ -9,11 +9,9 @@ const ContractSchema: Schema = new Schema(
   },
   { _id: false },
 );
-
 // Mongoose schema for the data registry
 const DataRegistrySchema: Schema = new Schema({
   contracts: { type: ContractSchema, default: {} },
 });
-
 // Mongoose model for DataRegistry
 export default mongoose.model<DataRegistry>('DataRegistry', DataRegistrySchema);

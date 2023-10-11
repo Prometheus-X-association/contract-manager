@@ -2,7 +2,7 @@ import { IContract, IContractDB } from 'interfaces/contract.interface';
 import { IAuthorisationPolicy } from 'interfaces/policy.interface';
 import { config } from 'config/config';
 import Contract from 'models/contract.model';
-import { checkFieldsMatching, loadModel } from 'utils/utils';
+import { checkFieldsMatching, loadJsonFromFile } from 'utils/utils';
 import pdp from './pdp.service';
 import policyProviderService from './policy.provider.service';
 import { logger } from 'utils/logger';
@@ -26,7 +26,7 @@ export class ContractService {
 
   private initContractModel() {
     console.time('initContractModel');
-    this.contractModel = loadModel(config.contract.modelPath);
+    this.contractModel = loadJsonFromFile(config.contract.modelPath);
     console.timeEnd('initContractModel');
   }
 
