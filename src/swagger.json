@@ -11,9 +11,16 @@
     "http"
   ],
   "paths": {
-    "/bilateral/contract/all": {
+    "/bilaterals/all/": {
       "get": {
         "description": "",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -24,7 +31,7 @@
         }
       }
     },
-    "/bilateral/contract/for/{did}": {
+    "/bilaterals/for/{did}": {
       "get": {
         "description": "",
         "parameters": [
@@ -55,28 +62,7 @@
         }
       }
     },
-    "/bilateral/contract/status/{status}": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "status",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/bilateral/contract/": {
+    "/bilaterals/": {
       "post": {
         "description": "",
         "responses": {
@@ -89,7 +75,7 @@
         }
       }
     },
-    "/bilateral/contract/{id}": {
+    "/bilaterals/{id}": {
       "get": {
         "description": "",
         "parameters": [
@@ -135,7 +121,7 @@
         }
       }
     },
-    "/bilateral/contract/negociator/{id}": {
+    "/bilaterals/negociator/{id}": {
       "put": {
         "description": "",
         "parameters": [
@@ -171,7 +157,7 @@
         }
       }
     },
-    "/bilateral/contract/sign/{id}": {
+    "/bilaterals/sign/{id}": {
       "put": {
         "description": "",
         "parameters": [
@@ -192,7 +178,7 @@
         }
       }
     },
-    "/bilateral/contract/sign/revoke/{id}/{did}": {
+    "/bilaterals/sign/revoke/{id}/{did}": {
       "delete": {
         "description": "",
         "parameters": [
@@ -219,9 +205,16 @@
         }
       }
     },
-    "/contract/all": {
+    "/contracts/all/": {
       "get": {
         "description": "",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
@@ -232,7 +225,7 @@
         }
       }
     },
-    "/contract/for/{did}": {
+    "/contracts/for/{did}": {
       "get": {
         "description": "",
         "parameters": [
@@ -258,28 +251,7 @@
         }
       }
     },
-    "/contract/status/{status}": {
-      "get": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "status",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/contract/": {
+    "/contracts/": {
       "post": {
         "description": "",
         "responses": {
@@ -292,7 +264,7 @@
         }
       }
     },
-    "/contract/{id}": {
+    "/contracts/{id}": {
       "get": {
         "description": "",
         "parameters": [
@@ -338,7 +310,7 @@
         }
       }
     },
-    "/contract/odrl/{id}": {
+    "/contracts/odrl/{id}": {
       "get": {
         "description": "",
         "parameters": [
@@ -362,7 +334,7 @@
         }
       }
     },
-    "/contract/sign/{id}": {
+    "/contracts/sign/{id}": {
       "put": {
         "description": "",
         "parameters": [
@@ -383,7 +355,7 @@
         }
       }
     },
-    "/contract/sign/revoke/{id}/{did}": {
+    "/contracts/sign/revoke/{id}/{did}": {
       "delete": {
         "description": "",
         "parameters": [
@@ -410,7 +382,17 @@
         }
       }
     },
-    "/pap/policies": {
+    "/pap/policies/verify": {
+      "post": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/pap/policies/": {
       "post": {
         "description": "",
         "responses": {

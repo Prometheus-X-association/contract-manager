@@ -9,7 +9,7 @@ import BilateralContract from 'models/bilateral.model';
 import { config } from 'config/config';
 
 const SERVER_PORT = 9999;
-const API_ROUTE_BASE = '/bilateral/contract/';
+const API_ROUTE_BASE = '/bilaterals/';
 const _logObject = (data: any) => {
   console.log(`\x1b[90m${JSON.stringify(data, null, 2)}\x1b[37m`);
 };

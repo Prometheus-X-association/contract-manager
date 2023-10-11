@@ -8,7 +8,7 @@ import Contract from 'models/contract.model';
 import { config } from 'config/config';
 
 const SERVER_PORT = 9999;
-const API_ROUTE_BASE = '/contract/';
+const API_ROUTE_BASE = '/contracts/';
 const _logObject = (data: any) => {
   console.log(`\x1b[90m${JSON.stringify(data, null, 2)}\x1b[37m`);
 };
@@ -58,7 +58,7 @@ describe('Routes for Contract API', () => {
     };
     // Send a POST request to create the contract
     const response = await supertest(app.router)
-      .post('/contract')
+      .post(`${API_ROUTE_BASE}`)
       .set('Authorization', `Bearer ${authToken}`)
       .send(contractData);
     // log

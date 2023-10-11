@@ -8,7 +8,7 @@ import bilateralContractService from 'services/bilateral.service';
 import { config } from 'config/config';
 
 const SERVER_PORT = 9999;
-const API_ROUTE_BASE = '/bilateral/contract/';
+const API_ROUTE_BASE = '/bilaterals/';
 const _logObject = (data: any) => {
   console.log(`\x1b[90m${JSON.stringify(data, null, 2)}\x1b[37m`);
 };
@@ -127,7 +127,7 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
   // Test suite for the route to get all contracts
   describe('Routes for Contract API - GetAllContracts', () => {
     // Test case for getting all contracts without filters
-    //    /bilateral/contract/all/
+    //    /bilaterals/all/
     it('should return all contracts', async () => {
       const response = await supertest(app.router)
         .get(`${API_ROUTE_BASE}all/`)
@@ -145,8 +145,8 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
     });
 
     // Test case for getting contracts with a specific DID in participants
-    //    /bilateral/contract/for/participantFakeTokenDID or
-    //    /bilateral/contract/for/participantFakeTokenDID?isParticipant=true
+    //    /bilaterals/for/participantFakeTokenDID or
+    //    /bilaterals/for/participantFakeTokenDID?isParticipant=true
     it('should return contracts where DID is in participants', async () => {
       const did = didPartyA;
       const isParticipant = true;
@@ -165,7 +165,7 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
     });
 
     // Test case for getting contracts where DID in the same time in signatures and participants
-    //    /bilateral/contract/for/participantFakeTokenDID?hasSigned=true
+    //    /bilateral/for/participantFakeTokenDID?hasSigned=true
     it('should return contracts where DID in the same time in signatures and participants', async () => {
       const did = didPartyA;
       const hasSigned = true;
@@ -181,8 +181,8 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
     });
 
     // Test case for getting contracts where DID is not a participant nor in signatures
-    //    /bilateral/contract/for/participantFakeTokenDID?isParticipant=false ou
-    //    /bilateral/contract/for/participantFakeTokenDID?isParticipant=false&hasSigned=false
+    //    /bilaterals/for/participantFakeTokenDID?isParticipant=false ou
+    //    /bilaterals/for/participantFakeTokenDID?isParticipant=false&hasSigned=false
     it('should return contracts where DID is not a participant nor in signatures', async () => {
       const did = didPartyA;
       const isParticipant = false;
@@ -201,7 +201,7 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
     });
 
     // Test case for getting contracts where DID is in participants but not in signatures
-    //    /bilateral/contract/for/participantFakeTokenDID?isParticipant=true&hasSigned=false
+    //    /bilaterals/for/participantFakeTokenDID?isParticipant=true&hasSigned=false
     it('should return contracts where DID is in participants but not in signatures', async () => {
       const did = didPartyA;
       const isParticipant = true;
@@ -220,7 +220,7 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
     });
 
     // Test case for getting contracts where DID is not in signatures with hasSigned equal false
-    //    /bilateral/contract/for/participantFakeTokenDID?hasSigned=false
+    //    /bilaterals/for/participantFakeTokenDID?hasSigned=false
     it('should return contracts where DID is not in signatures with hasSigned equal false', async () => {
       const did = didPartyA;
       const hasSigned = false;
@@ -239,8 +239,8 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
     });
 
     // Test case for getting contracts where DID is in participants and in signatures
-    //    /bilateral/contract/for/participantFakeTokenDID?hasSigned=true ou
-    //    /bilateral/contract/for/participantFakeTokenDID?isParticipant=true&hasSigned=true
+    //    /bilaterals/for/participantFakeTokenDID?hasSigned=true ou
+    //    /bilaterals/for/participantFakeTokenDID?isParticipant=true&hasSigned=true
     it('should return contracts where DID is in participants and in signatures', async () => {
       const did = didPartyA;
       const isParticipant = true;

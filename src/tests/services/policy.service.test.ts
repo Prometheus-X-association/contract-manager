@@ -59,6 +59,26 @@ describe('genPolicies', () => {
     ];
     expect(result).to.deep.equal(expectedPolicies);
   });
+
+  it('Should verify if a policy is valid', () => {
+    const validPolicy = {
+      target: 'target',
+      action: 'action',
+      constraint: [
+        {
+          leftOperand: 'name',
+          operator: 'eq',
+          rightOperand: {
+            '@value': 'value',
+            '@type': 'type',
+          },
+        },
+      ],
+    };
+    const isValid = policyProviderService.verifyOdrlPolicy(validPolicy);
+    expect(isValid).to.be.true;
+  });
+
   /*
   // Ensure unsupported constraint types trigger a warning.
   it('should handle unsupported constraint types', () => {

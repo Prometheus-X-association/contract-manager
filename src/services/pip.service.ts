@@ -26,16 +26,17 @@ class PIPService {
       conditions: {},
     };
     // Temporary conditions
+    // Todo: To retrieve from user auth token
     policy.conditions =
       policy.subject === 'user'
         ? {
             task: urlSegments[2],
           }
-        : policy.subject === 'contract'
+        : policy.subject === 'contracts'
         ? {
             participant: 'admin',
           }
-        : policy.subject === 'bilateral'
+        : policy.subject === 'bilaterals'
         ? {
             participant: 'admin',
           }

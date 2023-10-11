@@ -10,26 +10,26 @@ const policySeedling: IAuthorisationPolicy[] = [
   },
   // Bilateral contrat default authorisation rules
   {
-    subject: 'bilateral',
+    subject: 'bilaterals',
     action: 'GET',
     conditions: {},
   },
   {
-    subject: 'bilateral',
+    subject: 'bilaterals',
     action: 'POST',
     conditions: {
       participant: 'admin',
     },
   },
   {
-    subject: 'bilateral',
+    subject: 'bilaterals',
     action: 'PUT',
     conditions: {
       participant: 'admin',
     },
   },
   {
-    subject: 'bilateral',
+    subject: 'bilaterals',
     action: 'DELETE',
     conditions: {
       participant: 'admin',
@@ -37,26 +37,26 @@ const policySeedling: IAuthorisationPolicy[] = [
   },
   // Contract default authorisation rules
   {
-    subject: 'contract',
+    subject: 'contracts',
     action: 'GET',
     conditions: {},
   },
   {
-    subject: 'contract',
+    subject: 'contracts',
     action: 'POST',
     conditions: {
       participant: 'admin',
     },
   },
   {
-    subject: 'contract',
+    subject: 'contracts',
     action: 'PUT',
     conditions: {
       participant: 'admin',
     },
   },
   {
-    subject: 'contract',
+    subject: 'contracts',
     action: 'DELETE',
     conditions: {
       participant: 'admin',

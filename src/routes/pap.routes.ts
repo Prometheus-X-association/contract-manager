@@ -5,14 +5,17 @@ import {
   getPolicy,
   updatePolicy,
   deletePolicy,
+  verifyOdrlPolicy,
 } from 'controllers/pap.controller';
 const router: Router = express.Router();
 
+router.post('/pap/policies/verify', verifyOdrlPolicy);
+
 // CRUD routes for policy managment
 // Create a new policy
-router.post('/pap/policies', createPolicy);
+router.post('/pap/policies/', createPolicy);
 // List all policies
-router.get('/pap/policies', listPolicies);
+router.get('/pap/policies/', listPolicies);
 // Get a policy by ID
 router.get('/pap/policies/:id', getPolicy);
 // Update a policy by ID
