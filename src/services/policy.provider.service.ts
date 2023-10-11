@@ -4,21 +4,24 @@ import Ajv, { ValidateFunction } from 'ajv';
 import { logger } from 'utils/logger';
 
 // temporary odrl policy schema to put in data base
-const OdrlPolicy = {
+const odrlPolicy = {
   type: 'object',
   properties: {
-    target: { type: 'string' },
-    action: { type: 'string' },
-    constraint: {
-      type: 'array',
-      items: {
-        type: 'object',
-        properties: {
-          leftOperand: { type: 'string' },
-          operator: { type: 'string' },
-          rightOperand: {
-            oneOf: [
-              {
+    '@context': { type: 'string' },
+    '@type': { type: 'string' },
+    permission: {
+      type: 'object',
+      properties: {
+        action: { type: 'string' },
+        target: { type: 'string' },
+        constraint: {
+          type: 'array',
+          items: {
+            type: 'object',
+            properties: {
+              leftOperand: { type: 'string' },
+              operator: { type: 'string' },
+              rightOperand: {
                 type: 'object',
                 properties: {
                   '@value': { type: 'string' },
@@ -26,14 +29,16 @@ const OdrlPolicy = {
                 },
                 required: ['@value', '@type'],
               },
-            ],
+            },
+            required: ['leftOperand', 'operator', 'rightOperand'],
           },
         },
-        required: ['leftOperand', 'operator', 'rightOperand'],
       },
+      required: ['action', 'target'],
+      additionalProperties: false,
     },
   },
-  required: ['target', 'action', 'constraint'],
+  required: ['@context', '@type', 'permission'],
   additionalProperties: false,
 };
 
@@ -61,7 +66,7 @@ export class PolicyProviderService {
     this.policies = [];
     this.policiesPromise = this.fetchAuthorisationPolicies();
     const ajv = new Ajv();
-    this.validate = ajv.compile(OdrlPolicy);
+    this.validate = ajv.compile(odrlPolicy);
   }
 
   public static getInstance(): PolicyProviderService {

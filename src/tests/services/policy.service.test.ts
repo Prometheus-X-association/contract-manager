@@ -62,18 +62,19 @@ describe('genPolicies', () => {
 
   it('Should verify if a policy is valid', () => {
     const validPolicy = {
-      target: 'target',
-      action: 'action',
-      constraint: [
-        {
-          leftOperand: 'name',
-          operator: 'eq',
-          rightOperand: {
-            '@value': 'value',
-            '@type': 'type',
+      '@context': 'https://www.w3.org/ns/odrl.jsonld',
+      '@type': 'Offer',
+      permission: {
+        action: 'use',
+        target: 'http://provider/service',
+        constraint: [
+          {
+            leftOperand: 'machineReadable',
+            operator: 'eq',
+            rightOperand: { '@value': 'true', '@type': 'xsd:boolean' },
           },
-        },
-      ],
+        ],
+      },
     };
     const isValid = policyProviderService.verifyOdrlPolicy(validPolicy);
     expect(isValid).to.be.true;
