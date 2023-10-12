@@ -133,6 +133,57 @@ const odrlSchemas = [
     required: ['@context', '@type', 'permission'],
     additionalProperties: false,
   },
+  {
+    type: 'object',
+    properties: {
+      '@context': { type: 'string' },
+      '@type': { type: 'string' },
+      uid: { type: 'string' },
+      profile: { type: 'string' },
+      permission: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            target: { type: 'string' },
+            assigner: { type: 'string' },
+            action: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  'rdf:value': { type: 'object' },
+                  refinement: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        leftOperand: { type: 'string' },
+                        operator: { type: 'string' },
+                        rightOperand: {
+                          anyOf: [{ type: 'string' }, { type: 'object' }],
+                        },
+                        unit: { type: 'string' },
+                      },
+                      required: [
+                        'leftOperand',
+                        'operator',
+                        'rightOperand',
+                        'unit',
+                      ],
+                    },
+                  },
+                },
+                required: ['rdf:value', 'refinement'],
+              },
+            },
+          },
+          required: ['target', 'assigner', 'action'],
+        },
+      },
+    },
+    required: ['@context', '@type', 'uid', 'profile', 'permission'],
+  },
 ];
 
 const operators: any = Object.freeze({

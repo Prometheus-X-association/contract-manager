@@ -2,13 +2,15 @@ import { expect } from 'chai';
 import { IAuthorisationPolicy } from 'interfaces/policy.interface';
 import policyProviderService from 'services/policy.provider.service';
 import sinon from 'sinon';
-import { logger } from 'utils/logger';
+// import { logger } from 'utils/logger';
 
-const warnSpy = sinon.spy(logger, 'warn');
-
+// const warnSpy = sinon.spy(logger, 'warn');
+const _logObject = (data: any) => {
+  console.log(`\x1b[90m${JSON.stringify(data, null, 2)}\x1b[37m`);
+};
 describe('genPolicies', () => {
   beforeEach(() => {
-    warnSpy.resetHistory();
+    // warnSpy.resetHistory();
   });
 
   // Ensure policies are generated correctly for valid permissions.
@@ -81,7 +83,7 @@ describe('genPolicies', () => {
   });
 
   it('Should verify if a policy with permissions sharing common constraint is valid', () => {
-    const validPolicyB = {
+    const validPolicy = {
       '@context': 'https://www.w3.org/ns/odrl.jsonld',
       '@type': 'Offer',
       permission: [
@@ -109,12 +111,12 @@ describe('genPolicies', () => {
         },
       ],
     };
-    const isValidB = policyProviderService.verifyOdrlPolicy(validPolicyB);
-    expect(isValidB).to.be.true;
+    const isValid = policyProviderService.verifyOdrlPolicy(validPolicy);
+    expect(isValid).to.be.true;
   });
 
   it('Should verify if a policy including more than one permission is valid', () => {
-    const validPolicyC = {
+    const validPolicy = {
       '@context': 'https://www.w3.org/ns/odrl.jsonld',
       '@type': 'Offer',
       permission: [
@@ -142,8 +144,38 @@ describe('genPolicies', () => {
         },
       ],
     };
-    const isValidC = policyProviderService.verifyOdrlPolicy(validPolicyC);
-    expect(isValidC).to.be.true;
+    const isValid = policyProviderService.verifyOdrlPolicy(validPolicy);
+    expect(isValid).to.be.true;
+  });
+
+  it('Should verify if a policy using "refinement" is valid', () => {
+    const validPolicy = {
+      '@context': 'http://www.w3.org/ns/odrl.jsonld',
+      '@type': 'Offer',
+      uid: 'http://example.com/policy:6161',
+      profile: 'http://example.com/odrl:profile:10',
+      permission: [
+        {
+          target: 'http://example.com/document:1234',
+          assigner: 'http://example.com/org:616',
+          action: [
+            {
+              'rdf:value': { '@id': 'odrl:print' },
+              refinement: [
+                {
+                  leftOperand: 'resolution',
+                  operator: 'lteq',
+                  rightOperand: { '@value': '1200', '@type': 'xsd:integer' },
+                  unit: 'http://dbpedia.org/resource/Dots_per_inch',
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    };
+    const isValid = policyProviderService.verifyOdrlPolicy(validPolicy);
+    expect(isValid).to.be.true;
   });
 
   /*

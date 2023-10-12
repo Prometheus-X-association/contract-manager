@@ -13,9 +13,6 @@ const API_ROUTE_BASE = '/bilaterals/';
 const _logObject = (data: any) => {
   console.log(`\x1b[90m${JSON.stringify(data, null, 2)}\x1b[37m`);
 };
-beforeEach(() => {
-  console.log('\n');
-});
 describe('Routes for Bilateral Contract API', () => {
   let server: any;
   let authToken: string;
