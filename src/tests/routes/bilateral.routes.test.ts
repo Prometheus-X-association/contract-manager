@@ -8,6 +8,7 @@ import bilateralContractService from 'services/bilateral.service';
 import BilateralContract from 'models/bilateral.model';
 import { config } from 'config/config';
 
+let authTokenCookie: any;
 const SERVER_PORT = 9999;
 const API_ROUTE_BASE = '/bilaterals/';
 const _logObject = (data: any) => {
@@ -27,6 +28,7 @@ describe('Routes for Bilateral Contract API', () => {
     await BilateralContract.deleteMany({});
     app.router.delete(`${API_ROUTE_BASE}:id`, deleteContract);
     const authResponse = await supertest(app.router).get('/user/login');
+    authTokenCookie = authResponse.headers['set-cookie'];
     expect(authResponse.status).to.equal(200);
     authToken = authResponse.body.token;
   });
@@ -58,6 +60,7 @@ describe('Routes for Bilateral Contract API', () => {
     // Send a POST request to create the contract
     const response = await supertest(app.router)
       .post(`${API_ROUTE_BASE}`)
+      .set('Cookie', authTokenCookie)
       .set('Authorization', `Bearer ${authToken}`)
       .send(contractData);
     //
@@ -75,6 +78,7 @@ describe('Routes for Bilateral Contract API', () => {
     // Send a GET request to retrieve the contract by its ID
     const response = await supertest(app.router)
       .get(`${API_ROUTE_BASE}${createdContractId}`)
+      .set('Cookie', authTokenCookie)
       .set('Authorization', `Bearer ${authToken}`);
     //
     _logObject(response.body);
@@ -92,6 +96,7 @@ describe('Routes for Bilateral Contract API', () => {
     // Send a PUT request to update the contract by its ID
     const response = await supertest(app.router)
       .put(`${API_ROUTE_BASE}${createdContractId}`)
+      .set('Cookie', authTokenCookie)
       .set('Authorization', `Bearer ${authToken}`)
       .send(updatedContractData);
     //
@@ -118,6 +123,7 @@ describe('Routes for Bilateral Contract API', () => {
     // Send a PUT request to sign the contract for party A the first time
     const responsePartyA1 = await supertest(app.router)
       .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
+      .set('Cookie', authTokenCookie)
       .set('Authorization', `Bearer ${authToken}`)
       .send(signatureDataPartyA1);
     //
@@ -135,6 +141,7 @@ describe('Routes for Bilateral Contract API', () => {
     // Send a PUT request to sign the contract for party A the second time
     const responsePartyA2 = await supertest(app.router)
       .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
+      .set('Cookie', authTokenCookie)
       .set('Authorization', `Bearer ${authToken}`)
       .send(signatureDataPartyA2);
     //
@@ -149,6 +156,7 @@ describe('Routes for Bilateral Contract API', () => {
     // Send a PUT request to sign the contract for party B
     const response = await supertest(app.router)
       .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
+      .set('Cookie', authTokenCookie)
       .set('Authorization', `Bearer ${authToken}`)
       .send(signatureDataPartyB);
     //
@@ -201,6 +209,7 @@ describe('Routes for Bilateral Contract API', () => {
     // Send a PUT request to sign the contract for party C
     const responsePartyC = await supertest(app.router)
       .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
+      .set('Cookie', authTokenCookie)
       .set('Authorization', `Bearer ${authToken}`)
       .send(signatureDataPartyC);
     //
@@ -222,6 +231,7 @@ describe('Routes for Bilateral Contract API', () => {
     // Revoke the signature for party B
     const response = await supertest(app.router)
       .delete(`${API_ROUTE_BASE}sign/revoke/${createdContractId}/${didPartyB}`)
+      .set('Cookie', authTokenCookie)
       .set('Authorization', `Bearer ${authToken}`);
     //
     _logObject(response.body);

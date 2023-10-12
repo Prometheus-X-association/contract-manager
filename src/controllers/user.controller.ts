@@ -5,6 +5,7 @@ import pipService from 'services/pip.service';
 export const logUser = (req: Request, res: Response) => {
   const user = req.body;
   const token = genToken(user);
+  res.cookie('authToken', token, { httpOnly: true });
   res.json({ token });
 };
 

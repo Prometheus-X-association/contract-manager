@@ -9,7 +9,10 @@ const MONGO_URL =
 const MONGO_TEST_URL =
   process.env.MONGO_TEST_URL || 'mongodb://127.0.0.1:27017/contract-test-cases';
 const SERVER_PORT = process.env.SERVER_PORT ? +process.env.SERVER_PORT : 3000;
-const SECRET_KEY = process.env.SECRET_KEY || 'a-secret-unsafe-default-key';
+const SECRET_AUTH_KEY =
+  process.env.SECRET_AUTH_KEY || 'an-unsafe-secret-default-secret-key';
+const SECRET_SESSION_KEY =
+  process.env.SECRET_SESSION_KEY || 'an-unsafe-session-default-secret-key';
 const CATALOG_API_URL = process.env.CATALOG_API_URL || '';
 export const config = {
   mongo: {
@@ -22,7 +25,10 @@ export const config = {
     port: SERVER_PORT,
   },
   auth: {
-    secret: SECRET_KEY,
+    secret: SECRET_AUTH_KEY,
+  },
+  session: {
+    secret: SECRET_SESSION_KEY,
   },
   contract: {},
   bilateralContract: {},

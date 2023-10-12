@@ -1,7 +1,6 @@
 import { config } from 'config/config';
 import { Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
-import pipService from 'services/pip.service';
 
 export interface AuthRequest extends Request {
   user?: any;
@@ -37,6 +36,7 @@ export const genToken = (user: any): string => {
   return token;
 };
 
+/*
 export const pip = (req: Request, res: Response, next: NextFunction) => {
   const userPolicies = pipService.getUserPolicyFromSession(req);
   if (!userPolicies) {
@@ -45,5 +45,6 @@ export const pip = (req: Request, res: Response, next: NextFunction) => {
   }
   next();
 };
+*/
 
 export default auth;

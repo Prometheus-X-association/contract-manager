@@ -8,10 +8,20 @@ import { logger } from 'utils/logger';
 // Policy Enforcement Point
 const pep = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const policy: IAuthorisationPolicy = pip.buildAuthenticationPolicy(req);
+    let userPolicies: IAuthorisationPolicy[] | undefined =
+      pip.getUserPolicyFromSession(req);
+
+    if (!userPolicies) {
+      const newUserPolicy: IAuthorisationPolicy[] =
+        pip.buildAuthenticationPolicy(req);
+      pip.setUserPolicyToSession(req, newUserPolicy);
+      userPolicies = newUserPolicy;
+    }
     const referencePolicy = await policyService.fetch();
     pdp.defineReferencePolicies(referencePolicy);
-    const isAuthorized = pdp.evalPolicy(policy);
+    const isAuthorized = userPolicies.every((policy) => {
+      return pdp.evalPolicy(policy);
+    });
     if (isAuthorized) {
       next();
     } else {

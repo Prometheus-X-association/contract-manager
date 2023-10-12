@@ -43,7 +43,7 @@ class PDPService {
     // Define the ability based on policies
     const ability = this.defineAbility(this.referencePolicies);
     // Check if the given policy has permission
-    console.log(JSON.stringify(policy, null, 2));
+    console.log('evalPolicy: ', JSON.stringify(policy, null, 2));
     const hasPermission = ability.can(policy.action, {
       constructor: {
         name: policy.subject,

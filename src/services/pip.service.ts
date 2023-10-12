@@ -26,7 +26,7 @@ export class PIPService {
     return PIPService.instance;
   }
 
-  public buildAuthenticationPolicy(req: Request): IAuthorisationPolicy {
+  public buildAuthenticationPolicy(req: Request): IAuthorisationPolicy[] {
     // Get URL segments to build the policy
     const urlSegments = req.url.split('/');
     // Create an authorization policy based on request information
@@ -51,8 +51,9 @@ export class PIPService {
             participant: 'admin',
           }
         : {};
+
     // Return the constructed authorization policy
-    return policy;
+    return [policy];
   }
 
   // Get user policies from the session
@@ -66,13 +67,13 @@ export class PIPService {
   // Set user policies to the session
   public setUserPolicyToSession(
     req: Request,
-    data: IAuthorisationPolicy,
+    data: IAuthorisationPolicy[],
   ): void {
     const session = (req as any).session as Session;
     if (!session) {
       throw new Error('Session is not available.');
     }
-    this.policies[session.id] = [data];
+    this.policies[session.id] = data;
   }
 
   /**
