@@ -1,6 +1,5 @@
 // Policy Administration Point
 import Policy from 'models/policy.model';
-import policyService from './policy.provider.service';
 import { IPolicy } from 'interfaces/policy.interface';
 import { IJSON } from 'interfaces/global.interface';
 
@@ -23,7 +22,6 @@ class PAPService {
     // Create a new policy
     const newPolicy = new Policy(data);
     const savedPolicy = await newPolicy.save();
-    policyService.add(savedPolicy);
     return savedPolicy;
   }
 
@@ -35,7 +33,6 @@ class PAPService {
     if (!updatedPolicy) {
       throw new Error('An error occurred while updating policy');
     }
-    policyService.update(id, updatedPolicy);
     return updatedPolicy;
   }
 
@@ -45,7 +42,6 @@ class PAPService {
     if (!deletedPolicy) {
       throw new Error('An error occurred while deleting policy');
     }
-    policyService.remove(id);
     return deletedPolicy;
   }
 }

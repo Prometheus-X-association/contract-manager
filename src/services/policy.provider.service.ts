@@ -202,12 +202,10 @@ const operators: any = Object.freeze({
  */
 export class PolicyProviderService {
   private static instance: PolicyProviderService;
-  private policies: IAuthorisationPolicy[];
   private policiesPromise: Promise<IAuthorisationPolicy[]>;
   private validateFunctions: Function[];
 
   private constructor() {
-    this.policies = [];
     this.policiesPromise = this.fetchAuthorisationPolicies();
     const ajv = new Ajv();
     this.validateFunctions = odrlSchemas.map((schema) => ajv.compile(schema));
@@ -247,7 +245,7 @@ export class PolicyProviderService {
     }
   }
 
-  // Generate policies based on permissions and constraint configuration.
+  // Generate internal policies based on permissions and constraint configuration.
   public genPolicies(permissions: any): IAuthorisationPolicy[] {
     const policies: IAuthorisationPolicy[] = [];
     // Iterate through each permission provided.
@@ -283,39 +281,6 @@ export class PolicyProviderService {
     }
     // Return the generated policies.
     return policies;
-  }
-
-  // Add a new policy to the policy list
-  public add(data: any): void {
-    this.policies.push(data);
-  }
-
-  // Update an existing policy in the policy list by dbId
-  public update(id: string, data: any): void {
-    // Find the policy in the list based on its ID
-    const index = this.policies.findIndex((policy: IAuthorisationPolicy) => {
-      // Todo
-      return false;
-      // return policy.dbId === id;
-    });
-    if (index !== -1) {
-      // Update the policy in the list
-      this.policies[index] = data;
-    }
-  }
-
-  // Remove a policy from the policy list by dbId
-  public remove(id: string): void {
-    // Find the policy in the list based on its dbId
-    const index = this.policies.findIndex((policy: IAuthorisationPolicy) => {
-      // Todo
-      return false;
-      // return policy.dbId === id;
-    });
-    if (index !== -1) {
-      // Remove the policy from the list
-      this.policies.splice(index, 1);
-    }
   }
 
   // Fetch all policies from the policy list

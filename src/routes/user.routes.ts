@@ -1,9 +1,10 @@
 import express, { Router } from 'express';
-import { logUser } from '../controllers/user.controller';
+import { addPolicies, logUser } from '../controllers/user.controller';
 
 const router: Router = express.Router();
 
 //
 router.get('/user/login', logUser);
+router.post('/user/policies', addPolicies);
 
 export default router;

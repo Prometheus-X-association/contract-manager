@@ -5,7 +5,7 @@ import contractRoutes from 'routes/contract.routes';
 import bilateralContractRoutes from 'routes/bilateral.routes';
 import userRoutes from 'routes/user.routes';
 import papRoutes from 'routes/pap.routes';
-import auth from 'middlewares/auth.middleware';
+import auth, { pip } from 'middlewares/auth.middleware';
 import pep from 'middlewares/pep.middlewares';
 import { logger } from 'utils/logger';
 import swaggerUi from 'swagger-ui-express';
@@ -47,6 +47,8 @@ const startServer = async (url: string) => {
   });
   // swagger
   router.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerJson));
+  // pip middleware
+  router.use(pip);
   // Policy enforcement point
   router.use(pep);
   router.use((req, res, next) => {
