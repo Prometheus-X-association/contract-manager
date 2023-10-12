@@ -31,7 +31,8 @@ export class BilateralContractService {
 
   private async getContractModel(): Promise<IDataRegistry[]> {
     try {
-      const dataRegistry: IDataRegistryDB | null = await DataRegistry.findOne();
+      const dataRegistry: IDataRegistryDB | null =
+        await DataRegistry.findOne().select('contracts.bilateral');
       if (dataRegistry) {
         const contractModel = dataRegistry.contracts?.bilateral;
         if (contractModel) {

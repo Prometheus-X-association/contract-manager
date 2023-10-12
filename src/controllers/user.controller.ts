@@ -8,15 +8,19 @@ export const logUser = (req: Request, res: Response) => {
   res.json({ token });
 };
 
-export const addPolicies = (req: Request, res: Response) => {
+export const addPolicies = async (req: Request, res: Response) => {
   const newPolicies = req.body.policies;
-  const invalidPolicies = pipService.addPolicies(req, newPolicies);
-  if (invalidPolicies.length === 0) {
-    res.status(200).json({ message: 'New policies injected successfully.' });
-  } else {
-    res.status(400).json({
-      message: 'The following policies are not valid:',
-      invalidPolicies,
-    });
+  try {
+    const invalidPolicies = await pipService.addPolicies(req, newPolicies);
+    if (invalidPolicies.length === 0) {
+      res.status(200).json({ message: 'New policies injected successfully.' });
+    } else {
+      res.status(400).json({
+        message: 'The following policies are not valid:',
+        invalidPolicies,
+      });
+    }
+  } catch (error) {
+    res.status(500).json({ message: 'Internal Server Error' });
   }
 };

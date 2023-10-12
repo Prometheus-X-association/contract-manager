@@ -27,7 +27,8 @@ export class ContractService {
 
   private async getContractModel(): Promise<IDataRegistry[]> {
     try {
-      const dataRegistry: IDataRegistryDB | null = await DataRegistry.findOne();
+      const dataRegistry: IDataRegistryDB | null =
+        await DataRegistry.findOne().select('contracts.ecosystem');
       if (dataRegistry) {
         const contractModel = dataRegistry.contracts?.ecosystem;
         if (contractModel) {

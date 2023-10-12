@@ -1,16 +1,29 @@
 import { expect } from 'chai';
 import { IAuthorisationPolicy } from 'interfaces/policy.interface';
 import policyProviderService from 'services/policy.provider.service';
-import sinon from 'sinon';
-// import { logger } from 'utils/logger';
+import app from 'server';
+import { config } from 'config/config';
 
-// const warnSpy = sinon.spy(logger, 'warn');
+const SERVER_PORT = 9999;
 const _logObject = (data: any) => {
   console.log(`\x1b[90m${JSON.stringify(data, null, 2)}\x1b[37m`);
 };
 describe('genPolicies', () => {
-  beforeEach(() => {
-    // warnSpy.resetHistory();
+  let server: any;
+  before(async () => {
+    server = await app.startServer(config.mongo.testUrl);
+    await new Promise((resolve) => {
+      server.listen(SERVER_PORT, () => {
+        console.log(`Test server is running on port ${SERVER_PORT}`);
+        resolve(true);
+      });
+    });
+  });
+
+  after(async () => {
+    // Stop the test server
+    server.close();
+    console.log('Test server stopped.');
   });
 
   // Ensure policies are generated correctly for valid permissions.
@@ -62,7 +75,7 @@ describe('genPolicies', () => {
     expect(result).to.deep.equal(expectedPolicies);
   });
 
-  it('Should verify if a policy is valid', () => {
+  it('Should verify if a policy is valid', async () => {
     const validPolicy = {
       '@context': 'https://www.w3.org/ns/odrl.jsonld',
       '@type': 'Offer',
@@ -78,11 +91,11 @@ describe('genPolicies', () => {
         ],
       },
     };
-    const isValid = policyProviderService.verifyOdrlPolicy(validPolicy);
+    const isValid = await policyProviderService.verifyOdrlPolicy(validPolicy);
     expect(isValid).to.be.true;
   });
 
-  it('Should verify if a policy with permissions sharing common constraint is valid', () => {
+  it('Should verify if a policy with permissions sharing common constraint is valid', async () => {
     const validPolicy = {
       '@context': 'https://www.w3.org/ns/odrl.jsonld',
       '@type': 'Offer',
@@ -111,11 +124,11 @@ describe('genPolicies', () => {
         },
       ],
     };
-    const isValid = policyProviderService.verifyOdrlPolicy(validPolicy);
+    const isValid = await policyProviderService.verifyOdrlPolicy(validPolicy);
     expect(isValid).to.be.true;
   });
 
-  it('Should verify if a policy including more than one permission is valid', () => {
+  it('Should verify if a policy including more than one permission is valid', async () => {
     const validPolicy = {
       '@context': 'https://www.w3.org/ns/odrl.jsonld',
       '@type': 'Offer',
@@ -144,11 +157,11 @@ describe('genPolicies', () => {
         },
       ],
     };
-    const isValid = policyProviderService.verifyOdrlPolicy(validPolicy);
+    const isValid = await policyProviderService.verifyOdrlPolicy(validPolicy);
     expect(isValid).to.be.true;
   });
 
-  it('Should verify if a policy using "refinement" is valid', () => {
+  it('Should verify if a policy using "refinement" is valid', async () => {
     const validPolicy = {
       '@context': 'http://www.w3.org/ns/odrl.jsonld',
       '@type': 'Offer',
@@ -174,7 +187,7 @@ describe('genPolicies', () => {
         },
       ],
     };
-    const isValid = policyProviderService.verifyOdrlPolicy(validPolicy);
+    const isValid = await policyProviderService.verifyOdrlPolicy(validPolicy);
     expect(isValid).to.be.true;
   });
 

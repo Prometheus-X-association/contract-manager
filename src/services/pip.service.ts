@@ -94,14 +94,15 @@ export class PIPService {
    * The policies are added to the user's context only if they are valid,
    * based on the verification provided by the policyProviderService.
    */
-  public addPolicies(req: Request, policies: any[]): any[] {
+  public async addPolicies(req: Request, policies: any[]): Promise<any[]> {
     const session = (req as any).session as Session;
     if (!session) {
       throw new Error('Session is not available.');
     }
     const invalidPolicies: any[] = [];
-    policies.forEach((policy: any) => {
-      if (policyProviderService.verifyOdrlPolicy(policy)) {
+    for (const policy of policies) {
+      const verify = await policyProviderService.verifyOdrlPolicy(policy);
+      if (verify) {
         if (!this.policies[session.id]) {
           this.policies[session.id] = [];
         }
@@ -110,7 +111,7 @@ export class PIPService {
       } else {
         invalidPolicies.push(policy);
       }
-    });
+    }
     return invalidPolicies;
   }
 

@@ -9,12 +9,13 @@ import policyProviderService from 'services/policy.provider.service';
  * @param {Request} req - The Express Request object.
  * @param {Response} res - The Express Response object.
  */
-export const verifyOdrlPolicy = (req: Request, res: Response) => {
+export const verifyOdrlPolicy = async (req: Request, res: Response) => {
   // Extract the ODRL policy from the request body
   const odrlPolicy = req.body;
   try {
     // Verify the ODRL policy using the policyProviderService
-    const isValid: boolean = policyProviderService.verifyOdrlPolicy(odrlPolicy);
+    const isValid: boolean =
+      await policyProviderService.verifyOdrlPolicy(odrlPolicy);
     // Respond with a success message if the policy is valid
     if (isValid) {
       return res.json({

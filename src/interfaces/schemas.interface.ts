@@ -568,6 +568,18 @@ export type DataRegistryContract = {
 };
 
 /**
+ * Lean version of DataRegistryPolicieDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `DataRegistryDocument.toObject()`.
+ * ```
+ * const dataregistryObject = dataregistry.toObject();
+ * ```
+ */
+export type DataRegistryPolicie = {
+  odrlValidationSchema?: string;
+};
+
+/**
  * Lean version of DataRegistryDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `DataRegistryDocument.toObject()`. To avoid conflicts with model names, use the type alias `DataRegistryObject`.
@@ -576,7 +588,8 @@ export type DataRegistryContract = {
  * ```
  */
 export type DataRegistry = {
-  contracts: DataRegistryContract;
+  contracts?: DataRegistryContract;
+  policies?: DataRegistryPolicie;
   _id: mongoose.Types.ObjectId;
 };
 
@@ -667,12 +680,26 @@ export type DataRegistryContractDocument =
  * const DataRegistry = mongoose.model<DataRegistryDocument, DataRegistryModel>("DataRegistry", DataRegistrySchema);
  * ```
  */
+export type DataRegistryPolicieDocument =
+  mongoose.Document<mongoose.Types.ObjectId> & {
+    odrlValidationSchema?: string;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const DataRegistry = mongoose.model<DataRegistryDocument, DataRegistryModel>("DataRegistry", DataRegistrySchema);
+ * ```
+ */
 export type DataRegistryDocument = mongoose.Document<
   mongoose.Types.ObjectId,
   DataRegistryQueries
 > &
   DataRegistryMethods & {
-    contracts: DataRegistryContractDocument;
+    contracts?: DataRegistryContractDocument;
+    policies?: DataRegistryPolicieDocument;
     _id: mongoose.Types.ObjectId;
   };
 

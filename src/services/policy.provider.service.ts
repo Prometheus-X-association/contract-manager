@@ -2,190 +2,10 @@ import { IAuthorisationPolicy } from 'interfaces/policy.interface';
 import PolicyReferenceRegistry from 'models/policy.registry.model';
 import Ajv from 'ajv';
 import { logger } from 'utils/logger';
+import { IDataRegistry, IDataRegistryDB } from 'interfaces/global.interface';
+import DataRegistry from 'models/data.registry.model';
 
 // temporary odrl policy schema to put in data base
-const odrlSchemas = [
-  {
-    type: 'object',
-    properties: {
-      '@context': { type: 'string' },
-      '@type': { type: 'string' },
-      permission: {
-        type: 'object',
-        properties: {
-          action: { type: 'string' },
-          target: { type: 'string' },
-          constraint: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                leftOperand: { type: 'string' },
-                operator: { type: 'string' },
-                rightOperand: {
-                  type: 'object',
-                  properties: {
-                    '@value': { type: 'string' },
-                    '@type': { type: 'string' },
-                  },
-                  required: ['@value', '@type'],
-                },
-              },
-              required: ['leftOperand', 'operator', 'rightOperand'],
-            },
-          },
-        },
-        required: ['action', 'target', 'constraint'],
-        additionalProperties: false,
-      },
-    },
-    required: ['@context', '@type', 'permission'],
-    additionalProperties: false,
-  },
-  {
-    type: 'object',
-    properties: {
-      '@context': { type: 'string' },
-      '@type': { type: 'string' },
-      permission: {
-        type: 'array',
-        items: {
-          type: 'object',
-          properties: {
-            action: { type: 'string' },
-            target: { type: 'string' },
-            profile: { type: 'string' },
-          },
-          required: ['action', 'target', 'profile'],
-          additionalProperties: false,
-        },
-      },
-      constraint: {
-        type: 'array',
-        items: {
-          type: 'object',
-          properties: {
-            profile: { type: 'string' },
-            constraints: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  leftOperand: { type: 'string' },
-                  operator: { type: 'string' },
-                  rightOperand: {
-                    type: 'object',
-                    properties: {
-                      '@value': { type: 'string' },
-                      '@type': { type: 'string' },
-                    },
-                    required: ['@value', '@type'],
-                  },
-                },
-                required: ['leftOperand', 'operator', 'rightOperand'],
-              },
-            },
-          },
-          required: ['profile', 'constraints'],
-          additionalProperties: false,
-        },
-      },
-    },
-    required: ['@context', '@type', 'permission'],
-    additionalProperties: false,
-  },
-  {
-    type: 'object',
-    properties: {
-      '@context': { type: 'string' },
-      '@type': { type: 'string' },
-      permission: {
-        type: 'array',
-        items: {
-          type: 'object',
-          properties: {
-            action: { type: 'string' },
-            target: { type: 'string' },
-            constraint: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  leftOperand: { type: 'string' },
-                  operator: { type: 'string' },
-                  rightOperand: {
-                    type: 'object',
-                    properties: {
-                      '@value': { type: 'string' },
-                      '@type': { type: 'string' },
-                    },
-                    required: ['@value', '@type'],
-                  },
-                },
-                required: ['leftOperand', 'operator', 'rightOperand'],
-              },
-            },
-          },
-          required: ['action', 'target', 'constraint'],
-        },
-      },
-    },
-    required: ['@context', '@type', 'permission'],
-    additionalProperties: false,
-  },
-  {
-    type: 'object',
-    properties: {
-      '@context': { type: 'string' },
-      '@type': { type: 'string' },
-      uid: { type: 'string' },
-      profile: { type: 'string' },
-      permission: {
-        type: 'array',
-        items: {
-          type: 'object',
-          properties: {
-            target: { type: 'string' },
-            assigner: { type: 'string' },
-            action: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  'rdf:value': { type: 'object' },
-                  refinement: {
-                    type: 'array',
-                    items: {
-                      type: 'object',
-                      properties: {
-                        leftOperand: { type: 'string' },
-                        operator: { type: 'string' },
-                        rightOperand: {
-                          anyOf: [{ type: 'string' }, { type: 'object' }],
-                        },
-                        unit: { type: 'string' },
-                      },
-                      required: [
-                        'leftOperand',
-                        'operator',
-                        'rightOperand',
-                        'unit',
-                      ],
-                    },
-                  },
-                },
-                required: ['rdf:value', 'refinement'],
-              },
-            },
-          },
-          required: ['target', 'assigner', 'action'],
-        },
-      },
-    },
-    required: ['@context', '@type', 'uid', 'profile', 'permission'],
-  },
-];
-
 const operators: any = Object.freeze({
   eq: '$eq',
   lt: '$lt',
@@ -204,11 +24,12 @@ export class PolicyProviderService {
   private static instance: PolicyProviderService;
   private policiesPromise: Promise<IAuthorisationPolicy[]>;
   private validateFunctions: Function[];
+  private odrlValidationSchemaPromise: Promise<IDataRegistry[]>;
 
   private constructor() {
     this.policiesPromise = this.fetchAuthorisationPolicies();
-    const ajv = new Ajv();
-    this.validateFunctions = odrlSchemas.map((schema) => ajv.compile(schema));
+    this.odrlValidationSchemaPromise = this.getOdrlValidationSchema();
+    this.validateFunctions = [];
   }
 
   public static getInstance(): PolicyProviderService {
@@ -218,13 +39,48 @@ export class PolicyProviderService {
     return PolicyProviderService.instance;
   }
 
+  private async getOdrlValidationSchema(): Promise<IDataRegistry[]> {
+    try {
+      const dataRegistry: IDataRegistryDB | null =
+        await DataRegistry.findOne().select('policies.odrlValidationSchema');
+      if (dataRegistry) {
+        const odrlValidationSchema =
+          dataRegistry.policies?.odrlValidationSchema;
+        if (odrlValidationSchema) {
+          return JSON.parse(odrlValidationSchema);
+        } else {
+          throw new Error('No odrl validation schema found in database');
+        }
+      } else {
+        throw new Error(
+          '[PProvider/Service, getOdrlValidationSchema]: Something went wrong while fetching data from registry',
+        );
+      }
+    } catch (error: any) {
+      console.log(error);
+      logger.error(error.message);
+      throw error;
+    }
+  }
+
+  private async initializeValidateFunctions(): Promise<void> {
+    const odrlSchemas = await this.odrlValidationSchemaPromise;
+    const ajv = new Ajv();
+    this.validateFunctions = odrlSchemas.map((schema: any) =>
+      ajv.compile(schema),
+    );
+  }
+
   /**
    * Verifies the validity of an ODRL policy.
    *
    * @param {any} policy - The ODRL policy to verify.
    * @returns {boolean} True if the policy is valid, otherwise false.
    */
-  public verifyOdrlPolicy(policy: any): boolean {
+  public async verifyOdrlPolicy(policy: any): Promise<boolean> {
+    if (this.validateFunctions.length === 0) {
+      await this.initializeValidateFunctions();
+    }
     return this.validateFunctions.some((validateFunction) =>
       validateFunction(policy),
     );
