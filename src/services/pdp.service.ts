@@ -42,17 +42,13 @@ class PDPService {
   }
 
   public defineReferencePolicies(policies: IAuthorisationPolicy[]): void {
-    //
     this.referencePolicies = policies;
     this.authorisationAbility = this.defineAbility(this.referencePolicies);
   }
 
   public evalPolicy(policy: IAuthorisationPolicy): boolean {
-    // Define the ability based on policies
-    // const ability = this.defineAbility(this.referencePolicies);
-
     // Check if the given policy has permission
-    console.log('evalPolicy: ', JSON.stringify(policy, null, 2));
+    // console.log('evalPolicy: ', JSON.stringify(policy, null, 2));
     const hasPermission = this.authorisationAbility.can(policy.action, {
       constructor: {
         name: policy.subject,

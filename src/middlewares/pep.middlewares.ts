@@ -24,9 +24,11 @@ const pep = async (req: Request, res: Response, next: NextFunction) => {
     const referencePolicy = await policyService.fetch();
     pdp.defineReferencePolicies(referencePolicy);
     // Check authorization against all user policies
-    const isAuthorized = filteredUserPolicies.every((policy) => {
-      return pdp.evalPolicy(policy);
-    });
+    const isAuthorized =
+      filteredUserPolicies.length &&
+      filteredUserPolicies.every((policy) => {
+        return pdp.evalPolicy(policy);
+      });
     // Proceed to the next middleware if authorized; otherwise, respond with a 403 error
     if (isAuthorized) {
       next();

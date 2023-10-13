@@ -2,6 +2,7 @@ import { PDPAction, IAuthorisationPolicy } from 'interfaces/policy.interface';
 import { Request } from 'express';
 import session, { Session } from 'express-session';
 import policyProviderService from 'services/policy.provider.service';
+// import { urlToOriginal } from 'utils/utils';
 
 /**
  * ServicePIP is responsible for managing contextual policies related to the user, etc.
@@ -26,14 +27,63 @@ export class PIPService {
     return PIPService.instance;
   }
 
-  // Todo: build Authentication policy from user auth token
+  // Todo: Build authentication policies based on user authentication
   public buildAuthenticationPolicy(req: Request): IAuthorisationPolicy[] {
     // Temporary user policies
     return [
+      // Bilateral contrat default authorisation rules
       {
-        subject: '/bilateral',
+        subject: '/bilaterals',
         action: 'GET',
         conditions: {},
+      },
+      {
+        subject: '/bilaterals',
+        action: 'POST',
+        conditions: {
+          participant: 'admin',
+        },
+      },
+      {
+        subject: '/bilaterals',
+        action: 'PUT',
+        conditions: {
+          participant: 'admin',
+        },
+      },
+      {
+        subject: '/bilaterals',
+        action: 'DELETE',
+        conditions: {
+          participant: 'admin',
+        },
+      },
+      // Contract default authorisation rules
+      {
+        subject: '/contracts',
+        action: 'GET',
+        conditions: {},
+      },
+      {
+        subject: '/contracts',
+        action: 'POST',
+        conditions: {
+          participant: 'admin',
+        },
+      },
+      {
+        subject: '/contracts',
+        action: 'PUT',
+        conditions: {
+          participant: 'admin',
+        },
+      },
+      {
+        subject: '/contracts',
+        action: 'DELETE',
+        conditions: {
+          participant: 'admin',
+        },
       },
     ];
   }
@@ -44,47 +94,19 @@ export class PIPService {
   ): IAuthorisationPolicy[] {
     // Filter the user policies to include only those relevant to the current target resource URL.
     // Retains policies where the 'subject' property matches the base URL of the current request.
-    const baseUrl = req.baseUrl.replace(/\/:[^/]+/g, '');
+
+    /*
+    const original = urlToOriginal(req.baseUrl + req.path, req.params);
+    const subject = original.replace(/\/$/g, '');
+    */
+    const subject = `/${req.originalUrl.replace(/\/$/, '').split('/')[1]}`;
     return policies.filter((policy) => {
       return (
-        policy.subject === baseUrl &&
+        policy.subject === subject &&
         policy.action.toLowerCase() === (req.method as PDPAction).toLowerCase()
       );
     });
   }
-
-  /*
-  public getCurrentRoutePolicy(req: Request): IAuthorisationPolicy[] {
-    
-    // Get URL segments to build the policy
-    const urlSegments = req.url.split('/');
-    // Create an authorization policy based on request information
-    const policy: IAuthorisationPolicy = {
-      subject: urlSegments[1],
-      action: req.method as PDPAction,
-      conditions: {},
-    };
-    // Temporary conditions
-    // Todo: To retrieve from user auth token
-    policy.conditions =
-      policy.subject === 'user'
-        ? {
-            task: urlSegments[2],
-          }
-        : policy.subject === 'contracts'
-        ? {
-            participant: 'admin',
-          }
-        : policy.subject === 'bilaterals'
-        ? {
-            participant: 'admin',
-          }
-        : {};
-
-    // Return the constructed authorization policy
-    return [policy];
-  }
-  */
 
   // Get user policies from the session
   public getUserPolicyFromSession(

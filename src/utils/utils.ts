@@ -1,6 +1,18 @@
 import * as fs from 'fs';
 import * as path from 'path';
 
+export const urlToOriginal = (
+  url: string,
+  params: Record<string, any>,
+): string => {
+  let formattedUrl = url;
+  Object.entries(params).forEach(([key, value]) => {
+    const regex = new RegExp(`${value}(\\/|$)`, 'g');
+    formattedUrl = formattedUrl.replace(regex, `:${key}$1`);
+  });
+  return formattedUrl;
+};
+
 export const loadJsonFromFile = (jsonPath: string) => {
   try {
     // Read the contract model configuration file
