@@ -8,20 +8,26 @@ import { logger } from 'utils/logger';
 // Policy Enforcement Point
 const pep = async (req: Request, res: Response, next: NextFunction) => {
   try {
+    // Build user context policies
     let userPolicies: IAuthorisationPolicy[] | undefined =
       pip.getUserPolicyFromSession(req);
-
+    // If no user policies exist, create and set them
     if (!userPolicies) {
       const newUserPolicy: IAuthorisationPolicy[] =
         pip.buildAuthenticationPolicy(req);
       pip.setUserPolicyToSession(req, newUserPolicy);
       userPolicies = newUserPolicy;
     }
+    // Filter user policies based on the current request
+    const filteredUserPolicies = pip.filterUserPolicies(req, userPolicies);
+    // Set reference policies
     const referencePolicy = await policyService.fetch();
     pdp.defineReferencePolicies(referencePolicy);
-    const isAuthorized = userPolicies.every((policy) => {
+    // Check authorization against all user policies
+    const isAuthorized = filteredUserPolicies.every((policy) => {
       return pdp.evalPolicy(policy);
     });
+    // Proceed to the next middleware if authorized; otherwise, respond with a 403 error
     if (isAuthorized) {
       next();
     } else {
@@ -30,6 +36,7 @@ const pep = async (req: Request, res: Response, next: NextFunction) => {
         .json({ error: 'Unauthorized. Security policies not met.' });
     }
   } catch (error) {
+    // Handle internal server error
     logger.error(error);
     res.status(500).json({ error: 'Internal Server Error' });
   }

@@ -49,7 +49,9 @@ const startServer = async (url: string) => {
   });
   // swagger
   router.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerJson));
-
+  router.get('/is-it-alive', (req, res, next) => {
+    res.json({ message: 'yes it is!' });
+  });
   router.use(
     session({
       secret: config.session.secret,
@@ -58,6 +60,7 @@ const startServer = async (url: string) => {
       cookie: { secure: false },
     }),
   );
+  router.use('/', userRoutes);
   // Policy enforcement point
   router.use(pep);
   router.use((req, res, next) => {
@@ -69,10 +72,6 @@ const startServer = async (url: string) => {
     next();
   });
   // Routes
-  router.use('/', userRoutes);
-  router.get('/is-it-alive', (req, res, next) => {
-    res.json({ message: 'yes it is!' });
-  });
   router.use('/', auth, contractRoutes, bilateralContractRoutes, papRoutes);
   router.use((req, res, next) => {
     const message = 'Not found!';

@@ -22,29 +22,38 @@ const lambdaMatcher = (matchConditions: MatchConditions) => {
 class PDPService {
   private static instance: PDPService;
   private referencePolicies: IAuthorisationPolicy[] = [];
+  private authorisationAbility: Ability;
 
   private constructor() {
     // Initialize the singleton instance
+    const { can, build } = this.getBuilder();
+    this.authorisationAbility = build();
   }
 
-  static getInstance(): PDPService {
+  private getBuilder(): AbilityBuilder<Ability> {
+    return new AbilityBuilder<Ability>(PureAbility);
+  }
+
+  public static getInstance(): PDPService {
     if (!PDPService.instance) {
       PDPService.instance = new PDPService();
     }
     return PDPService.instance;
   }
 
-  defineReferencePolicies(policies: IAuthorisationPolicy[]): void {
+  public defineReferencePolicies(policies: IAuthorisationPolicy[]): void {
     //
     this.referencePolicies = policies;
+    this.authorisationAbility = this.defineAbility(this.referencePolicies);
   }
 
-  evalPolicy(policy: IAuthorisationPolicy): boolean {
+  public evalPolicy(policy: IAuthorisationPolicy): boolean {
     // Define the ability based on policies
-    const ability = this.defineAbility(this.referencePolicies);
+    // const ability = this.defineAbility(this.referencePolicies);
+
     // Check if the given policy has permission
     console.log('evalPolicy: ', JSON.stringify(policy, null, 2));
-    const hasPermission = ability.can(policy.action, {
+    const hasPermission = this.authorisationAbility.can(policy.action, {
       constructor: {
         name: policy.subject,
       },
@@ -55,7 +64,7 @@ class PDPService {
 
   private defineAbility(policies: IAuthorisationPolicy[]): Ability {
     // Create an AbilityBuilder instance
-    const { can: allow, build } = new AbilityBuilder<Ability>(PureAbility);
+    const { can: allow, build } = this.getBuilder();
     // Define permissions based on policies
     policies.forEach((item: IAuthorisationPolicy) => {
       const matchConditions = mongoQueryMatcher(item.conditions);

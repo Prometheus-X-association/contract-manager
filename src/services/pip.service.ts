@@ -26,7 +26,36 @@ export class PIPService {
     return PIPService.instance;
   }
 
+  // Todo: build Authentication policy from user auth token
   public buildAuthenticationPolicy(req: Request): IAuthorisationPolicy[] {
+    // Temporary user policies
+    return [
+      {
+        subject: '/bilateral',
+        action: 'GET',
+        conditions: {},
+      },
+    ];
+  }
+
+  public filterUserPolicies(
+    req: Request,
+    policies: IAuthorisationPolicy[],
+  ): IAuthorisationPolicy[] {
+    // Filter the user policies to include only those relevant to the current target resource URL.
+    // Retains policies where the 'subject' property matches the base URL of the current request.
+    const baseUrl = req.baseUrl.replace(/\/:[^/]+/g, '');
+    return policies.filter((policy) => {
+      return (
+        policy.subject === baseUrl &&
+        policy.action.toLowerCase() === (req.method as PDPAction).toLowerCase()
+      );
+    });
+  }
+
+  /*
+  public getCurrentRoutePolicy(req: Request): IAuthorisationPolicy[] {
+    
     // Get URL segments to build the policy
     const urlSegments = req.url.split('/');
     // Create an authorization policy based on request information
@@ -55,6 +84,7 @@ export class PIPService {
     // Return the constructed authorization policy
     return [policy];
   }
+  */
 
   // Get user policies from the session
   public getUserPolicyFromSession(

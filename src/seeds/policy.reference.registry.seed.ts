@@ -4,7 +4,7 @@ import { IAuthorisationPolicy } from 'interfaces/policy.interface';
 const policySeedling: IAuthorisationPolicy[] = [
   // Temporary default static policies for testing
   {
-    subject: 'is-it-alive',
+    subject: '/is-it-alive',
     action: 'GET',
     conditions: {},
   },
