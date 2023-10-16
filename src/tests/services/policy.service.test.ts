@@ -59,7 +59,7 @@ describe('genPolicies', () => {
       policyProviderService.genPolicies(permissions);
     const expectedPolicies: IAuthorisationPolicy[] = [
       {
-        subject: 'Offer',
+        subject: 'http://example.com/data/resource-2',
         action: 'write',
         conditions: {
           scope: {
@@ -154,6 +154,54 @@ describe('genPolicies', () => {
               rightOperand: { '@value': 'true', '@type': 'xsd:boolean' },
             },
           ],
+        },
+      ],
+    };
+    const isValid = await policyProviderService.verifyOdrlPolicy(validPolicy);
+    expect(isValid).to.be.true;
+  });
+
+  it('Should verify if a policy with multiple "prohibition" is valid', async () => {
+    const validPolicy = {
+      '@context': 'http://www.w3.org/ns/odrl.jsonld',
+      '@type': 'Agreement',
+      prohibition: [
+        {
+          target: 'http://example.com/photoAlbum:54',
+          action: 'archive',
+          assigner: 'http://example.com/MyPix:54',
+          assignee: 'http://example.com/assignee:54',
+        },
+        {
+          target: 'http://example.com/photoAlbum:55',
+          action: 'archive',
+          assigner: 'http://example.com/MyPix:55',
+          assignee: 'http://example.com/assignee:55',
+        },
+      ],
+    };
+    const isValid = await policyProviderService.verifyOdrlPolicy(validPolicy);
+    expect(isValid).to.be.true;
+  });
+
+  it('Should verify if a policy with "prohibition" and "permission" is valid', async () => {
+    const validPolicy = {
+      '@context': 'http://www.w3.org/ns/odrl.jsonld',
+      '@type': 'Agreement',
+      permission: [
+        {
+          target: 'http://example.com/photoAlbum:55',
+          action: 'display',
+          assigner: 'http://example.com/MyPix:55',
+          assignee: 'http://example.com/assignee:55',
+        },
+      ],
+      prohibition: [
+        {
+          target: 'http://example.com/photoAlbum:55',
+          action: 'archive',
+          assigner: 'http://example.com/MyPix:55',
+          assignee: 'http://example.com/assignee:55',
         },
       ],
     };

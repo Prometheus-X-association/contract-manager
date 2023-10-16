@@ -119,7 +119,9 @@ const ecoSystemModelSeedling: any = {
   spiCat: '',
 };
 
+// ODRL Validtaion Schemas
 const odrlValidationSchema = [
+  // Permission as Object
   {
     type: 'object',
     properties: {
@@ -157,6 +159,129 @@ const odrlValidationSchema = [
     required: ['@context', '@type', 'permission'],
     additionalProperties: false,
   },
+  // Permission & Prohibition
+  {
+    type: 'object',
+    properties: {
+      '@context': { type: 'string' },
+      '@type': { type: 'string' },
+      permission: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            target: { type: 'string' },
+            action: { type: 'string' },
+            assigner: { type: 'string' },
+            assignee: { type: 'string' },
+          },
+          required: ['target', 'action', 'assigner', 'assignee'],
+        },
+      },
+      prohibition: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            target: { type: 'string' },
+            action: { type: 'string' },
+            assigner: { type: 'string' },
+            assignee: { type: 'string' },
+          },
+          required: ['target', 'action', 'assigner', 'assignee'],
+        },
+      },
+      constraint: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            leftOperand: { type: 'string' },
+            operator: { type: 'string' },
+            rightOperand: {
+              type: 'object',
+              properties: {
+                '@value': { type: 'string' },
+                '@type': { type: 'string' },
+              },
+              required: ['@value', '@type'],
+            },
+          },
+          required: ['leftOperand', 'operator', 'rightOperand'],
+        },
+      },
+    },
+    required: ['@context', '@type'],
+    anyOf: [
+      { required: ['permission', 'prohibition'] },
+      { required: ['permission', 'constraint'] },
+    ],
+    additionalProperties: false,
+  },
+  // Prohibition as Array
+  {
+    type: 'object',
+    properties: {
+      '@context': { type: 'string' },
+      '@type': { type: 'string' },
+      prohibition: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            target: { type: 'string' },
+            action: { type: 'string' },
+            assigner: { type: 'string' },
+            assignee: { type: 'string' },
+          },
+          required: ['target', 'action', 'assigner', 'assignee'],
+        },
+      },
+    },
+    required: ['@context', '@type', 'prohibition'],
+    additionalProperties: false,
+  },
+  // Permission as Array
+  {
+    type: 'object',
+    properties: {
+      '@context': { type: 'string' },
+      '@type': { type: 'string' },
+      permission: {
+        type: 'array',
+        items: {
+          type: 'object',
+          properties: {
+            action: { type: 'string' },
+            target: { type: 'string' },
+            constraint: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  leftOperand: { type: 'string' },
+                  operator: { type: 'string' },
+                  rightOperand: {
+                    type: 'object',
+                    properties: {
+                      '@value': { type: 'string' },
+                      '@type': { type: 'string' },
+                    },
+                    required: ['@value', '@type'],
+                  },
+                },
+                required: ['leftOperand', 'operator', 'rightOperand'],
+              },
+            },
+          },
+          required: ['action', 'target', 'constraint'],
+        },
+      },
+    },
+    required: ['@context', '@type', 'permission'],
+    additionalProperties: false,
+  },
+  // Using profile
   {
     type: 'object',
     properties: {
@@ -209,45 +334,7 @@ const odrlValidationSchema = [
     required: ['@context', '@type', 'permission'],
     additionalProperties: false,
   },
-  {
-    type: 'object',
-    properties: {
-      '@context': { type: 'string' },
-      '@type': { type: 'string' },
-      permission: {
-        type: 'array',
-        items: {
-          type: 'object',
-          properties: {
-            action: { type: 'string' },
-            target: { type: 'string' },
-            constraint: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  leftOperand: { type: 'string' },
-                  operator: { type: 'string' },
-                  rightOperand: {
-                    type: 'object',
-                    properties: {
-                      '@value': { type: 'string' },
-                      '@type': { type: 'string' },
-                    },
-                    required: ['@value', '@type'],
-                  },
-                },
-                required: ['leftOperand', 'operator', 'rightOperand'],
-              },
-            },
-          },
-          required: ['action', 'target', 'constraint'],
-        },
-      },
-    },
-    required: ['@context', '@type', 'permission'],
-    additionalProperties: false,
-  },
+  // Using refinement
   {
     type: 'object',
     properties: {

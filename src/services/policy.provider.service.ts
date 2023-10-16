@@ -108,7 +108,7 @@ export class PolicyProviderService {
     for (const permission of permissions) {
       const policy: IAuthorisationPolicy = {
         // Set the subject of the policy to the '@type' property of the permission.
-        subject: permission['@type'],
+        subject: permission.target,
         // Set the action of the policy to the 'action' property of the permission.
         action: permission.action,
         conditions: {},
