@@ -56,6 +56,15 @@ const BilateralContractSchema: Schema = new Schema({
       ],
     },
   ],
+  prohibition: [
+    {
+      action: String,
+      constraint: [
+        BilateralDefaultConstraintSchema,
+        BilateralUnknownConstraintSchema,
+      ],
+    },
+  ],
   purpose: [BilateralPurposeSchema],
   signatures: [BilateralSignatureSchema],
   revokedSignatures: [BilateralSignatureSchema],

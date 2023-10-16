@@ -31,6 +31,6 @@ router.put('/bilaterals/sign/:id', signContract);
 // Revoke signature
 router.delete('/bilaterals/sign/revoke/:id/:did', revokeContractSignature);
 // Check data exploitation
-router.put('/bilaterals/:id', checkDataExploitation);
+router.post('/bilaterals/check-exploitability/:id', checkDataExploitation);
 
 export default router;

@@ -55,6 +55,13 @@ const ContractSchema: Schema = new Schema({
       _id: false,
     },
   ],
+  prohibition: [
+    {
+      action: String,
+      constraint: [DefaultConstraintSchema, UnknownConstraintSchema],
+      _id: false,
+    },
+  ],
   purpose: [PurposeSchema],
   signatures: [SignatureSchema],
   revokedSignatures: [SignatureSchema],

@@ -215,14 +215,19 @@ export class ContractService {
         // Contract not found
         return false;
       }
-      // Retrieve permissions from the contract
-      const permissions = contract.permission;
-      // Create an authorization policy based on contract permissions
-      const policies: IAuthorisationPolicy[] =
-        policyProviderService.genPolicies(permissions);
-      // Use the PDP to evaluate the authorization policy
-      pdp.defineReferencePolicies(policies);
-      const isAuthorized = pdp.evalPolicy(data.policies);
+      const constraints = [
+        { value: contract.permission, cannot: false },
+        { value: contract.prohibition, cannot: true },
+      ];
+      const isAuthorized = constraints.every((constraint) => {
+        // Create an authorization policy based on contract
+        // permissions and/or prohibition
+        const policies: IAuthorisationPolicy[] =
+          policyProviderService.genPolicies(constraint.value);
+        // Use the PDP to evaluate the authorization policy
+        pdp.defineReferencePolicies(policies);
+        return pdp.evalPolicy(data.policy, constraint.cannot);
+      });
       return isAuthorized;
     } catch (error) {
       throw error;

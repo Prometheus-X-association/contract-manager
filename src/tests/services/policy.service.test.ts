@@ -27,15 +27,11 @@ describe('genPolicies', () => {
   });
 
   // Ensure policies are generated correctly for valid permissions.
-  it('should generate policies for valid permissions', () => {
-    const permissions = [
+  it('should generate policies for valid permissions/prohibitions', () => {
+    const resourceConstraint = [
       {
-        '@type': 'Offer',
         target: 'http://example.com/data/resource-2',
-        assigner: 'http://example.com/parties/data-provider',
-        assignee: 'http://example.com/parties/data-consumer',
         action: 'write',
-        data: 'http://example.com/data/sensitive-info',
         constraint: [
           {
             leftOperand: 'relation',
@@ -56,7 +52,7 @@ describe('genPolicies', () => {
       },
     ];
     const result: IAuthorisationPolicy[] =
-      policyProviderService.genPolicies(permissions);
+      policyProviderService.genPolicies(resourceConstraint);
     const expectedPolicies: IAuthorisationPolicy[] = [
       {
         subject: 'http://example.com/data/resource-2',
@@ -74,7 +70,7 @@ describe('genPolicies', () => {
     ];
     expect(result).to.deep.equal(expectedPolicies);
   });
-
+  //
   it('Should verify if a policy is valid', async () => {
     const validPolicy = {
       '@context': 'https://www.w3.org/ns/odrl.jsonld',
@@ -238,29 +234,4 @@ describe('genPolicies', () => {
     const isValid = await policyProviderService.verifyOdrlPolicy(validPolicy);
     expect(isValid).to.be.true;
   });
-
-  /*
-  // Ensure unsupported constraint types trigger a warning.
-  it('should handle unsupported constraint types', () => {
-    const permissions = [
-      {
-        '@type': 'Offer',
-        constraint: [
-          {
-            // The following type is not supported.
-            '@type': 'unsupportedType',
-            scope: 'http://example.com/geolocation/us',
-            relation: 'within',
-          },
-        ],
-      },
-    ];
-    policyProviderService.genPolicies(permissions);
-    // Check if the warn method was called with the correct message
-    sinon.assert.calledWith(
-      warnSpy,
-      sinon.match('Unsupported constraint type: unsupportedType'),
-    );
-  });
-  */
 });

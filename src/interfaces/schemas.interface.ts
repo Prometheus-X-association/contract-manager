@@ -37,6 +37,35 @@ export type BilateralContractPermission = {
 };
 
 /**
+ * Lean version of BilateralContractProhibitionConstraintDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BilateralContractProhibitionDocument.toObject()`.
+ * ```
+ * const bilateralcontractprohibitionObject = bilateralcontractprohibition.toObject();
+ * ```
+ */
+export type BilateralContractProhibitionConstraint = {
+  '@type'?: string;
+  leftOperand?: string;
+  operator?: string;
+  rightOperand?: string;
+};
+
+/**
+ * Lean version of BilateralContractProhibitionDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BilateralContractDocument.toObject()`.
+ * ```
+ * const bilateralcontractObject = bilateralcontract.toObject();
+ * ```
+ */
+export type BilateralContractProhibition = {
+  action?: string;
+  constraint: BilateralContractProhibitionConstraint[];
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
  * Lean version of BilateralContractPurposeDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `BilateralContractDocument.toObject()`.
@@ -115,6 +144,7 @@ export type BilateralContract = {
   uid?: string;
   profile?: string;
   permission: BilateralContractPermission[];
+  prohibition: BilateralContractProhibition[];
   purpose: BilateralContractPurpose[];
   signatures: BilateralContractRevokedSignature[];
   revokedSignatures: BilateralContractRevokedSignature[];
@@ -217,6 +247,31 @@ export type BilateralContractPermissionDocument = mongoose.Types.Subdocument & {
 /**
  * Mongoose Subdocument type
  *
+ * Type of `BilateralContractProhibitionDocument["constraint"]` element.
+ */
+export type BilateralContractProhibitionConstraintDocument =
+  mongoose.Types.Subdocument & {
+    '@type'?: string;
+    leftOperand?: string;
+    operator?: string;
+    rightOperand?: string;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `BilateralContractDocument["prohibition"]` element.
+ */
+export type BilateralContractProhibitionDocument =
+  mongoose.Types.Subdocument & {
+    action?: string;
+    constraint: mongoose.Types.DocumentArray<BilateralContractProhibitionConstraintDocument>;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
  * Type of `BilateralContractDocument["purpose"]` element.
  */
 export type BilateralContractPurposeDocument = mongoose.Types.Subdocument & {
@@ -286,6 +341,7 @@ export type BilateralContractDocument = mongoose.Document<
     uid?: string;
     profile?: string;
     permission: mongoose.Types.DocumentArray<BilateralContractPermissionDocument>;
+    prohibition: mongoose.Types.DocumentArray<BilateralContractProhibitionDocument>;
     purpose: mongoose.Types.DocumentArray<BilateralContractPurposeDocument>;
     signatures: mongoose.Types.DocumentArray<BilateralContractRevokedSignatureDocument>;
     revokedSignatures: mongoose.Types.DocumentArray<BilateralContractRevokedSignatureDocument>;
@@ -322,6 +378,34 @@ export type ContractPermissionConstraint = {
 export type ContractPermission = {
   action?: string;
   constraint: ContractPermissionConstraint[];
+};
+
+/**
+ * Lean version of ContractProhibitionConstraintDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ContractProhibitionDocument.toObject()`.
+ * ```
+ * const contractprohibitionObject = contractprohibition.toObject();
+ * ```
+ */
+export type ContractProhibitionConstraint = {
+  '@type'?: string;
+  leftOperand?: string;
+  operator?: string;
+  rightOperand?: string;
+};
+
+/**
+ * Lean version of ContractProhibitionDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ContractDocument.toObject()`.
+ * ```
+ * const contractObject = contract.toObject();
+ * ```
+ */
+export type ContractProhibition = {
+  action?: string;
+  constraint: ContractProhibitionConstraint[];
 };
 
 /**
@@ -390,6 +474,7 @@ export type Contract = {
   uid?: string;
   profile?: string;
   permission: ContractPermission[];
+  prohibition: ContractProhibition[];
   purpose: ContractPurpose[];
   signatures: ContractRevokedSignature[];
   revokedSignatures: ContractRevokedSignature[];
@@ -487,6 +572,29 @@ export type ContractPermissionDocument = mongoose.Types.Subdocument & {
 /**
  * Mongoose Subdocument type
  *
+ * Type of `ContractProhibitionDocument["constraint"]` element.
+ */
+export type ContractProhibitionConstraintDocument =
+  mongoose.Types.Subdocument & {
+    '@type'?: string;
+    leftOperand?: string;
+    operator?: string;
+    rightOperand?: string;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `ContractDocument["prohibition"]` element.
+ */
+export type ContractProhibitionDocument = mongoose.Types.Subdocument & {
+  action?: string;
+  constraint: mongoose.Types.DocumentArray<ContractProhibitionConstraintDocument>;
+};
+
+/**
+ * Mongoose Subdocument type
+ *
  * Type of `ContractDocument["purpose"]` element.
  */
 export type ContractPurposeDocument = mongoose.Types.Subdocument & {
@@ -545,6 +653,7 @@ export type ContractDocument = mongoose.Document<
     uid?: string;
     profile?: string;
     permission: mongoose.Types.DocumentArray<ContractPermissionDocument>;
+    prohibition: mongoose.Types.DocumentArray<ContractProhibitionDocument>;
     purpose: mongoose.Types.DocumentArray<ContractPurposeDocument>;
     signatures: mongoose.Types.DocumentArray<ContractRevokedSignatureDocument>;
     revokedSignatures: mongoose.Types.DocumentArray<ContractRevokedSignatureDocument>;

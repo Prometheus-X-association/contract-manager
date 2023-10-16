@@ -7,6 +7,7 @@ import contractService from 'services/contract.service';
 import Contract from 'models/contract.model';
 import { config } from 'config/config';
 
+let authTokenCookie: any;
 const SERVER_PORT = 9999;
 const API_ROUTE_BASE = '/contracts/';
 const _logObject = (data: any) => {
@@ -25,6 +26,7 @@ describe('Routes for Contract API', () => {
     });
     Contract.deleteMany({});
     const authResponse = await supertest(app.router).get('/user/login');
+    authTokenCookie = authResponse.headers['set-cookie'];
     expect(authResponse.status).to.equal(200);
     authToken = authResponse.body.token;
   });
@@ -56,6 +58,7 @@ describe('Routes for Contract API', () => {
     // Send a POST request to create the contract
     const response = await supertest(app.router)
       .post(`${API_ROUTE_BASE}`)
+      .set('Cookie', authTokenCookie)
       .set('Authorization', `Bearer ${authToken}`)
       .send(contractData);
     // log
@@ -73,6 +76,7 @@ describe('Routes for Contract API', () => {
     // Send a GET request to retrieve the contract by its ID
     const response = await supertest(app.router)
       .get(`${API_ROUTE_BASE}${createdContractId}`)
+      .set('Cookie', authTokenCookie)
       .set('Authorization', `Bearer ${authToken}`);
     // log
     _logObject(response.body);
@@ -90,6 +94,7 @@ describe('Routes for Contract API', () => {
     // Send a PUT request to update the contract by its ID
     const response = await supertest(app.router)
       .put(`${API_ROUTE_BASE}${createdContractId}`)
+      .set('Cookie', authTokenCookie)
       .set('Authorization', `Bearer ${authToken}`)
       .send(updatedContractData);
     // log
@@ -117,6 +122,7 @@ describe('Routes for Contract API', () => {
     // Send a PUT request to sign the contract for party A the first time
     const responsePartyA1 = await supertest(app.router)
       .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
+      .set('Cookie', authTokenCookie)
       .set('Authorization', `Bearer ${authToken}`)
       .send(signatureDataPartyA1);
     // log
@@ -137,6 +143,7 @@ describe('Routes for Contract API', () => {
     // Send a PUT request to sign the contract for party A the second time
     const responsePartyA2 = await supertest(app.router)
       .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
+      .set('Cookie', authTokenCookie)
       .set('Authorization', `Bearer ${authToken}`)
       .send(signatureDataPartyA2);
     // log
@@ -151,6 +158,7 @@ describe('Routes for Contract API', () => {
     // Send a PUT request to sign the contract for party B
     const responsePartyB = await supertest(app.router)
       .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
+      .set('Cookie', authTokenCookie)
       .set('Authorization', `Bearer ${authToken}`)
       .send(signatureDataPartyB);
     // log
@@ -171,6 +179,7 @@ describe('Routes for Contract API', () => {
     // Send a PUT request to sign the contract for the orchestrator
     const responseOrchestrator = await supertest(app.router)
       .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
+      .set('Cookie', authTokenCookie)
       .set('Authorization', `Bearer ${authToken}`)
       .send(signatureDataOrchestrator);
     // log
@@ -214,6 +223,18 @@ describe('Routes for Contract API', () => {
     expect(responseOrchestrator.body.status).to.equal('signed');
   });
 
+  // Test case: Check if data is exploitation
+  it('should check whether a specific resource is exploitable through an established contract', async () => {
+    const data = {};
+    const response = await supertest(app.router)
+      .post(`${API_ROUTE_BASE}check-exploitability/${createdContractId}`)
+      .set('Cookie', authTokenCookie)
+      .set('Authorization', `Bearer ${authToken}`)
+      .send(data);
+    //
+    _logObject(response.body);
+  });
+
   // Test case: Revoke a signature
   it('should revoke a signature and move it to revokedSignatures', async () => {
     // Define the DID for party B
@@ -221,6 +242,7 @@ describe('Routes for Contract API', () => {
     // Revoke the signature for party B
     const response = await supertest(app.router)
       .delete(`${API_ROUTE_BASE}sign/revoke/${createdContractId}/${didPartyB}`)
+      .set('Cookie', authTokenCookie)
       .set('Authorization', `Bearer ${authToken}`);
     //
     _logObject(response.body);

@@ -101,6 +101,19 @@ export class PolicyProviderService {
     }
   }
 
+  //
+  /*
+  public genAuthPolicyFromProhibition(
+    prohibitions: any,
+  ): IAuthorisationPolicy[] {}
+  */
+  //
+  /*
+  public genAuthPolicyFromPermission(permissions: any): IAuthorisationPolicy[] {
+    return this.genPolicies(permissions);
+  }
+  */
+
   // Generate internal policies based on permissions and constraint configuration.
   public genPolicies(permissions: any): IAuthorisationPolicy[] {
     const policies: IAuthorisationPolicy[] = [];

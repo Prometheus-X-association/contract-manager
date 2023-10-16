@@ -224,6 +224,18 @@ describe('Routes for Bilateral Contract API', () => {
     );
   });
 
+  // Test case: Check if data is exploitation
+  it('should check whether a specific resource is exploitable through an established contract', async () => {
+    const data = {};
+    const response = await supertest(app.router)
+      .post(`${API_ROUTE_BASE}check-exploitability/${createdContractId}`)
+      .set('Cookie', authTokenCookie)
+      .set('Authorization', `Bearer ${authToken}`)
+      .send(data);
+    //
+    _logObject(response.body);
+  });
+
   // Test case: Revoke a signature
   it('should revoke a signature and move it to revokedSignatures', async () => {
     // Define the DID for party B

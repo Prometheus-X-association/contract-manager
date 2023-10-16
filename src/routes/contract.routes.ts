@@ -32,6 +32,6 @@ router.put('/contracts/sign/:id', signContract);
 // Revoque signature
 router.delete('/contracts/sign/revoke/:id/:did', revokeContractSignature);
 // Check data exploitation
-router.put('/contracts/:id', checkDataExploitation);
+router.post('/contracts/check-exploitability/:id', checkDataExploitation);
 
 export default router;
