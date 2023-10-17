@@ -3,9 +3,9 @@ import http from 'http';
 import mongoose from 'mongoose';
 import contractRoutes from 'routes/contract.routes';
 import bilateralContractRoutes from 'routes/bilateral.routes';
-import userRoutes from 'routes/user.routes';
+import userRoutes, { login } from 'routes/user.routes';
 import papRoutes from 'routes/pap.routes';
-import auth from 'middlewares/auth.middleware';
+import auth, { checkSessionCookie } from 'middlewares/auth.middleware';
 import pep from 'middlewares/pep.middlewares';
 import { logger } from 'utils/logger';
 import swaggerUi from 'swagger-ui-express';
@@ -52,15 +52,17 @@ const startServer = async (url: string) => {
   router.get('/is-it-alive', (req, res, next) => {
     res.json({ message: 'yes it is!' });
   });
+  router.use('/', login);
   router.use(
     session({
       secret: config.session.secret,
       resave: false,
       saveUninitialized: true,
+      name: 'contract-manager-session-cookie',
       cookie: { secure: false },
     }),
   );
-  router.use('/', userRoutes);
+  router.use(checkSessionCookie);
   // Policy enforcement point
   router.use(pep);
   router.use((req, res, next) => {
@@ -72,7 +74,14 @@ const startServer = async (url: string) => {
     next();
   });
   // Routes
-  router.use('/', auth, contractRoutes, bilateralContractRoutes, papRoutes);
+  router.use(
+    '/',
+    auth,
+    userRoutes,
+    contractRoutes,
+    bilateralContractRoutes,
+    papRoutes,
+  );
   router.use((req, res, next) => {
     const message = 'Not found!';
     logger.info(`404 ${message}`);

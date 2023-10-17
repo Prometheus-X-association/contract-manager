@@ -22,7 +22,7 @@ const BilateralDefaultConstraintSchema = new mongoose.Schema(
     '@type': String,
     leftOperand: String,
     operator: String,
-    rightOperand: String,
+    rightOperand: mongoose.Schema.Types.Mixed,
   },
   { _id: false },
 );
@@ -50,6 +50,7 @@ const BilateralContractSchema: Schema = new Schema({
   permission: [
     {
       action: String,
+      target: String,
       constraint: [
         BilateralDefaultConstraintSchema,
         BilateralUnknownConstraintSchema,
@@ -59,6 +60,7 @@ const BilateralContractSchema: Schema = new Schema({
   prohibition: [
     {
       action: String,
+      target: String,
       constraint: [
         BilateralDefaultConstraintSchema,
         BilateralUnknownConstraintSchema,

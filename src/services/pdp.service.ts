@@ -72,6 +72,7 @@ class PDPService {
     // Define permissions based on policies
     policies.forEach((item: IAuthorisationPolicy) => {
       const matchConditions = mongoQueryMatcher(item.conditions);
+      const m = mongoQueryMatcher({ age: { $gt: 17 } });
       allow(
         item.action,
         item.subject,

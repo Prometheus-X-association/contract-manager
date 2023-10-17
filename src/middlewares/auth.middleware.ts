@@ -36,15 +36,22 @@ export const genToken = (user: any): string => {
   return token;
 };
 
-/*
-export const pip = (req: Request, res: Response, next: NextFunction) => {
-  const userPolicies = pipService.getUserPolicyFromSession(req);
-  if (!userPolicies) {
-    const newUserPolicy = pipService.buildAuthenticationPolicy(req);
-    pipService.setUserPolicyToSession(req, newUserPolicy);
+interface Session {
+  'contract-manager-session-cookie'?: string;
+}
+export const checkSessionCookie = (
+  req: Request & { session: Session },
+  res: Response,
+  next: NextFunction,
+) => {
+  const cookies = req.headers.cookie || '';
+  const cookieArray = cookies.split(';').map((cookie) => cookie.trim());
+  const sessionCookie = cookieArray.find((cookie) =>
+    cookie.startsWith('contract-manager-session-cookie='),
+  );
+  if (req.session && sessionCookie) {
+    return next();
   }
-  next();
+  return res.status(401).json({ error: 'Session cookie is missing.' });
 };
-*/
-
 export default auth;

@@ -19,7 +19,7 @@ export type BilateralContractPermissionConstraint = {
   '@type'?: string;
   leftOperand?: string;
   operator?: string;
-  rightOperand?: string;
+  rightOperand?: any;
 };
 
 /**
@@ -32,6 +32,7 @@ export type BilateralContractPermissionConstraint = {
  */
 export type BilateralContractPermission = {
   action?: string;
+  target?: string;
   constraint: BilateralContractPermissionConstraint[];
   _id: mongoose.Types.ObjectId;
 };
@@ -48,7 +49,7 @@ export type BilateralContractProhibitionConstraint = {
   '@type'?: string;
   leftOperand?: string;
   operator?: string;
-  rightOperand?: string;
+  rightOperand?: any;
 };
 
 /**
@@ -61,6 +62,7 @@ export type BilateralContractProhibitionConstraint = {
  */
 export type BilateralContractProhibition = {
   action?: string;
+  target?: string;
   constraint: BilateralContractProhibitionConstraint[];
   _id: mongoose.Types.ObjectId;
 };
@@ -230,7 +232,7 @@ export type BilateralContractPermissionConstraintDocument =
     '@type'?: string;
     leftOperand?: string;
     operator?: string;
-    rightOperand?: string;
+    rightOperand?: any;
   };
 
 /**
@@ -240,6 +242,7 @@ export type BilateralContractPermissionConstraintDocument =
  */
 export type BilateralContractPermissionDocument = mongoose.Types.Subdocument & {
   action?: string;
+  target?: string;
   constraint: mongoose.Types.DocumentArray<BilateralContractPermissionConstraintDocument>;
   _id: mongoose.Types.ObjectId;
 };
@@ -254,7 +257,7 @@ export type BilateralContractProhibitionConstraintDocument =
     '@type'?: string;
     leftOperand?: string;
     operator?: string;
-    rightOperand?: string;
+    rightOperand?: any;
   };
 
 /**
@@ -265,6 +268,7 @@ export type BilateralContractProhibitionConstraintDocument =
 export type BilateralContractProhibitionDocument =
   mongoose.Types.Subdocument & {
     action?: string;
+    target?: string;
     constraint: mongoose.Types.DocumentArray<BilateralContractProhibitionConstraintDocument>;
     _id: mongoose.Types.ObjectId;
   };
@@ -364,7 +368,7 @@ export type ContractPermissionConstraint = {
   '@type'?: string;
   leftOperand?: string;
   operator?: string;
-  rightOperand?: string;
+  rightOperand?: any;
 };
 
 /**
@@ -377,6 +381,7 @@ export type ContractPermissionConstraint = {
  */
 export type ContractPermission = {
   action?: string;
+  target?: string;
   constraint: ContractPermissionConstraint[];
 };
 
@@ -392,7 +397,7 @@ export type ContractProhibitionConstraint = {
   '@type'?: string;
   leftOperand?: string;
   operator?: string;
-  rightOperand?: string;
+  rightOperand?: any;
 };
 
 /**
@@ -405,6 +410,7 @@ export type ContractProhibitionConstraint = {
  */
 export type ContractProhibition = {
   action?: string;
+  target?: string;
   constraint: ContractProhibitionConstraint[];
 };
 
@@ -556,7 +562,7 @@ export type ContractPermissionConstraintDocument =
     '@type'?: string;
     leftOperand?: string;
     operator?: string;
-    rightOperand?: string;
+    rightOperand?: any;
   };
 
 /**
@@ -566,6 +572,7 @@ export type ContractPermissionConstraintDocument =
  */
 export type ContractPermissionDocument = mongoose.Types.Subdocument & {
   action?: string;
+  target?: string;
   constraint: mongoose.Types.DocumentArray<ContractPermissionConstraintDocument>;
 };
 
@@ -579,7 +586,7 @@ export type ContractProhibitionConstraintDocument =
     '@type'?: string;
     leftOperand?: string;
     operator?: string;
-    rightOperand?: string;
+    rightOperand?: any;
   };
 
 /**
@@ -589,6 +596,7 @@ export type ContractProhibitionConstraintDocument =
  */
 export type ContractProhibitionDocument = mongoose.Types.Subdocument & {
   action?: string;
+  target?: string;
   constraint: mongoose.Types.DocumentArray<ContractProhibitionConstraintDocument>;
 };
 

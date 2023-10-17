@@ -57,7 +57,6 @@ export class PolicyProviderService {
         );
       }
     } catch (error: any) {
-      console.log(error);
       logger.error(error.message);
       throw error;
     }
@@ -114,7 +113,8 @@ export class PolicyProviderService {
   }
   */
 
-  // Generate internal policies based on permissions and constraint configuration.
+  // Generate internal policies based on constraint configurations
+  // derived from the contract's permissions, prohibitions, or duties.
   public genPolicies(permissions: any): IAuthorisationPolicy[] {
     const policies: IAuthorisationPolicy[] = [];
     // Iterate through each permission provided.
@@ -149,6 +149,34 @@ export class PolicyProviderService {
       policies.push(policy);
     }
     // Return the generated policies.
+    return policies;
+  }
+
+  // Generate internal policies based on constraint configurations
+  // derived from the contract's permissions, prohibitions, or duties.
+  // This method focuses on generating policies based on input values without considering operators in constraints.
+  public genInputPolicies(permissions: any): IAuthorisationPolicy[] {
+    const policies: IAuthorisationPolicy[] = [];
+    for (const permission of permissions) {
+      const policy: IAuthorisationPolicy = {
+        subject: permission.target,
+        action: permission.action,
+        conditions: {},
+      };
+      if (permission.constraint) {
+        for (const constraint of permission.constraint) {
+          const leftOperand = constraint.leftOperand;
+
+          if (leftOperand) {
+            const condition: Record<string, any> = {
+              [leftOperand]: constraint.rightOperand,
+            };
+            Object.assign(policy.conditions, condition);
+          }
+        }
+      }
+      policies.push(policy);
+    }
     return policies;
   }
 

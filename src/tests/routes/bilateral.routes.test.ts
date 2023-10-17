@@ -46,12 +46,19 @@ describe('Routes for Bilateral Contract API', () => {
   // Test case: Create a new contract
   it('should create a new bilateral contract', async () => {
     const contractData = {
-      '@context': 'context',
-      '@type': 'type',
-      '@id': 'id',
+      '@context': 'http://www.w3.org/ns/odrl.jsonld',
+      '@type': 'Offer',
       permission: [
         {
-          '@type': 'Offer',
+          action: 'read',
+          target: 'http://contract-target',
+          constraint: [
+            {
+              leftOperand: 'age',
+              operator: 'gt', // greater than
+              rightOperand: 17,
+            },
+          ],
         },
       ],
     };
@@ -225,11 +232,19 @@ describe('Routes for Bilateral Contract API', () => {
   // Test case: Check if data is exploitable
   it('should check whether a specific resource is exploitable through an established contract', async () => {
     const data = {
-      '@context': 'http://mycontext/core',
+      '@context': 'http://www.w3.org/ns/odrl.jsonld',
       '@type': 'authorisation',
       permission: [
         {
+          action: 'read',
           target: 'http://contract-target',
+          constraint: [
+            {
+              leftOperand: 'age',
+              operator: 'eq',
+              rightOperand: 17,
+            },
+          ],
         },
       ],
     };

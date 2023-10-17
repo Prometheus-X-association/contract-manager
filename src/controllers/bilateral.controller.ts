@@ -137,7 +137,7 @@ export const revokeContractSignature = async (req: Request, res: Response) => {
 // Check if data is authorized for exploitation
 export const checkDataExploitation = async (req: Request, res: Response) => {
   const contractId = req.params.id;
-  const data = req.body;
+  const data = { policy: req.body };
   try {
     const isAuthorized = await bilateralContractService.checkPermission(
       contractId,

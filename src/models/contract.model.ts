@@ -23,7 +23,7 @@ const DefaultConstraintSchema = new Schema(
     '@type': String,
     leftOperand: String,
     operator: String,
-    rightOperand: String,
+    rightOperand: mongoose.Schema.Types.Mixed,
   },
   { _id: false },
 );
@@ -51,6 +51,7 @@ const ContractSchema: Schema = new Schema({
   permission: [
     {
       action: String,
+      target: String,
       constraint: [DefaultConstraintSchema, UnknownConstraintSchema],
       _id: false,
     },
@@ -58,6 +59,7 @@ const ContractSchema: Schema = new Schema({
   prohibition: [
     {
       action: String,
+      target: String,
       constraint: [DefaultConstraintSchema, UnknownConstraintSchema],
       _id: false,
     },

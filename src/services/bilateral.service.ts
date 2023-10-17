@@ -236,17 +236,31 @@ export class BilateralContractService {
       }
       // Retrieve constraints from the contract
       const constraints = [
-        { value: contract.permission, cannot: false },
-        { value: contract.prohibition, cannot: true },
+        {
+          contract: contract.permission,
+          input: data.policy.permission,
+          cannot: false,
+        },
+        {
+          contract: contract.prohibition || [],
+          input: data.policy.prohibition || [],
+          cannot: true,
+        },
       ];
       const isAuthorized: boolean = constraints.every((constraint) => {
-        // Create an authorization policy based on contract
-        // permissions and/or prohibition
-        const policies: IAuthorisationPolicy[] =
-          policyProviderService.genPolicies(constraint.value);
+        // Create an authorization policy based on the current constraint
+        const contractPolicies: IAuthorisationPolicy[] =
+          policyProviderService.genPolicies(constraint.contract);
         // Use the PDP to evaluate the authorization policy
-        pdp.defineReferencePolicies(policies);
-        const validation = pdp.evalPolicy(data.policy, constraint.cannot);
+        pdp.defineReferencePolicies(contractPolicies);
+        //
+        const inputPolicies: IAuthorisationPolicy[] =
+          policyProviderService.genInputPolicies(constraint.input);
+        //
+        const validation = inputPolicies.every((policy) => {
+          const e = pdp.evalPolicy(policy, constraint.cannot);
+          return e;
+        });
         return validation;
       });
       return isAuthorized;
