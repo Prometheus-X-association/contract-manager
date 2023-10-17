@@ -3,7 +3,6 @@ import supertest from 'supertest';
 import { expect } from 'chai';
 import app from 'server';
 import { BilateralContractSignature } from 'interfaces/schemas.interface';
-import { deleteContract } from 'controllers/bilateral.controller';
 import bilateralContractService from 'services/bilateral.service';
 import BilateralContract from 'models/bilateral.model';
 import { config } from 'config/config';
@@ -26,7 +25,6 @@ describe('Routes for Bilateral Contract API', () => {
       });
     });
     await BilateralContract.deleteMany({});
-    app.router.delete(`${API_ROUTE_BASE}:id`, deleteContract);
     const authResponse = await supertest(app.router).get('/user/login');
     authTokenCookie = authResponse.headers['set-cookie'];
     expect(authResponse.status).to.equal(200);
@@ -224,9 +222,17 @@ describe('Routes for Bilateral Contract API', () => {
     );
   });
 
-  // Test case: Check if data is exploitation
+  // Test case: Check if data is exploitable
   it('should check whether a specific resource is exploitable through an established contract', async () => {
-    const data = {};
+    const data = {
+      '@context': 'http://mycontext/core',
+      '@type': 'authorisation',
+      permission: [
+        {
+          target: 'http://contract-target',
+        },
+      ],
+    };
     const response = await supertest(app.router)
       .post(`${API_ROUTE_BASE}check-exploitability/${createdContractId}`)
       .set('Cookie', authTokenCookie)
@@ -234,6 +240,8 @@ describe('Routes for Bilateral Contract API', () => {
       .send(data);
     //
     _logObject(response.body);
+    //
+    expect(response.body.authorised).to.equal(true);
   });
 
   // Test case: Revoke a signature

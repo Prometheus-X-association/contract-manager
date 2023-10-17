@@ -144,9 +144,9 @@ export const checkDataExploitation = async (req: Request, res: Response) => {
       data,
     );
     if (isAuthorized) {
-      return res.status(200).json({ authorized: true });
+      return res.status(200).json({ authorised: true });
     } else {
-      return res.status(403).json({ authorized: false });
+      return res.status(403).json({ authorised: false });
     }
   } catch (error) {
     logger.error(error);

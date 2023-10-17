@@ -50,17 +50,20 @@ class PDPService {
     policy: IAuthorisationPolicy,
     cannot: boolean = false,
   ): boolean {
-    // Check if the given policy has permission
-    const constraint = {
-      constructor: {
-        name: policy.subject,
-      },
-      ...policy.conditions,
-    };
-    if (!cannot) {
-      return this.authorisationAbility.can(policy.action, constraint);
+    if (policy) {
+      // Check if the given policy has permission
+      const constraint = {
+        constructor: {
+          name: policy.subject,
+        },
+        ...policy.conditions,
+      };
+      if (!cannot) {
+        return this.authorisationAbility.can(policy.action, constraint);
+      }
+      return this.authorisationAbility.cannot(policy.action, constraint);
     }
-    return this.authorisationAbility.cannot(policy.action, constraint);
+    return false;
   }
 
   private defineAbility(policies: IAuthorisationPolicy[]): Ability {

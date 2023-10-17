@@ -2,6 +2,12 @@ import PolicyReferenceRegistry from 'models/policy.registry.model';
 import { IAuthorisationPolicy } from 'interfaces/policy.interface';
 
 const policySeedling: IAuthorisationPolicy[] = [
+  // PAP default authorisation rules
+  {
+    subject: '/pap',
+    action: 'POST',
+    conditions: {},
+  },
   // Bilateral contrat default authorisation rules
   {
     subject: '/bilaterals',

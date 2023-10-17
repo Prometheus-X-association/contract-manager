@@ -223,9 +223,17 @@ describe('Routes for Contract API', () => {
     expect(responseOrchestrator.body.status).to.equal('signed');
   });
 
-  // Test case: Check if data is exploitation
+  // Test case: Check if data is exploitable
   it('should check whether a specific resource is exploitable through an established contract', async () => {
-    const data = {};
+    const data = {
+      '@context': 'http://mycontext/core',
+      '@type': 'authorisation',
+      permission: [
+        {
+          target: 'http://contract-target',
+        },
+      ],
+    };
     const response = await supertest(app.router)
       .post(`${API_ROUTE_BASE}check-exploitability/${createdContractId}`)
       .set('Cookie', authTokenCookie)
@@ -233,6 +241,8 @@ describe('Routes for Contract API', () => {
       .send(data);
     //
     _logObject(response.body);
+    //
+    expect(response.body.authorised).to.equal(true);
   });
 
   // Test case: Revoke a signature

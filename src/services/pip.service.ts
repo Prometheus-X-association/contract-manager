@@ -31,6 +31,12 @@ export class PIPService {
   public buildAuthenticationPolicy(req: Request): IAuthorisationPolicy[] {
     // Temporary user policies
     return [
+      //
+      {
+        subject: '/pap',
+        action: 'POST',
+        conditions: {},
+      },
       // Bilateral contrat default authorisation rules
       {
         subject: '/bilaterals',
