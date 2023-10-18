@@ -206,7 +206,7 @@
       }
     },
     "/bilaterals/check-exploitability/{id}": {
-      "put": {
+      "post": {
         "description": "",
         "parameters": [
           {
@@ -407,7 +407,7 @@
       }
     },
     "/contracts/check-exploitability/{id}": {
-      "put": {
+      "post": {
         "description": "",
         "parameters": [
           {

@@ -140,12 +140,19 @@ const odrlValidationSchema = [
                 leftOperand: { type: 'string' },
                 operator: { type: 'string' },
                 rightOperand: {
-                  type: 'object',
-                  properties: {
-                    '@value': { type: 'string' },
-                    '@type': { type: 'string' },
-                  },
-                  required: ['@value', '@type'],
+                  oneOf: [
+                    { type: 'boolean' },
+                    { type: 'number' },
+                    { type: 'string' },
+                    {
+                      type: 'object',
+                      properties: {
+                        '@value': { type: 'string' },
+                        '@type': { type: 'string' },
+                      },
+                      required: ['@value', '@type'],
+                    },
+                  ],
                 },
               },
               required: ['leftOperand', 'operator', 'rightOperand'],
@@ -199,12 +206,19 @@ const odrlValidationSchema = [
             leftOperand: { type: 'string' },
             operator: { type: 'string' },
             rightOperand: {
-              type: 'object',
-              properties: {
-                '@value': { type: 'string' },
-                '@type': { type: 'string' },
-              },
-              required: ['@value', '@type'],
+              oneOf: [
+                { type: 'boolean' },
+                { type: 'number' },
+                { type: 'string' },
+                {
+                  type: 'object',
+                  properties: {
+                    '@value': { type: 'string' },
+                    '@type': { type: 'string' },
+                  },
+                  required: ['@value', '@type'],
+                },
+              ],
             },
           },
           required: ['leftOperand', 'operator', 'rightOperand'],
@@ -262,12 +276,19 @@ const odrlValidationSchema = [
                   leftOperand: { type: 'string' },
                   operator: { type: 'string' },
                   rightOperand: {
-                    type: 'object',
-                    properties: {
-                      '@value': { type: 'string' },
-                      '@type': { type: 'string' },
-                    },
-                    required: ['@value', '@type'],
+                    oneOf: [
+                      { type: 'boolean' },
+                      { type: 'number' },
+                      { type: 'string' },
+                      {
+                        type: 'object',
+                        properties: {
+                          '@value': { type: 'string' },
+                          '@type': { type: 'string' },
+                        },
+                        required: ['@value', '@type'],
+                      },
+                    ],
                   },
                 },
                 required: ['leftOperand', 'operator', 'rightOperand'],
@@ -314,12 +335,19 @@ const odrlValidationSchema = [
                   leftOperand: { type: 'string' },
                   operator: { type: 'string' },
                   rightOperand: {
-                    type: 'object',
-                    properties: {
-                      '@value': { type: 'string' },
-                      '@type': { type: 'string' },
-                    },
-                    required: ['@value', '@type'],
+                    oneOf: [
+                      { type: 'boolean' },
+                      { type: 'number' },
+                      { type: 'string' },
+                      {
+                        type: 'object',
+                        properties: {
+                          '@value': { type: 'string' },
+                          '@type': { type: 'string' },
+                        },
+                        required: ['@value', '@type'],
+                      },
+                    ],
                   },
                 },
                 required: ['leftOperand', 'operator', 'rightOperand'],
