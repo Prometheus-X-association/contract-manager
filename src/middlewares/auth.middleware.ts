@@ -49,7 +49,7 @@ export const checkSessionCookie = (
   const sessionCookie = cookieArray.find((cookie) =>
     cookie.startsWith('contract-manager-session-cookie='),
   );
-  if (req.session && sessionCookie) {
+  if (/*req.session && */ sessionCookie) {
     return next();
   }
   return res.status(401).json({ error: 'Session cookie is missing.' });

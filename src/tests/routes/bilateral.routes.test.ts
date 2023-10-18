@@ -46,7 +46,7 @@ describe('Routes for Bilateral Contract API', () => {
   // Test case: Create a new contract
   it('should create a new bilateral contract', async () => {
     const contractData = {
-      '@context': 'http://www.w3.org/ns/odrl.jsonld',
+      '@context': 'http://www.w3.org/ns/odrl/2/',
       '@type': 'Offer',
       permission: [
         {
@@ -232,7 +232,7 @@ describe('Routes for Bilateral Contract API', () => {
   // Test case: Check if data is exploitable
   it('should check whether a specific resource is exploitable through an established contract', async () => {
     const data = {
-      '@context': 'http://www.w3.org/ns/odrl.jsonld',
+      '@context': 'http://www.w3.org/ns/odrl/2/',
       '@type': 'authorisation',
       permission: [
         {
@@ -242,7 +242,7 @@ describe('Routes for Bilateral Contract API', () => {
             {
               leftOperand: 'age',
               operator: 'eq',
-              rightOperand: 17,
+              rightOperand: 18,
             },
           ],
         },

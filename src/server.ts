@@ -52,7 +52,6 @@ const startServer = async (url: string) => {
   router.get('/is-it-alive', (req, res, next) => {
     res.json({ message: 'yes it is!' });
   });
-  router.use('/', login);
   router.use(
     session({
       secret: config.session.secret,
@@ -62,6 +61,7 @@ const startServer = async (url: string) => {
       cookie: { secure: false },
     }),
   );
+  router.use('/', login);
   router.use(checkSessionCookie);
   // Policy enforcement point
   router.use(pep);

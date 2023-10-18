@@ -4,6 +4,7 @@ import Ajv from 'ajv';
 import { logger } from 'utils/logger';
 import { IDataRegistry, IDataRegistryDB } from 'interfaces/global.interface';
 import DataRegistry from 'models/data.registry.model';
+import { getValueFromXSD } from 'utils/utils';
 
 // temporary odrl policy schema to put in data base
 const operators: any = Object.freeze({
@@ -100,19 +101,6 @@ export class PolicyProviderService {
     }
   }
 
-  //
-  /*
-  public genAuthPolicyFromProhibition(
-    prohibitions: any,
-  ): IAuthorisationPolicy[] {}
-  */
-  //
-  /*
-  public genAuthPolicyFromPermission(permissions: any): IAuthorisationPolicy[] {
-    return this.genPolicies(permissions);
-  }
-  */
-
   // Generate internal policies based on constraint configurations
   // derived from the contract's permissions, prohibitions, or duties.
   public genPolicies(permissions: any): IAuthorisationPolicy[] {
@@ -136,7 +124,9 @@ export class PolicyProviderService {
             condition[leftOperand] = {};
             const operator: string | undefined = operators[constraint.operator];
             if (operator) {
-              condition[leftOperand] = { [operator]: constraint.rightOperand };
+              condition[leftOperand] = {
+                [operator]: getValueFromXSD(constraint.rightOperand),
+              };
             } else {
               logger.warn(`Operator ${operator} unsupported.`);
             }

@@ -109,14 +109,14 @@ export const checkDataExploitation = async (req: Request, res: Response) => {
   const contractId = req.params.id;
   const data = { policy: req.body };
   try {
-    const isAuthorized = await contractService.checkPermission(
+    const isAuthorised = await contractService.checkPermission(
       contractId,
       data,
     );
-    if (isAuthorized) {
-      return res.status(200).json({ authorized: true });
+    if (isAuthorised) {
+      return res.status(200).json({ authorised: true });
     } else {
-      return res.status(403).json({ authorized: false });
+      return res.status(403).json({ authorised: false });
     }
   } catch (error) {
     logger.error(error);
@@ -159,27 +159,7 @@ export const getContracts = async (
     res.status(500).json({ error: error.message });
   }
 };
-/*
-// Get contracts by status
-export const getContractsByStatus = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
-  const { status } = req.params;
-  try {
-    const contracts = await contractService.getContractsByStatus(status);
-    logger.info(
-      '[Contract/Controller: getContractsByStatus] Successfully called.',
-    );
-    res.json({ contracts });
-  } catch (error: any) {
-    logger.error('Error while fetching contracts by status:', { error });
-    res
-      .status(500)
-      .json({ error: 'Error while fetching contracts by status.' });
-  }
-};
-*/
+
 // get ODRL contract
 export const getODRLContract = async (req: Request, res: Response) => {
   try {

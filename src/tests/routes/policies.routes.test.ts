@@ -33,7 +33,7 @@ describe('Routes for policies managment Contract API', () => {
 
   it('should verify a policy containing permission and prohibition', async () => {
     const validPolicy = {
-      '@context': 'http://www.w3.org/ns/odrl.jsonld',
+      '@context': 'http://www.w3.org/ns/odrl/2/',
       '@type': 'Agreement',
       permission: [
         {

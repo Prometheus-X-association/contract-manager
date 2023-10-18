@@ -73,7 +73,7 @@ describe('genPolicies', () => {
   //
   it('Should verify if a policy is valid', async () => {
     const validPolicy = {
-      '@context': 'https://www.w3.org/ns/odrl.jsonld',
+      '@context': 'http://www.w3.org/ns/odrl/2/',
       '@type': 'Offer',
       permission: {
         action: 'use',
@@ -93,7 +93,7 @@ describe('genPolicies', () => {
 
   it('Should verify if a policy with permissions sharing common constraint is valid', async () => {
     const validPolicy = {
-      '@context': 'https://www.w3.org/ns/odrl.jsonld',
+      '@context': 'http://www.w3.org/ns/odrl/2/',
       '@type': 'Offer',
       permission: [
         {
@@ -126,7 +126,7 @@ describe('genPolicies', () => {
 
   it('Should verify if a policy including more than one permission is valid', async () => {
     const validPolicy = {
-      '@context': 'https://www.w3.org/ns/odrl.jsonld',
+      '@context': 'http://www.w3.org/ns/odrl/2/',
       '@type': 'Offer',
       permission: [
         {
@@ -159,7 +159,7 @@ describe('genPolicies', () => {
 
   it('Should verify if a policy with multiple "prohibition" is valid', async () => {
     const validPolicy = {
-      '@context': 'http://www.w3.org/ns/odrl.jsonld',
+      '@context': 'http://www.w3.org/ns/odrl/2/',
       '@type': 'Agreement',
       prohibition: [
         {
@@ -182,7 +182,7 @@ describe('genPolicies', () => {
 
   it('Should verify if a policy with "prohibition" and "permission" is valid', async () => {
     const validPolicy = {
-      '@context': 'http://www.w3.org/ns/odrl.jsonld',
+      '@context': 'http://www.w3.org/ns/odrl/2/',
       '@type': 'Agreement',
       permission: [
         {
@@ -207,7 +207,7 @@ describe('genPolicies', () => {
 
   it('Should verify if a policy using "refinement" is valid', async () => {
     const validPolicy = {
-      '@context': 'http://www.w3.org/ns/odrl.jsonld',
+      '@context': 'http://www.w3.org/ns/odrl/2/',
       '@type': 'Offer',
       uid: 'http://example.com/policy:6161',
       profile: 'http://example.com/odrl:profile:10',

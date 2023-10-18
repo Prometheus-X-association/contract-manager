@@ -210,30 +210,62 @@ export class ContractService {
   ): Promise<boolean> {
     try {
       // Retrieve contract data by ID
-      const contract = await Contract.findById(contractId).select('-jsonLD');
+      const contract = await Contract.findById(contractId);
       if (!contract) {
         // Contract not found
         return false;
       }
-      const constraints = [
-        { value: contract.permission, cannot: false },
-        { value: contract.prohibition, cannot: true },
-      ];
-      const isAuthorized = constraints.every((constraint) => {
-        // Create an authorization policy based on contract
-        // permissions and/or prohibition
-        const policies: IAuthorisationPolicy[] =
-          policyProviderService.genPolicies(constraint.value);
-        // Use the PDP to evaluate the authorization policy
-        pdp.defineReferencePolicies(policies);
-        return pdp.evalPolicy(data.policy, constraint.cannot);
-      });
+      //
+      const constraints = this.buildConstraints(contract, data);
+      // Check if data is authorized based on constraints
+      const isAuthorized: boolean = constraints.every((constraint) =>
+        this.checkConstraint(constraint),
+      );
       return isAuthorized;
     } catch (error) {
       throw error;
     }
   }
-  //
+
+  // Retrieve permissions and prohibitions constraints from the contract and input policy
+  private buildConstraints(contract: IContract, data: any): any[] {
+    const permissionsConstraint = {
+      // Permissions constraints from the contract
+      contract: contract.permission,
+      // Permissions constraints from the input policy
+      input: data.policy.permission,
+      // Indicator that these are permissions (can) and not prohibitions (cannot)
+      cannot: false,
+    };
+    const prohibitionsConstraint = {
+      // Prohibitions constraints from the contract (or an empty array if none exist)
+      contract: contract.prohibition || [],
+      // Prohibitions constraints from the input policy (or an empty array if none exist)
+      input: data.policy.prohibition || [],
+      // Indicator that these are prohibitions (cannot)
+      cannot: true,
+    };
+    // Combine permissions and prohibitions constraints for unified processing
+    return [permissionsConstraint, prohibitionsConstraint];
+  }
+
+  // Helper function to check a constraint
+  private checkConstraint(constraint: any): boolean {
+    // Create an authorization policy based on the current constraint
+    const contractPolicies: IAuthorisationPolicy[] =
+      policyProviderService.genPolicies(constraint.contract);
+    // Use the PDP to evaluate the authorization policy
+    pdp.defineReferencePolicies(contractPolicies);
+    // Generate internal policies based on input values without considering operators in constraints
+    const inputPolicies: IAuthorisationPolicy[] =
+      policyProviderService.genInputPolicies(constraint.input);
+    // Check if each input policy is authorized
+    const validation = inputPolicies.every((policy) =>
+      pdp.evalPolicy(policy, constraint.cannot),
+    );
+    return validation;
+  }
+
   // Get ecosystem contracts for a specific DID with optional filter
   public async getContractsFor(
     did: string,
