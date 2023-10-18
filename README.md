@@ -94,7 +94,7 @@ Before you begin, ensure you have met the following requirements:
 2. Start your Node.js application:
 
   ```bash
-  npm start
+  npm run start
   ```
 
   This command will start your application using the compiled code.
@@ -104,11 +104,17 @@ Before you begin, ensure you have met the following requirements:
 1. Run tests:
 
   ```bash
-  npm test
+  npm run test
   ```
 
   This command will run your tests using Mocha. Make sure your tests are
   located in `./src/tests/**/*.test.ts`.
+
+2. Run Scenarios:
+
+  ```bash
+  npm run test-scenarios
+  ```
 
 ## License
 
