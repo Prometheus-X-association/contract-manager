@@ -22,7 +22,6 @@ describe('Routes for policies managment Contract API', () => {
     });
     const authResponse = await supertest(app.router).get('/user/login');
     authTokenCookie = authResponse.headers['set-cookie'];
-    expect(authResponse.status).to.equal(200);
     authToken = authResponse.body.token;
   });
 

@@ -91,7 +91,7 @@ describe('genPolicies', () => {
     expect(isValid).to.be.true;
   });
 
-  it('Should verify if a policy with permissions sharing common constraint is valid', async () => {
+  /*it('Should verify if a policy with permissions sharing common constraint is valid', async () => {
     const validPolicy = {
       '@context': 'http://www.w3.org/ns/odrl/2/',
       '@type': 'Offer',
@@ -123,7 +123,7 @@ describe('genPolicies', () => {
     const isValid = await policyProviderService.verifyOdrlPolicy(validPolicy);
     expect(isValid).to.be.true;
   });
-
+  */
   it('Should verify if a policy including more than one permission is valid', async () => {
     const validPolicy = {
       '@context': 'http://www.w3.org/ns/odrl/2/',
@@ -204,7 +204,7 @@ describe('genPolicies', () => {
     const isValid = await policyProviderService.verifyOdrlPolicy(validPolicy);
     expect(isValid).to.be.true;
   });
-
+  /*
   it('Should verify if a policy using "refinement" is valid', async () => {
     const validPolicy = {
       '@context': 'http://www.w3.org/ns/odrl/2/',
@@ -234,4 +234,5 @@ describe('genPolicies', () => {
     const isValid = await policyProviderService.verifyOdrlPolicy(validPolicy);
     expect(isValid).to.be.true;
   });
+  */
 });

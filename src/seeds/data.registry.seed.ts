@@ -302,6 +302,7 @@ const odrlValidationSchema = [
     required: ['@context', '@type', 'permission'],
     additionalProperties: false,
   },
+  /*
   // Using profile
   {
     type: 'object',
@@ -414,6 +415,7 @@ const odrlValidationSchema = [
     },
     required: ['@context', '@type', 'uid', 'profile', 'permission'],
   },
+  */
 ];
 
 export async function seedDataRegistry() {

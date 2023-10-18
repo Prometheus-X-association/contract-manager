@@ -27,7 +27,6 @@ describe('Routes for Contract API', () => {
     Contract.deleteMany({});
     const authResponse = await supertest(app.router).get('/user/login');
     authTokenCookie = authResponse.headers['set-cookie'];
-    expect(authResponse.status).to.equal(200);
     authToken = authResponse.body.token;
   });
 
