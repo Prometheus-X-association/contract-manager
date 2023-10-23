@@ -6,11 +6,15 @@ import { BilateralContractSignature } from 'interfaces/schemas.interface';
 import BilateralContract from 'models/bilateral.model';
 import DataRegistry from 'models/data.registry.model';
 import { checkFieldsMatching } from 'utils/utils';
-import pdp from './pdp.service';
-import policyProviderService from './policy.provider.service';
+import pdp from './policy/pdp.service';
 import { IAuthorisationPolicy } from 'interfaces/policy.interface';
 import { logger } from 'utils/logger';
 import { IDataRegistry, IDataRegistryDB } from 'interfaces/global.interface';
+import {
+  buildConstraints,
+  genInputPolicies,
+  genPolicies,
+} from 'services/policy/utils';
 
 // Bilateral Contract Service
 export class BilateralContractService {
@@ -235,54 +239,12 @@ export class BilateralContractService {
         return false;
       }
       //
-      const constraints = this.buildConstraints(contract, data);
+      const constraints = buildConstraints(contract, data.policy);
       // Check if data is authorized based on constraints
-      const isAuthorized: boolean = constraints.every((constraint) =>
-        this.checkConstraint(constraint),
-      );
-      return isAuthorized;
+      return pdp.isAuthorised(constraints);
     } catch (error) {
       throw error;
     }
-  }
-
-  // Retrieve permissions and prohibitions constraints from the contract and input policy
-  private buildConstraints(contract: IBilateralContract, data: any): any[] {
-    const permissionsConstraint = {
-      // Permissions constraints from the contract
-      contract: contract.permission,
-      // Permissions constraints from the input policy
-      input: data.policy.permission,
-      // Indicator that these are permissions (can) and not prohibitions (cannot)
-      cannot: false,
-    };
-    const prohibitionsConstraint = {
-      // Prohibitions constraints from the contract (or an empty array if none exist)
-      contract: contract.prohibition || [],
-      // Prohibitions constraints from the input policy (or an empty array if none exist)
-      input: data.policy.prohibition || [],
-      // Indicator that these are prohibitions (cannot)
-      cannot: true,
-    };
-    // Combine permissions and prohibitions constraints for unified processing
-    return [permissionsConstraint, prohibitionsConstraint];
-  }
-
-  // Helper function to check a constraint
-  private checkConstraint(constraint: any): boolean {
-    // Create an authorization policy based on the current constraint
-    const contractPolicies: IAuthorisationPolicy[] =
-      policyProviderService.genPolicies(constraint.contract);
-    // Use the PDP to evaluate the authorization policy
-    pdp.defineReferencePolicies(contractPolicies);
-    // Generate internal policies based on input values without considering operators in constraints
-    const inputPolicies: IAuthorisationPolicy[] =
-      policyProviderService.genInputPolicies(constraint.input);
-    // Check if each input policy is authorized
-    const validation = inputPolicies.every((policy) =>
-      pdp.evalPolicy(policy, constraint.cannot),
-    );
-    return validation;
   }
 
   // Get contracts for a specific DID and an optionnal filter

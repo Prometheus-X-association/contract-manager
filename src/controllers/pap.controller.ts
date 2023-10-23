@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import pap from 'services/pap.service';
+import pap from 'services/policy/pap.service';
 import Policy from 'models/policy.model';
-import policyProviderService from 'services/policy.provider.service';
+import policyProviderService from 'services/policy/policy.provider.service';
 
 /**
  * Validates an ODRL policy.

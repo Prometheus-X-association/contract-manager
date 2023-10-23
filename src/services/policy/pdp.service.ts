@@ -6,6 +6,7 @@ import {
   mongoQueryMatcher,
 } from '@casl/ability';
 import { PDPAction, IAuthorisationPolicy } from 'interfaces/policy.interface';
+import { genInputPolicies, genPolicies } from './utils';
 
 // Define an Ability type
 type Ability = PureAbility<
@@ -82,6 +83,29 @@ class PDPService {
     });
     // Build and return the ability using the lambda conditions matcher
     return build({ conditionsMatcher: lambdaMatcher });
+  }
+
+  // Helper function to check a constraint
+  private checkConstraint(constraint: any): boolean {
+    // Create an authorization policy based on the current constraint
+    const contractPolicies: IAuthorisationPolicy[] = genPolicies(
+      constraint.reference,
+    );
+    // Evaluate the authorization policy
+    this.defineReferencePolicies(contractPolicies);
+    // Generate internal policies based on input values without considering operators in constraints
+    const inputPolicies: IAuthorisationPolicy[] = genInputPolicies(
+      constraint.input,
+    );
+    // Check if each input policy is authorized
+    const validation = inputPolicies.every((policy) =>
+      this.evalPolicy(policy, constraint.cannot),
+    );
+    return validation;
+  }
+
+  public isAuthorised(constraints: any[]) {
+    return constraints.every((constraint) => this.checkConstraint(constraint));
   }
 }
 

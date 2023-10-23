@@ -159,7 +159,6 @@ export const getContracts = async (
     res.status(500).json({ error: error.message });
   }
 };
-
 // get ODRL contract
 export const getODRLContract = async (req: Request, res: Response) => {
   try {

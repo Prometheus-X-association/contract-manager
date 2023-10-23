@@ -1,8 +1,7 @@
 import { PDPAction, IAuthorisationPolicy } from 'interfaces/policy.interface';
 import { Request } from 'express';
 import session, { Session } from 'express-session';
-import policyProviderService from 'services/policy.provider.service';
-// import { urlToOriginal } from 'utils/utils';
+import policyProviderService from 'services/policy/policy.provider.service';
 
 /**
  * ServicePIP is responsible for managing contextual policies related to the user, etc.

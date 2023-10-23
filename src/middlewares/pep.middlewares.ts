@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { IAuthorisationPolicy } from 'interfaces/policy.interface';
-import pdp from 'services/pdp.service';
-import pip from 'services/pip.service';
-import policyService from 'services/policy.provider.service';
+import pdp from 'services/policy/pdp.service';
+import pip from 'services/policy/pip.service';
+import policyService from 'services/policy/policy.provider.service';
 import { logger } from 'utils/logger';
 
 // Policy Enforcement Point

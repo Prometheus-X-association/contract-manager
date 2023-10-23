@@ -1,8 +1,9 @@
 import { expect } from 'chai';
 import { IAuthorisationPolicy } from 'interfaces/policy.interface';
-import policyProviderService from 'services/policy.provider.service';
+import policyProviderService from 'services/policy/policy.provider.service';
 import app from 'server';
 import { config } from 'config/config';
+import { genPolicies } from 'services/policy/utils';
 
 const SERVER_PORT = 9999;
 const _logObject = (data: any) => {
@@ -51,8 +52,7 @@ describe('genPolicies', () => {
         ],
       },
     ];
-    const result: IAuthorisationPolicy[] =
-      policyProviderService.genPolicies(resourceConstraint);
+    const result: IAuthorisationPolicy[] = genPolicies(resourceConstraint);
     const expectedPolicies: IAuthorisationPolicy[] = [
       {
         subject: 'http://example.com/data/resource-2',

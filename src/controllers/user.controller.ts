@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { genToken } from 'middlewares/auth.middleware';
-import pipService from 'services/pip.service';
+import pipService from 'services/policy/pip.service';
 
 export const logUser = (req: Request, res: Response) => {
   const user = req.body;

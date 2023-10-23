@@ -57,20 +57,3 @@ export const checkFieldsMatching = (a: any, b: any) => {
     field: currentField,
   };
 };
-
-type ConditionValue = boolean | number | string;
-export const getValueFromXSD = (operand: any): ConditionValue => {
-  if (typeof operand === 'object' && '@type' in operand) {
-    switch (operand['@type']) {
-      case 'xsd:boolean':
-        return operand['@value'] === 'true';
-      case 'xsd:integer':
-      case 'xsd:double':
-        return parseFloat(operand['@value']);
-      default:
-        return operand['@value'];
-    }
-  } else {
-    return operand;
-  }
-};
