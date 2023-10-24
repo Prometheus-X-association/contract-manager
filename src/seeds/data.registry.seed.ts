@@ -3,120 +3,46 @@ import DataRegistry from 'models/data.registry.model';
 // Temporary bilateral contract model created for the development process
 // This model serves as a placeholder until the final contract structure is defined
 const bilateralModelSeedling: any = {
-  '@context': 'http://www.w3.org/ns/odrl.jsonld',
-  '@type': 'Agreement',
-  '@id': 'DID:123',
-  uri: 'http://example.com/contract/123',
-  uid: '123',
-  profile: 'http://example.com/profiles/data-exchange',
+  '@context': '',
+  '@type': '',
   permission: [
     {
-      '@type': 'Offer',
+      '@type': '',
       target: '',
-      assigner: '',
-      assignee: '',
       action: '',
-      data: '',
-      constraint: '',
+      constraint: [],
     },
   ],
-  data: [
+  prohibition: [
     {
-      '@type': 'Data',
-      uid: '',
-      type: '',
-      purpose: '',
-    },
-  ],
-  purpose: [
-    {
-      '@type': 'Purpose',
-      uid: '',
-      purpose: '',
+      '@type': '',
+      target: '',
       action: '',
-      assigner: '',
-      assignee: '',
-      purposeCategory: '',
-      consentType: '',
-      piiCategory: '',
-      primaryPurpose: '',
-      termination: '',
-      thirdPartyDisclosure: '',
-      thirdPartyName: '',
+      constraint: [],
     },
   ],
-  signatures: [
-    {
-      '@type': 'Signature',
-      party: 'Participant A VC token or whatever',
-      value: 'Participant A, digital signature',
-    },
-    {
-      '@type': 'Signature',
-      party: 'Participant B VC token or whatever',
-      value: 'Participant B, digital signature',
-    },
-  ],
-  spiCat: '',
 };
 // Temporary ecoSystem contract model created for the development process
 // This model serves as a placeholder until the final contract structure is defined
 const ecoSystemModelSeedling: any = {
-  '@context': 'http://www.w3.org/ns/odrl.jsonld',
-  '@type': 'Agreement',
-  '@id': 'DID:123',
-  uri: 'http://example.com/contract/123',
-  uid: '123',
-  profile: 'http://example.com/profiles/data-exchange',
+  '@context': '',
+  '@type': '',
   permission: [
     {
-      '@type': 'Offer',
+      '@type': '',
       target: '',
-      assigner: '',
-      assignee: '',
       action: '',
-      data: '',
-      constraint: '',
+      constraint: [],
     },
   ],
-  data: [
+  prohibition: [
     {
-      '@type': 'Data',
-      uid: '',
-      type: '',
-      purpose: '',
-    },
-  ],
-  purpose: [
-    {
-      '@type': 'Purpose',
-      uid: '',
-      purpose: '',
+      '@type': '',
+      target: '',
       action: '',
-      assigner: '',
-      assignee: '',
-      purposeCategory: '',
-      consentType: '',
-      piiCategory: '',
-      primaryPurpose: '',
-      termination: '',
-      thirdPartyDisclosure: '',
-      thirdPartyName: '',
+      constraint: [],
     },
   ],
-  signatures: [
-    {
-      '@type': 'Signature',
-      party: 'Participant A VC token or whatever',
-      value: 'Participant A, digital signature',
-    },
-    {
-      '@type': 'Signature',
-      party: 'Participant B VC token or whatever',
-      value: 'Participant B, digital signature',
-    },
-  ],
-  spiCat: '',
 };
 
 // ODRL Validtaion Schemas

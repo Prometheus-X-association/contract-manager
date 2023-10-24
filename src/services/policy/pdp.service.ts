@@ -4,9 +4,11 @@ import {
   MatchConditions,
   SubjectType,
   mongoQueryMatcher,
+  AbilityOptionsOf,
 } from '@casl/ability';
 import { PDPAction, IAuthorisationPolicy } from 'interfaces/policy.interface';
 import { genInputPolicies, genPolicies } from './utils';
+import { logger } from 'utils/logger';
 
 // Define an Ability type
 type Ability = PureAbility<
@@ -14,21 +16,20 @@ type Ability = PureAbility<
   MatchConditions
 >;
 
-// Lambda function for custom conditions matching
-const lambdaMatcher = (matchConditions: MatchConditions) => {
-  return matchConditions;
-};
-
 // Policy Decision Point
 class PDPService {
-  private static instance: PDPService;
-  private referencePolicies: IAuthorisationPolicy[] = [];
-  private authorisationAbility: Ability;
+  // Lambda function for custom conditions matching
+  private static lambdaMatcher = (matchConditions: MatchConditions) => {
+    return matchConditions;
+  };
 
+  private static instance: PDPService;
+  // private referencePolicies: IAuthorisationPolicy[] = [];
+  private authorisationAbility: Ability | undefined;
+  private builder: AbilityBuilder<Ability>;
   private constructor() {
     // Initialize the singleton instance
-    const { can, build } = this.getBuilder();
-    this.authorisationAbility = build();
+    this.builder = this.getBuilder();
   }
 
   private getBuilder(): AbilityBuilder<Ability> {
@@ -43,15 +44,16 @@ class PDPService {
   }
 
   public defineReferencePolicies(policies: IAuthorisationPolicy[]): void {
-    this.referencePolicies = policies;
-    this.authorisationAbility = this.defineAbility(this.referencePolicies);
+    // this.referencePolicies = policies;
+    this.defineAbility(policies);
+    this.authorisationAbility = this.buildAbility();
   }
 
   public evalPolicy(
     policy: IAuthorisationPolicy,
     cannot: boolean = false,
   ): boolean {
-    if (policy) {
+    if (policy && this.authorisationAbility != undefined) {
       // Check if the given policy has permission
       const constraint = {
         constructor: {
@@ -67,25 +69,32 @@ class PDPService {
     return false;
   }
 
-  private defineAbility(policies: IAuthorisationPolicy[]): Ability {
-    // Create an AbilityBuilder instance
-    const { can: allow, build } = this.getBuilder();
+  // define ability from authorisation policy
+  private defineAbility(policies: IAuthorisationPolicy[]): void {
+    const { can: allow, cannot: deny } = this.builder;
     // Define permissions based on policies
     policies.forEach((item: IAuthorisationPolicy) => {
       const matchConditions = mongoQueryMatcher(item.conditions);
-      const m = mongoQueryMatcher({ age: { $gt: 17 } });
       allow(
         item.action,
         item.subject,
-        /*item.fields,*/
+        /* item.fields,*/
         matchConditions,
       );
     });
-    // Build and return the ability using the lambda conditions matcher
-    return build({ conditionsMatcher: lambdaMatcher });
   }
 
-  // Helper function to check a constraint
+  // Build current ability and make sure to generate the next builder
+  public buildAbility(): Ability {
+    // Build and return the ability using the lambda conditions matcher
+    const ability = this.builder.build({
+      conditionsMatcher: PDPService.lambdaMatcher,
+    });
+    // Generate a fresh new builder for the next use
+    this.builder = this.getBuilder();
+    return ability;
+  }
+
   private checkConstraint(constraint: any): boolean {
     // Create an authorization policy based on the current constraint
     const contractPolicies: IAuthorisationPolicy[] = genPolicies(
@@ -98,14 +107,21 @@ class PDPService {
       constraint.input,
     );
     // Check if each input policy is authorized
-    const validation = inputPolicies.every((policy) =>
-      this.evalPolicy(policy, constraint.cannot),
-    );
+    const validation = inputPolicies.every((policy) => {
+      const isValid = this.evalPolicy(policy, constraint.cannot);
+      console.log('isValid: ', isValid);
+      return isValid;
+    });
     return validation;
   }
 
-  public isAuthorised(constraints: any[]) {
-    return constraints.every((constraint) => this.checkConstraint(constraint));
+  public isAuthorised(constraints: any[]): boolean {
+    const isAuthorised = constraints.every((constraint) => {
+      console.log(`\x1b[36m${JSON.stringify(constraint, null, 2)}\x1b[37m`);
+      //
+      return this.checkConstraint(constraint);
+    });
+    return isAuthorised;
   }
 }
 
