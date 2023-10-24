@@ -1,5 +1,4 @@
 import { IContract, IContractDB } from 'interfaces/contract.interface';
-import { IAuthorisationPolicy } from 'interfaces/policy.interface';
 import Contract from 'models/contract.model';
 import DataRegistry from 'models/data.registry.model';
 import { checkFieldsMatching } from 'utils/utils';
@@ -7,11 +6,7 @@ import pdp from './policy/pdp.service';
 import { logger } from 'utils/logger';
 import { ContractSignature } from 'interfaces/schemas.interface';
 import { IDataRegistry, IDataRegistryDB } from 'interfaces/global.interface';
-import {
-  buildConstraints,
-  genInputPolicies,
-  genPolicies,
-} from 'services/policy/utils';
+import { buildConstraints } from 'services/policy/utils';
 
 // Ecosystem Contract Service
 export class ContractService {
@@ -219,10 +214,20 @@ export class ContractService {
         // Contract not found
         return false;
       }
-      //
-      const constraints = buildConstraints(contract, data.policy);
-      // Check if data is authorised based on constraints
-      return pdp.isAuthorised(constraints);
+      const { permission, prohibition } = data.policy;
+      console.log('a');
+      const isAuthorised = pdp.isAuthorised({
+        reference: {
+          permission: contract.permission,
+          prohibition: contract.prohibition,
+        },
+        external: {
+          permission,
+          prohibition,
+        },
+      });
+      console.log('b');
+      return isAuthorised;
     } catch (error) {
       throw error;
     }

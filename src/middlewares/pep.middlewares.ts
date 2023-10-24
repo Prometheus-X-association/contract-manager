@@ -22,7 +22,7 @@ const pep = async (req: Request, res: Response, next: NextFunction) => {
     const filteredUserPolicies = pip.filterUserPolicies(req, userPolicies);
     // Set reference policies
     const referencePolicy = await policyService.fetch();
-    pdp.defineReferencePolicies(referencePolicy);
+    pdp.pushReferencePolicies(referencePolicy);
     // Check authorization against all user policies
     const isAuthorized =
       filteredUserPolicies.length &&

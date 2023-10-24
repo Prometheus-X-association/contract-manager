@@ -17,4 +17,18 @@ export interface IAuthorisationPolicy extends PolicyReferenceRegistryPolicie {
   fields?: [];
 }
 //
+export interface IAuthorisationPolicySet {
+  [actor: string]: {
+    permissions: IAuthorisationPolicy[];
+    prohibitions: IAuthorisationPolicy[];
+  };
+}
+
+export interface IPolicySet {
+  [actor: string]: {
+    permission: unknown[] | undefined;
+    prohibition: unknown[] | undefined;
+  };
+}
+
 export type IAuthorisationPolicyDB = PolicyReferenceRegistryPolicieDocument;

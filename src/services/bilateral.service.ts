@@ -7,14 +7,9 @@ import BilateralContract from 'models/bilateral.model';
 import DataRegistry from 'models/data.registry.model';
 import { checkFieldsMatching } from 'utils/utils';
 import pdp from './policy/pdp.service';
-import { IAuthorisationPolicy } from 'interfaces/policy.interface';
 import { logger } from 'utils/logger';
 import { IDataRegistry, IDataRegistryDB } from 'interfaces/global.interface';
-import {
-  buildConstraints,
-  genInputPolicies,
-  genPolicies,
-} from 'services/policy/utils';
+import { buildConstraints } from 'services/policy/utils';
 
 // Bilateral Contract Service
 export class BilateralContractService {
@@ -238,10 +233,17 @@ export class BilateralContractService {
         // Contract not found
         return false;
       }
-      //
-      const constraints = buildConstraints(contract, data.policy);
-      // Check if data is authorized based on constraints
-      return pdp.isAuthorised(constraints);
+      const { permission, prohibition } = data.policy;
+      return pdp.isAuthorised({
+        reference: {
+          permission: contract.permission,
+          prohibition: contract.prohibition,
+        },
+        external: {
+          permission,
+          prohibition,
+        },
+      });
     } catch (error) {
       throw error;
     }

@@ -4,10 +4,14 @@ import {
   MatchConditions,
   SubjectType,
   mongoQueryMatcher,
-  AbilityOptionsOf,
 } from '@casl/ability';
-import { PDPAction, IAuthorisationPolicy } from 'interfaces/policy.interface';
-import { genInputPolicies, genPolicies } from './utils';
+import {
+  PDPAction,
+  IAuthorisationPolicy,
+  IAuthorisationPolicySet,
+  IPolicySet,
+} from 'interfaces/policy.interface';
+import { extractTargets, genInputPolicies, genPolicies } from './utils';
 import { logger } from 'utils/logger';
 
 // Define an Ability type
@@ -43,10 +47,22 @@ class PDPService {
     return PDPService.instance;
   }
 
+  /*
   public defineReferencePolicies(policies: IAuthorisationPolicy[]): void {
     // this.referencePolicies = policies;
     this.defineAbility(policies);
     this.authorisationAbility = this.buildAbility();
+  }
+  */
+
+  public pushReferencePolicies(
+    policies: IAuthorisationPolicy[],
+    options: any = { build: true, deny: false },
+  ): void {
+    this.defineAbility(policies, options.deny === true);
+    if (options.build) {
+      this.authorisationAbility = this.buildAbility();
+    }
   }
 
   public evalPolicy(
@@ -70,22 +86,34 @@ class PDPService {
   }
 
   // define ability from authorisation policy
-  private defineAbility(policies: IAuthorisationPolicy[]): void {
+  public defineAbility(
+    policies: IAuthorisationPolicy[],
+    shouldDeny: boolean = false,
+  ): void {
     const { can: allow, cannot: deny } = this.builder;
     // Define permissions based on policies
     policies.forEach((item: IAuthorisationPolicy) => {
       const matchConditions = mongoQueryMatcher(item.conditions);
-      allow(
-        item.action,
-        item.subject,
-        /* item.fields,*/
-        matchConditions,
-      );
+      if (shouldDeny) {
+        deny(
+          item.action,
+          item.subject,
+          /* item.fields,*/
+          matchConditions,
+        );
+      } else {
+        allow(
+          item.action,
+          item.subject,
+          /* item.fields,*/
+          matchConditions,
+        );
+      }
     });
   }
 
   // Build current ability and make sure to generate the next builder
-  public buildAbility(): Ability {
+  private buildAbility(): Ability {
     // Build and return the ability using the lambda conditions matcher
     const ability = this.builder.build({
       conditionsMatcher: PDPService.lambdaMatcher,
@@ -95,33 +123,67 @@ class PDPService {
     return ability;
   }
 
-  private checkConstraint(constraint: any): boolean {
-    // Create an authorization policy based on the current constraint
-    const contractPolicies: IAuthorisationPolicy[] = genPolicies(
-      constraint.reference,
-    );
-    // Evaluate the authorization policy
-    this.defineReferencePolicies(contractPolicies);
-    // Generate internal policies based on input values without considering operators in constraints
-    const inputPolicies: IAuthorisationPolicy[] = genInputPolicies(
-      constraint.input,
-    );
-    // Check if each input policy is authorized
-    const validation = inputPolicies.every((policy) => {
-      const isValid = this.evalPolicy(policy, constraint.cannot);
+  /*
+  const contractPolicies: IAuthorisationPolicy[] = genPolicies(
+    constraint.reference,
+  );
+  */
+  private evalAuthorisations(set: IAuthorisationPolicySet): boolean {
+    const refPermissions = set.reference.permissions;
+    const extPermissions = set.external.permissions;
+    const refProhibitions = set.reference.prohibitions;
+    const extProhibitions = set.external.prohibitions;
+    //
+    this.pushReferencePolicies(refPermissions, { build: false });
+    this.pushReferencePolicies(extPermissions, { build: false });
+    this.pushReferencePolicies(refProhibitions, { build: false, deny: true });
+    this.pushReferencePolicies(extProhibitions, { build: true, deny: true });
+    //
+    console.log('>>');
+    console.log(JSON.stringify(refPermissions, null, 2));
+    console.log(JSON.stringify(extPermissions, null, 2));
+    console.log(JSON.stringify(refProhibitions, null, 2));
+    console.log(JSON.stringify(extProhibitions, null, 2));
+    console.log('<<');
+    /*
+    const targets: IAuthorisationPolicy[] = [
+      ...extractTargets(extPermissions),
+      ...extractTargets(extProhibitions),
+    ];
+    
+    const policies: IAuthorisationPolicy[] = genContextPolicies();
+    //
+    const validation = policies.every((policy) => {
+      const isValid = this.evalPolicy(policy);
       console.log('isValid: ', isValid);
       return isValid;
     });
-    return validation;
+    */
+    return false /*validation*/;
   }
 
-  public isAuthorised(constraints: any[]): boolean {
+  public isAuthorised(set: IPolicySet): boolean {
+    const authorisationPolicySet: IAuthorisationPolicySet = {
+      reference: {
+        permissions: genPolicies(set.reference.permission),
+        prohibitions: genPolicies(set.reference.prohibition),
+      },
+      external: {
+        permissions: genPolicies(set.external.permission),
+        prohibitions: genPolicies(set.external.prohibition),
+      },
+    };
+    this.evalAuthorisations(authorisationPolicySet);
+    /*
     const isAuthorised = constraints.every((constraint) => {
-      console.log(`\x1b[36m${JSON.stringify(constraint, null, 2)}\x1b[37m`);
+      // console.log(`\x1b[36m${JSON.stringify(constraint, null, 2)}\x1b[37m`);
       //
-      return this.checkConstraint(constraint);
+      const check = this.checkConstraint(constraint);
+      return check;
     });
     return isAuthorised;
+    */
+    return false;
   }
 }
 

@@ -32,40 +32,44 @@ export const getValueFromXSD = (operand: any): ConditionValue => {
 
 // Generate internal policies based on constraint configurations
 // derived from the contract's permissions, prohibitions, or duties.
-export const genPolicies = (permissions: any): IAuthorisationPolicy[] => {
+export const genPolicies = (
+  permissions: unknown | undefined,
+): IAuthorisationPolicy[] => {
   const policies: IAuthorisationPolicy[] = [];
   // Iterate through each permission provided.
-  for (const permission of permissions) {
-    const policy: IAuthorisationPolicy = {
-      // Set the subject of the policy to the 'target' property of the permission.
-      subject: permission.target,
-      // Set the action of the policy to the 'action' property of the permission.
-      action: permission.action,
-      conditions: {},
-    };
+  if (permissions !== undefined) {
+    for (const permission of permissions as any) {
+      const policy: IAuthorisationPolicy = {
+        // Set the subject of the policy to the 'target' property of the permission.
+        subject: permission.target,
+        // Set the action of the policy to the 'action' property of the permission.
+        action: permission.action,
+        conditions: {},
+      };
 
-    if (permission.constraint) {
-      // Iterate through each constraint in the permission.
-      for (const constraint of permission.constraint) {
-        const condition: Record<string, any> = {};
-        const leftOperand = constraint.leftOperand;
-        if (leftOperand) {
-          condition[leftOperand] = {};
-          const operator: string | undefined = operators[constraint.operator];
-          if (operator) {
-            condition[leftOperand] = {
-              [operator]: getValueFromXSD(constraint.rightOperand),
-            };
-          } else {
-            logger.warn(`Operator ${operator} unsupported.`);
+      if (permission.constraint) {
+        // Iterate through each constraint in the permission.
+        for (const constraint of permission.constraint) {
+          const condition: Record<string, any> = {};
+          const leftOperand = constraint.leftOperand;
+          if (leftOperand) {
+            condition[leftOperand] = {};
+            const operator: string | undefined = operators[constraint.operator];
+            if (operator) {
+              condition[leftOperand] = {
+                [operator]: getValueFromXSD(constraint.rightOperand),
+              };
+            } else {
+              logger.warn(`Operator ${operator} unsupported.`);
+            }
           }
+          // Merge the condition into the policy's conditions.
+          Object.assign(policy.conditions, condition);
         }
-        // Merge the condition into the policy's conditions.
-        Object.assign(policy.conditions, condition);
       }
+      // Add the policy to the list of generated policies.
+      policies.push(policy);
     }
-    // Add the policy to the list of generated policies.
-    policies.push(policy);
   }
   // Return the generated policies.
   return policies;
@@ -74,27 +78,31 @@ export const genPolicies = (permissions: any): IAuthorisationPolicy[] => {
 // Generate internal policies based on constraint configurations
 // derived from the contract's permissions, prohibitions, or duties.
 // This method focuses on generating policies based on input values without considering operators in constraints.
-export const genInputPolicies = (permissions: any): IAuthorisationPolicy[] => {
+export const genInputPolicies = (
+  permissions: unknown | undefined,
+): IAuthorisationPolicy[] => {
   const policies: IAuthorisationPolicy[] = [];
-  for (const permission of permissions) {
-    const policy: IAuthorisationPolicy = {
-      subject: permission.target,
-      action: permission.action,
-      conditions: {},
-    };
-    if (permission.constraint) {
-      for (const constraint of permission.constraint) {
-        const leftOperand = constraint.leftOperand;
+  if (permissions !== undefined) {
+    for (const permission of permissions as any) {
+      const policy: IAuthorisationPolicy = {
+        subject: permission.target,
+        action: permission.action,
+        conditions: {},
+      };
+      if (permission.constraint) {
+        for (const constraint of permission.constraint) {
+          const leftOperand = constraint.leftOperand;
 
-        if (leftOperand) {
-          const condition: Record<string, any> = {
-            [leftOperand]: constraint.rightOperand,
-          };
-          Object.assign(policy.conditions, condition);
+          if (leftOperand) {
+            const condition: Record<string, any> = {
+              [leftOperand]: constraint.rightOperand,
+            };
+            Object.assign(policy.conditions, condition);
+          }
         }
       }
+      policies.push(policy);
     }
-    policies.push(policy);
   }
   return policies;
 };
@@ -119,4 +127,10 @@ export const buildConstraints = (reference: any, input: any): any[] => {
   };
   // Combine permissions and prohibitions constraints for unified processing
   return [permissionsConstraint, prohibitionsConstraint];
+};
+
+export const extractTargets = (
+  policies: IAuthorisationPolicy[],
+): IAuthorisationPolicy[] => {
+  return [];
 };
