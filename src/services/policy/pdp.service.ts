@@ -11,7 +11,7 @@ import {
   IAuthorisationPolicySet,
   IPolicySet,
 } from 'interfaces/policy.interface';
-import { extractTargets, genInputPolicies, genPolicies } from './utils';
+import { genConditions, genPolicies } from './utils';
 import { logger } from 'utils/logger';
 
 // Define an Ability type
@@ -123,11 +123,6 @@ class PDPService {
     return ability;
   }
 
-  /*
-  const contractPolicies: IAuthorisationPolicy[] = genPolicies(
-    constraint.reference,
-  );
-  */
   private evalAuthorisations(set: IAuthorisationPolicySet): boolean {
     const refPermissions = set.reference.permissions;
     const extPermissions = set.external.permissions;
@@ -138,28 +133,19 @@ class PDPService {
     this.pushReferencePolicies(extPermissions, { build: false });
     this.pushReferencePolicies(refProhibitions, { build: false, deny: true });
     this.pushReferencePolicies(extProhibitions, { build: true, deny: true });
-    //
-    console.log('>>');
-    console.log(JSON.stringify(refPermissions, null, 2));
-    console.log(JSON.stringify(extPermissions, null, 2));
-    console.log(JSON.stringify(refProhibitions, null, 2));
-    console.log(JSON.stringify(extProhibitions, null, 2));
-    console.log('<<');
-    /*
-    const targets: IAuthorisationPolicy[] = [
-      ...extractTargets(extPermissions),
-      ...extractTargets(extProhibitions),
+
+    const policies: IAuthorisationPolicy[] = [
+      ...genConditions(extProhibitions),
+      ...genConditions(extProhibitions),
     ];
-    
-    const policies: IAuthorisationPolicy[] = genContextPolicies();
-    //
+
     const validation = policies.every((policy) => {
       const isValid = this.evalPolicy(policy);
       console.log('isValid: ', isValid);
       return isValid;
     });
-    */
-    return false /*validation*/;
+
+    return validation;
   }
 
   public isAuthorised(set: IPolicySet): boolean {
@@ -173,17 +159,7 @@ class PDPService {
         prohibitions: genPolicies(set.external.prohibition),
       },
     };
-    this.evalAuthorisations(authorisationPolicySet);
-    /*
-    const isAuthorised = constraints.every((constraint) => {
-      // console.log(`\x1b[36m${JSON.stringify(constraint, null, 2)}\x1b[37m`);
-      //
-      const check = this.checkConstraint(constraint);
-      return check;
-    });
-    return isAuthorised;
-    */
-    return false;
+    return this.evalAuthorisations(authorisationPolicySet);
   }
 }
 

@@ -129,8 +129,15 @@ export const buildConstraints = (reference: any, input: any): any[] => {
   return [permissionsConstraint, prohibitionsConstraint];
 };
 
-export const extractTargets = (
-  policies: IAuthorisationPolicy[],
-): IAuthorisationPolicy[] => {
-  return [];
-};
+export const genConditions = (autorisations: IAuthorisationPolicy[]) =>
+  autorisations.map((authorisation: IAuthorisationPolicy) => {
+    const auth = { ...authorisation };
+    if (auth?.conditions) {
+      auth.conditions = Object.fromEntries(
+        Object.entries(auth.conditions).map(([key, value]) => {
+          return [key, 0];
+        }),
+      );
+    }
+    return auth;
+  });
