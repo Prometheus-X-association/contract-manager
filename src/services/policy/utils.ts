@@ -1,5 +1,6 @@
-import { IAuthorisationPolicy } from 'interfaces/policy.interface';
+import { IAuthorisationPolicy, ICondition } from 'interfaces/policy.interface';
 import { logger } from 'utils/logger';
+import { PDPAction } from 'interfaces/policy.interface';
 
 // temporary odrl policy schema to put in data base
 const operators: any = Object.freeze({
@@ -127,4 +128,39 @@ export const buildConstraints = (reference: any, input: any): any[] => {
   };
   // Combine permissions and prohibitions constraints for unified processing
   return [permissionsConstraint, prohibitionsConstraint];
+};
+
+///
+export const mergeConditions = (
+  authorisations: IAuthorisationPolicy[],
+): IAuthorisationPolicy[] => {
+  const conditions: Record<string, ICondition> = {};
+
+  authorisations.forEach(({ subject, action, conditions: authConditions }) => {
+    const key = `${subject}:${action}`;
+    conditions[key] = conditions[key] || {};
+    Object.entries(authConditions).forEach(([conditionKey, conditionValue]) => {
+      conditions[key][conditionKey] = Array.isArray(
+        conditions[key][conditionKey],
+      )
+        ? [...(conditions[key][conditionKey] as []), ...(conditionValue as [])]
+        : {
+            ...(conditions[key][conditionKey] as ICondition),
+            ...(conditionValue as ICondition),
+          };
+    });
+  });
+
+  const mergedAuthorisations: IAuthorisationPolicy[] = Object.entries(
+    conditions,
+  ).map(([key, mergedConditions]) => {
+    const [subject, action] = key.split(':');
+    return {
+      subject,
+      action,
+      conditions: mergedConditions,
+    };
+  }) as IAuthorisationPolicy[];
+
+  return mergedAuthorisations;
 };

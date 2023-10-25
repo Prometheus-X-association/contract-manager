@@ -1,5 +1,7 @@
 import * as fs from 'fs';
 import * as path from 'path';
+import { logger } from './logger';
+import { IAuthorisationPolicy } from 'interfaces/policy.interface';
 
 export const urlToOriginal = (
   url: string,
@@ -21,10 +23,7 @@ export const loadJsonFromFile = (jsonPath: string) => {
     return JSON.parse(modelData);
   } catch (error) {
     // Handle errors produced when reading the contract model
-    console.error(
-      'An error occurred while reading the contract model\n',
-      error,
-    );
+    logger.error('An error occurred while reading the contract model\n', error);
     return null;
   }
 };

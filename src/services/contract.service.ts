@@ -216,7 +216,6 @@ export class ContractService {
         return false;
       }
       const { permission, prohibition } = data.policy;
-      console.log('a');
       const isAuthorised = pdp.isAuthorised(
         {
           reference: {
@@ -230,7 +229,6 @@ export class ContractService {
         },
         sessionId,
       );
-      console.log('b');
       return isAuthorised;
     } catch (error) {
       throw error;

@@ -22,9 +22,13 @@ const pep = async (req: Request, res: Response, next: NextFunction) => {
 
     // Todo: to be removed
     // Temporary fake data for testing purpose
-    repository.addUserData(req.session.id, {
+    const data: any = {
       age: 21,
-    });
+      role: 'admin',
+    };
+    repository.addUserData(req.session.id, data);
+    repository.addData(data);
+    //
 
     // Filter user policies based on the current request
     const filteredUserPolicies = pip.filterUserPolicies(req, userPolicies);

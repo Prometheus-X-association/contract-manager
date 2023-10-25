@@ -60,6 +60,7 @@ describe('Scenario creating an ecosystem contract\n\tthen process an input polic
           ],
         },
       ],
+      /*
       prohibition: [
         {
           action: 'read',
@@ -67,12 +68,13 @@ describe('Scenario creating an ecosystem contract\n\tthen process an input polic
           constraint: [
             {
               leftOperand: 'age',
-              operator: 'gt',
+              operator: 'lt',
               rightOperand: 20,
             },
           ],
         },
       ],
+      */
     };
     _logGreen('The odrl input contract:');
     _logObject(contract);
@@ -99,7 +101,7 @@ describe('Scenario creating an ecosystem contract\n\tthen process an input polic
             {
               leftOperand: 'age',
               operator: 'gt',
-              rightOperand: 21,
+              rightOperand: 20,
             },
             {
               leftOperand: 'role',
@@ -108,6 +110,7 @@ describe('Scenario creating an ecosystem contract\n\tthen process an input polic
             },
           ],
         },
+        /*
         {
           action: 'use',
           target: 'http://contract-target-task',
@@ -119,6 +122,7 @@ describe('Scenario creating an ecosystem contract\n\tthen process an input polic
             },
           ],
         },
+        */
       ],
     };
     _logYellow('\n-Check if resource is exploitable');

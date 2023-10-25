@@ -11,9 +11,11 @@ export interface IPolicy extends Document {
 
 export type PDPAction = 'write' | 'POST' | 'GET' | 'PUT' | 'DELETE';
 //
+export type ICondition = Record<string, unknown>;
+
 export interface IAuthorisationPolicy extends PolicyReferenceRegistryPolicie {
   action: PDPAction;
-  conditions: Record<string, unknown>;
+  conditions: ICondition;
   fields?: [];
 }
 //

@@ -14,6 +14,7 @@ import {
 import repository from 'services/data.repository.service';
 import { genPolicies } from './utils';
 import { logger } from 'utils/logger';
+import { mergeConditions } from 'services/policy/utils';
 
 // Define an Ability type
 type Ability = PureAbility<
@@ -129,25 +130,24 @@ class PolicyEvaluator {
   }
   private evalAuthorisations(set: IAuthorisationPolicySet): boolean {
     const pdp = PDPService.getInstance();
-    const refPermissions = set.reference.permissions;
-    const extPermissions = set.external.permissions;
-    const refProhibitions = set.reference.prohibitions;
-    const extProhibitions = set.external.prohibitions;
     //
-    pdp.pushReferencePolicies(refPermissions, { build: false });
-    pdp.pushReferencePolicies(extPermissions, { build: false });
-    pdp.pushReferencePolicies(refProhibitions, {
-      build: false,
-      deny: true,
-    });
-    pdp.pushReferencePolicies(extProhibitions, {
-      build: true,
-      deny: true,
-    });
+    const permissions = mergeConditions([
+      ...set.reference.permissions,
+      ...set.external.permissions,
+    ]);
+    //
+    const prohibitions = mergeConditions([
+      ...set.reference.prohibitions,
+      ...set.external.prohibitions,
+    ]);
+    //
+    pdp.pushReferencePolicies(permissions, { build: false });
+    pdp.pushReferencePolicies(prohibitions, { build: true, deny: true });
 
+    // Todo remove double
     const policies: IAuthorisationPolicy[] = [
-      ...this.genConditions(extProhibitions),
-      ...this.genConditions(extProhibitions),
+      ...this.genConditions(permissions),
+      // ...this.genConditions(prohibitions),
     ];
 
     const validation = policies.every((policy) => {
@@ -179,7 +179,7 @@ class PolicyEvaluator {
     const [store, name] = key.split(':');
     let value: unknown | null = 0;
     if (name === undefined) {
-      value = repository.getValue(name);
+      value = repository.getValue(store);
     } else if (store === 'user') {
       value = repository.getUserValue(this.sessionId, name);
     } else {

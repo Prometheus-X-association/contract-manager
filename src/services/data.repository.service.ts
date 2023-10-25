@@ -30,8 +30,18 @@ export class DataRepository {
     return DataRepository.instance;
   }
 
+  public addData(data: Record<string, unknown>): void {
+    if (data) {
+      const store = this.store.default || {};
+      this.store.default = { ...store, ...data };
+    } else {
+      logger.error(
+        '[DataRepository:addData] Invalid sessionId or data provided',
+      );
+    }
+  }
   // Method to add user data to the user-specific Store for a given session
-  public addUserData(sessionId: string, data: Record<string, unknown>) {
+  public addUserData(sessionId: string, data: Record<string, unknown>): void {
     // Ensure sessionId and data are defined
     if (sessionId && data) {
       // Ensure user section is initialized

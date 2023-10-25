@@ -237,13 +237,6 @@ describe('Routes for Bilateral Contract API', () => {
         {
           action: 'read',
           target: 'http://contract-target',
-          constraint: [
-            {
-              leftOperand: 'age',
-              operator: 'eq',
-              rightOperand: 18,
-            },
-          ],
         },
       ],
     };

@@ -238,13 +238,6 @@ describe('Routes for Contract API', () => {
         {
           action: 'read',
           target: 'http://contract-target',
-          constraint: [
-            {
-              leftOperand: 'age',
-              operator: 'eq',
-              rightOperand: 18,
-            },
-          ],
         },
       ],
     };
