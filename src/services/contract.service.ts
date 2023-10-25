@@ -206,6 +206,7 @@ export class ContractService {
   public async checkPermission(
     contractId: string,
     data: any,
+    sessionId: string,
   ): Promise<boolean> {
     try {
       // Retrieve contract data by ID
@@ -216,16 +217,19 @@ export class ContractService {
       }
       const { permission, prohibition } = data.policy;
       console.log('a');
-      const isAuthorised = pdp.isAuthorised({
-        reference: {
-          permission: contract.permission,
-          prohibition: contract.prohibition,
+      const isAuthorised = pdp.isAuthorised(
+        {
+          reference: {
+            permission: contract.permission,
+            prohibition: contract.prohibition,
+          },
+          external: {
+            permission,
+            prohibition,
+          },
         },
-        external: {
-          permission,
-          prohibition,
-        },
-      });
+        sessionId,
+      );
       console.log('b');
       return isAuthorised;
     } catch (error) {

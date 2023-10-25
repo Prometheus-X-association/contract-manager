@@ -225,6 +225,7 @@ export class BilateralContractService {
   public async checkPermission(
     contractId: string,
     data: any,
+    sessionId: string,
   ): Promise<boolean> {
     try {
       // Retrieve contract data by ID
@@ -234,16 +235,19 @@ export class BilateralContractService {
         return false;
       }
       const { permission, prohibition } = data.policy;
-      return pdp.isAuthorised({
-        reference: {
-          permission: contract.permission,
-          prohibition: contract.prohibition,
+      return pdp.isAuthorised(
+        {
+          reference: {
+            permission: contract.permission,
+            prohibition: contract.prohibition,
+          },
+          external: {
+            permission,
+            prohibition,
+          },
         },
-        external: {
-          permission,
-          prohibition,
-        },
-      });
+        sessionId,
+      );
     } catch (error) {
       throw error;
     }

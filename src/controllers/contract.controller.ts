@@ -108,10 +108,12 @@ export const revokeContractSignature = async (req: Request, res: Response) => {
 export const checkDataExploitation = async (req: Request, res: Response) => {
   const contractId = req.params.id;
   const data = { policy: req.body };
+  const sessionId = req.session.id;
   try {
     const isAuthorised = await contractService.checkPermission(
       contractId,
       data,
+      sessionId,
     );
     if (isAuthorised) {
       return res.status(200).json({ authorised: true });

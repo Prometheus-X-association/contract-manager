@@ -128,16 +128,3 @@ export const buildConstraints = (reference: any, input: any): any[] => {
   // Combine permissions and prohibitions constraints for unified processing
   return [permissionsConstraint, prohibitionsConstraint];
 };
-
-export const genConditions = (autorisations: IAuthorisationPolicy[]) =>
-  autorisations.map((authorisation: IAuthorisationPolicy) => {
-    const auth = { ...authorisation };
-    if (auth?.conditions) {
-      auth.conditions = Object.fromEntries(
-        Object.entries(auth.conditions).map(([key, value]) => {
-          return [key, 0];
-        }),
-      );
-    }
-    return auth;
-  });

@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { IAuthorisationPolicy } from 'interfaces/policy.interface';
+import repository from 'services/data.repository.service';
 import pdp from 'services/policy/pdp.service';
 import pip from 'services/policy/pip.service';
 import policyService from 'services/policy/policy.provider.service';
@@ -18,6 +19,13 @@ const pep = async (req: Request, res: Response, next: NextFunction) => {
       pip.setUserPolicyToSession(req, newUserPolicy);
       userPolicies = newUserPolicy;
     }
+
+    // Todo: to be removed
+    // Temporary fake data for testing purpose
+    repository.addUserData(req.session.id, {
+      age: 21,
+    });
+
     // Filter user policies based on the current request
     const filteredUserPolicies = pip.filterUserPolicies(req, userPolicies);
     // Set reference policies

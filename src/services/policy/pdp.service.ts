@@ -11,7 +11,8 @@ import {
   IAuthorisationPolicySet,
   IPolicySet,
 } from 'interfaces/policy.interface';
-import { genConditions, genPolicies } from './utils';
+import repository from 'services/data.repository.service';
+import { genPolicies } from './utils';
 import { logger } from 'utils/logger';
 
 // Define an Ability type
@@ -46,14 +47,6 @@ class PDPService {
     }
     return PDPService.instance;
   }
-
-  /*
-  public defineReferencePolicies(policies: IAuthorisationPolicy[]): void {
-    // this.referencePolicies = policies;
-    this.defineAbility(policies);
-    this.authorisationAbility = this.buildAbility();
-  }
-  */
 
   public pushReferencePolicies(
     policies: IAuthorisationPolicy[],
@@ -123,24 +116,42 @@ class PDPService {
     return ability;
   }
 
+  public isAuthorised(set: IPolicySet, sessionId: string): boolean {
+    const evaluator = new PolicyEvaluator(sessionId);
+    return evaluator.isAllowing(set);
+  }
+}
+
+class PolicyEvaluator {
+  private sessionId: string;
+  constructor(sessionId: string) {
+    this.sessionId = sessionId;
+  }
   private evalAuthorisations(set: IAuthorisationPolicySet): boolean {
+    const pdp = PDPService.getInstance();
     const refPermissions = set.reference.permissions;
     const extPermissions = set.external.permissions;
     const refProhibitions = set.reference.prohibitions;
     const extProhibitions = set.external.prohibitions;
     //
-    this.pushReferencePolicies(refPermissions, { build: false });
-    this.pushReferencePolicies(extPermissions, { build: false });
-    this.pushReferencePolicies(refProhibitions, { build: false, deny: true });
-    this.pushReferencePolicies(extProhibitions, { build: true, deny: true });
+    pdp.pushReferencePolicies(refPermissions, { build: false });
+    pdp.pushReferencePolicies(extPermissions, { build: false });
+    pdp.pushReferencePolicies(refProhibitions, {
+      build: false,
+      deny: true,
+    });
+    pdp.pushReferencePolicies(extProhibitions, {
+      build: true,
+      deny: true,
+    });
 
     const policies: IAuthorisationPolicy[] = [
-      ...genConditions(extProhibitions),
-      ...genConditions(extProhibitions),
+      ...this.genConditions(extProhibitions),
+      ...this.genConditions(extProhibitions),
     ];
 
     const validation = policies.every((policy) => {
-      const isValid = this.evalPolicy(policy);
+      const isValid = pdp.evalPolicy(policy);
       console.log('isValid: ', isValid);
       return isValid;
     });
@@ -148,7 +159,36 @@ class PDPService {
     return validation;
   }
 
-  public isAuthorised(set: IPolicySet): boolean {
+  private genConditions(
+    authorizations: IAuthorisationPolicy[],
+  ): IAuthorisationPolicy[] {
+    return authorizations.map((authorization: IAuthorisationPolicy) => {
+      const auth = { ...authorization };
+      if (auth?.conditions) {
+        auth.conditions = Object.fromEntries(
+          Object.entries(auth.conditions).map(([key, value]) => {
+            return [key, this.getRightValue(key)];
+          }),
+        );
+      }
+      return auth;
+    });
+  }
+
+  private getRightValue(key: string): unknown {
+    const [store, name] = key.split(':');
+    let value: unknown | null = 0;
+    if (name === undefined) {
+      value = repository.getValue(name);
+    } else if (store === 'user') {
+      value = repository.getUserValue(this.sessionId, name);
+    } else {
+      repository.getStoreValue(store, name);
+    }
+    return value;
+  }
+
+  public isAllowing(set: IPolicySet): boolean {
     const authorisationPolicySet: IAuthorisationPolicySet = {
       reference: {
         permissions: genPolicies(set.reference.permission),
@@ -162,5 +202,4 @@ class PDPService {
     return this.evalAuthorisations(authorisationPolicySet);
   }
 }
-
 export default PDPService.getInstance();
