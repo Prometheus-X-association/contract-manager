@@ -88,7 +88,7 @@ describe('Scenario creating an ecosystem contract and verify a policy', () => {
             {
               leftOperand: 'age',
               operator: 'eq',
-              rightOperand: 18,
+              rightOperand: 21,
             },
           ],
         },

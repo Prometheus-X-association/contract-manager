@@ -119,51 +119,66 @@ class PDPService {
 
   public isAuthorised(set: IPolicySet, sessionId: string): boolean {
     const evaluator = new PolicyEvaluator(sessionId);
-    return evaluator.isAllowing(set);
+    return evaluator.isAllowed(set);
   }
 }
 
-class PolicyEvaluator {
+export class PolicyEvaluator {
   private sessionId: string;
   constructor(sessionId: string) {
     this.sessionId = sessionId;
   }
+
+  /**
+   * Evaluate authorisations of a set using the PDP (Policy Decision Point) service.
+   * @param set - Set of authorisations including reference and external authorisations.
+   * @returns {boolean} - Returns true if all authorisation policies are valid, otherwise false.
+   */
   private evalAuthorisations(set: IAuthorisationPolicySet): boolean {
+    // Get an instance of the PDP (Policy Decision Point) service.
     const pdp = PDPService.getInstance();
-    //
+
+    // Merge reference and external authorisations for permissions.
     const permissions = mergeConditions([
       ...set.reference.permissions,
       ...set.external.permissions,
     ]);
-    //
+
+    // Merge reference and external authorisations for prohibitions.
     const prohibitions = mergeConditions([
       ...set.reference.prohibitions,
       ...set.external.prohibitions,
     ]);
-    //
+
+    // Add reference policies to the PDP service.
     pdp.pushReferencePolicies(permissions, { build: false });
     pdp.pushReferencePolicies(prohibitions, { build: true, deny: true });
 
-    // Todo remove double
-    const policies: IAuthorisationPolicy[] = [
-      ...this.genConditions(permissions),
-      // ...this.genConditions(prohibitions),
-    ];
+    // Generate conditions to evaluate with values from the system from the merge of permissions and prohibitions.
+    const policies: IAuthorisationPolicy[] = this.genConditions(
+      mergeConditions([...permissions, ...prohibitions]),
+    );
 
+    // Evaluate each generated policy with the PDP service and check if they are all valid.
     const validation = policies.every((policy) => {
       const isValid = pdp.evalPolicy(policy);
-      console.log('isValid: ', isValid);
       return isValid;
     });
 
+    // Return the validation result.
     return validation;
   }
 
+  /**
+   * Generate conditions for authorisations, replacing condition values with corresponding system values.
+   * @param authorisations - Array of authorisations to be processed.
+   * @returns {IAuthorisationPolicy[]} - Array of processed authorisations with replaced condition values.
+   */
   private genConditions(
-    authorizations: IAuthorisationPolicy[],
+    authorisations: IAuthorisationPolicy[],
   ): IAuthorisationPolicy[] {
-    return authorizations.map((authorization: IAuthorisationPolicy) => {
-      const auth = { ...authorization };
+    return authorisations.map((authorisation: IAuthorisationPolicy) => {
+      const auth = { ...authorisation };
       if (auth?.conditions) {
         auth.conditions = Object.fromEntries(
           Object.entries(auth.conditions).map(([key, value]) => {
@@ -175,6 +190,11 @@ class PolicyEvaluator {
     });
   }
 
+  /**
+   * Get the correct value from the system based on the provided key.
+   * @param key - authorisation condition key.
+   * @returns {unknown} - Value corresponding to the provided key from the system.
+   */
   private getRightValue(key: string): unknown {
     const [store, name] = key.split(':');
     let value: unknown | null = 0;
@@ -188,7 +208,12 @@ class PolicyEvaluator {
     return value;
   }
 
-  public isAllowing(set: IPolicySet): boolean {
+  /**
+   * Check if a set of policies is allowed based on the provided policy set.
+   * @param set - Policy set containing reference and external policies.
+   * @returns {boolean} - Returns true if all policies are allowed, otherwise false.
+   */
+  public isAllowed(set: IPolicySet): boolean {
     const authorisationPolicySet: IAuthorisationPolicySet = {
       reference: {
         permissions: genPolicies(set.reference.permission),

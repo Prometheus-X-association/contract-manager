@@ -60,7 +60,6 @@ describe('Scenario creating an ecosystem contract\n\tthen process an input polic
           ],
         },
       ],
-      /*
       prohibition: [
         {
           action: 'read',
@@ -68,13 +67,12 @@ describe('Scenario creating an ecosystem contract\n\tthen process an input polic
           constraint: [
             {
               leftOperand: 'age',
-              operator: 'lt',
-              rightOperand: 20,
+              operator: 'gt',
+              rightOperand: 23,
             },
           ],
         },
       ],
-      */
     };
     _logGreen('The odrl input contract:');
     _logObject(contract);
@@ -100,8 +98,8 @@ describe('Scenario creating an ecosystem contract\n\tthen process an input polic
           constraint: [
             {
               leftOperand: 'age',
-              operator: 'gt',
-              rightOperand: 20,
+              operator: 'lt',
+              rightOperand: 22,
             },
             {
               leftOperand: 'role',

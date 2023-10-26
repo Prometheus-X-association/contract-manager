@@ -137,7 +137,11 @@ export const mergeConditions = (
   const conditions: Record<string, ICondition> = {};
 
   authorisations.forEach(({ subject, action, conditions: authConditions }) => {
-    const key = `${subject}:${action}`;
+    const key = JSON.stringify({
+      subject,
+      action,
+    });
+
     conditions[key] = conditions[key] || {};
     Object.entries(authConditions).forEach(([conditionKey, conditionValue]) => {
       conditions[key][conditionKey] = Array.isArray(
@@ -154,7 +158,7 @@ export const mergeConditions = (
   const mergedAuthorisations: IAuthorisationPolicy[] = Object.entries(
     conditions,
   ).map(([key, mergedConditions]) => {
-    const [subject, action] = key.split(':');
+    const { subject, action } = JSON.parse(key);
     return {
       subject,
       action,
