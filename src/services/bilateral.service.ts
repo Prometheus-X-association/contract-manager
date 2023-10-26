@@ -237,14 +237,11 @@ export class BilateralContractService {
       const { permission, prohibition } = data.policy;
       return pdp.isAuthorised(
         {
-          reference: {
-            permission: contract.permission,
-            prohibition: contract.prohibition,
-          },
-          external: {
-            permission,
-            prohibition,
-          },
+          permission: [...(contract.permission || []), ...(permission || [])],
+          prohibition: [
+            ...(contract.prohibition || []),
+            ...(prohibition || []),
+          ],
         },
         sessionId,
       );

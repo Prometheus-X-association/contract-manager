@@ -119,7 +119,7 @@ class PDPService {
 
   public isAuthorised(set: IPolicySet, sessionId: string): boolean {
     const evaluator = new PolicyEvaluator(sessionId);
-    return evaluator.isAllowed(set);
+    return evaluator.isAuthorised(set);
   }
 }
 
@@ -137,34 +137,22 @@ export class PolicyEvaluator {
   private evalAuthorisations(set: IAuthorisationPolicySet): boolean {
     // Get an instance of the PDP (Policy Decision Point) service.
     const pdp = PDPService.getInstance();
-
     // Merge reference and external authorisations for permissions.
-    const permissions = mergeConditions([
-      ...set.reference.permissions,
-      ...set.external.permissions,
-    ]);
-
+    const permissions = mergeConditions(set.permissions);
     // Merge reference and external authorisations for prohibitions.
-    const prohibitions = mergeConditions([
-      ...set.reference.prohibitions,
-      ...set.external.prohibitions,
-    ]);
-
+    const prohibitions = mergeConditions(set.prohibitions);
     // Add reference policies to the PDP service.
     pdp.pushReferencePolicies(permissions, { build: false });
     pdp.pushReferencePolicies(prohibitions, { build: true, deny: true });
-
     // Generate conditions to evaluate with values from the system from the merge of permissions and prohibitions.
     const policies: IAuthorisationPolicy[] = this.genConditions(
       mergeConditions([...permissions, ...prohibitions]),
     );
-
     // Evaluate each generated policy with the PDP service and check if they are all valid.
     const validation = policies.every((policy) => {
       const isValid = pdp.evalPolicy(policy);
       return isValid;
     });
-
     // Return the validation result.
     return validation;
   }
@@ -213,16 +201,10 @@ export class PolicyEvaluator {
    * @param set - Policy set containing reference and external policies.
    * @returns {boolean} - Returns true if all policies are allowed, otherwise false.
    */
-  public isAllowed(set: IPolicySet): boolean {
+  public isAuthorised(set: IPolicySet): boolean {
     const authorisationPolicySet: IAuthorisationPolicySet = {
-      reference: {
-        permissions: genPolicies(set.reference.permission),
-        prohibitions: genPolicies(set.reference.prohibition),
-      },
-      external: {
-        permissions: genPolicies(set.external.permission),
-        prohibitions: genPolicies(set.external.prohibition),
-      },
+      permissions: genPolicies(set.permission),
+      prohibitions: genPolicies(set.prohibition),
     };
     return this.evalAuthorisations(authorisationPolicySet);
   }

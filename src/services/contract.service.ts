@@ -216,20 +216,16 @@ export class ContractService {
         return false;
       }
       const { permission, prohibition } = data.policy;
-      const isAuthorised = pdp.isAuthorised(
+      return pdp.isAuthorised(
         {
-          reference: {
-            permission: contract.permission,
-            prohibition: contract.prohibition,
-          },
-          external: {
-            permission,
-            prohibition,
-          },
+          permission: [...(contract.permission || []), ...(permission || [])],
+          prohibition: [
+            ...(contract.prohibition || []),
+            ...(prohibition || []),
+          ],
         },
         sessionId,
       );
-      return isAuthorised;
     } catch (error) {
       throw error;
     }
