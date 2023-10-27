@@ -42,6 +42,19 @@ describe('Scenario creating an ecosystem contract\n\tthen process an input polic
     expect(authResponse.status).to.equal(200);
   });
 
+  it('should setup the user store', async () => {
+    const userStore = {
+      age: 21,
+      role: 'admin',
+    };
+    const response = await supertest(app.router)
+      .put('/user/store')
+      .set('Cookie', cookie)
+      .set('Authorization', `Bearer ${authToken}`)
+      .send(userStore);
+    expect(response.status).to.equal(200);
+  });
+
   it('should generate an ecosystem contract', async () => {
     _logYellow('\n-Generate a contract with the following odrl policy');
     const contract = {

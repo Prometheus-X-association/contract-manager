@@ -28,8 +28,14 @@ export class PIPService {
 
   // Todo: Build authentication policies based on user authentication
   public buildAuthenticationPolicy(req: Request): IAuthorisationPolicy[] {
-    // Temporary user policies
+    // Todo: to be removed, Temporary user policies
     return [
+      //
+      {
+        subject: '/user',
+        action: 'PUT',
+        conditions: {},
+      },
       //
       {
         subject: '/pap',

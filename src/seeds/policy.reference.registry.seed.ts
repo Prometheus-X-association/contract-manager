@@ -2,6 +2,12 @@ import PolicyReferenceRegistry from 'models/policy.registry.model';
 import { IAuthorisationPolicy } from 'interfaces/policy.interface';
 
 const policySeedling: IAuthorisationPolicy[] = [
+  // User
+  {
+    subject: '/user',
+    action: 'PUT',
+    conditions: {},
+  },
   // PAP default authorisation rules
   {
     subject: '/pap',

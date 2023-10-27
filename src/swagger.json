@@ -523,6 +523,16 @@
           }
         }
       }
+    },
+    "/user/store": {
+      "put": {
+        "description": "",
+        "responses": {
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
     }
   }
 }
