@@ -1,10 +1,12 @@
 import { logger } from 'utils/logger';
 
 // Definition of the interface for the Store
+export type StoreElement = Record<string, () => unknown>;
+type StoreUserElement = Record<string, StoreElement>;
 interface Store {
-  user: Record<string, Record<string, unknown>>;
-  default: Record<string, unknown>;
-  [store: string]: Record<string, unknown>;
+  default: StoreElement;
+  [store: string]: StoreElement | StoreUserElement;
+  user: StoreUserElement;
 }
 
 // DataRepository class acting as a singleton for data management
@@ -30,7 +32,7 @@ export class DataRepository {
     return DataRepository.instance;
   }
 
-  public addData(data: Record<string, unknown>): void {
+  public addData(data: Record<string, () => unknown>): void {
     if (data) {
       const store = this.store.default || {};
       this.store.default = { ...store, ...data };
@@ -41,7 +43,10 @@ export class DataRepository {
     }
   }
   // Method to add user data to the user-specific Store for a given session
-  public addUserData(sessionId: string, data: Record<string, unknown>): void {
+  public addUserData(
+    sessionId: string,
+    data: Record<string, () => unknown>,
+  ): void {
     // Ensure sessionId and data are defined
     if (sessionId && data) {
       // Ensure user section is initialized
@@ -63,14 +68,16 @@ export class DataRepository {
   // Method to get the value of a key from the default Store section
   public getValue(name: string): unknown {
     const store = this.store.default;
-    return store?.[name] ?? null;
+    const f: () => unknown = store?.[name];
+    return f ? f() : null;
   }
 
   // Method to get the value of a key from the user-specific Store for a given session
   public getUserValue(sessionId: string, name: string): unknown {
     if (sessionId) {
       const store = this.store.user?.[sessionId];
-      return store?.[name] ?? null;
+      const f: () => unknown = store?.[name];
+      return f ? f() : null;
     }
     // Handle undefined sessionId
     logger.error('[DataRepository:getUserValue] Invalid sessionId');
@@ -80,7 +87,8 @@ export class DataRepository {
   // Method to get the value of a key from the specified Store section
   public getStoreValue(target: string, name: string): unknown {
     const store = this.store[target];
-    return store?.[name] ?? null;
+    const f: () => unknown = (store as StoreElement)?.[name];
+    return f ? f() : null;
   }
 }
 

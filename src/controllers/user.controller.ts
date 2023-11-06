@@ -28,18 +28,12 @@ export const addPolicies = async (req: Request, res: Response) => {
 };
 
 export const storeUserData = async (req: Request, res: Response) => {
-  const data = req.body;
   try {
     if (req.session?.id) {
-      /*
-      const data: any = {
-        age: 21,
-        role: 'admin',
-      };
-      */
+      const data = Object.fromEntries(
+        Object.entries(req.body).map(([key, value]) => [key, () => value]),
+      );
       repository.addUserData(req.session.id, data);
-      // todo: to be removed temporary
-      repository.addData(data);
       res.status(200).json({ message: 'Data has been added to the store.' });
     } else {
       throw new Error('Undefined session');

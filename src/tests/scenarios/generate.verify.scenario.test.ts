@@ -67,7 +67,7 @@ describe('Scenario creating an ecosystem contract and verify a policy', () => {
           target: 'http://contract-target',
           constraint: [
             {
-              leftOperand: 'age',
+              leftOperand: 'user:age',
               operator: 'gt',
               rightOperand: 17,
             },
@@ -99,7 +99,7 @@ describe('Scenario creating an ecosystem contract and verify a policy', () => {
           target: 'http://contract-target',
           constraint: [
             {
-              leftOperand: 'age',
+              leftOperand: 'user:age',
               operator: 'eq',
               rightOperand: 21,
             },

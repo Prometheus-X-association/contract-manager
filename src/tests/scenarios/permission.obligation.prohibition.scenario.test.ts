@@ -66,7 +66,7 @@ describe('Scenario creating an ecosystem contract\n\tthen process an input polic
           target: 'http://contract-target',
           constraint: [
             {
-              leftOperand: 'age',
+              leftOperand: 'user:age',
               operator: 'gt',
               rightOperand: 17,
             },
@@ -79,7 +79,7 @@ describe('Scenario creating an ecosystem contract\n\tthen process an input polic
           target: 'http://contract-target',
           constraint: [
             {
-              leftOperand: 'age',
+              leftOperand: 'user:age',
               operator: 'gt',
               rightOperand: 23,
             },
@@ -110,12 +110,12 @@ describe('Scenario creating an ecosystem contract\n\tthen process an input polic
           target: 'http://contract-target',
           constraint: [
             {
-              leftOperand: 'age',
+              leftOperand: 'user:age',
               operator: 'lt',
               rightOperand: 22,
             },
             {
-              leftOperand: 'role',
+              leftOperand: 'user:role',
               operator: 'eq',
               rightOperand: 'admin',
             },
