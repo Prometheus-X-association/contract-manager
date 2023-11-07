@@ -35,7 +35,6 @@ export const verifyOdrlPolicy = async (req: Request, res: Response) => {
   }
 };
 
-// C.UD using PAP service
 // Create a new policy
 export const createPolicy = (req: Request, res: Response) => {
   try {

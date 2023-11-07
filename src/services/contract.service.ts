@@ -1,5 +1,6 @@
 import { IContract, IContractDB } from 'interfaces/contract.interface';
 import Contract from 'models/contract.model';
+import Policy from 'models/policy.model';
 import DataRegistry from 'models/data.registry.model';
 import { checkFieldsMatching } from 'utils/utils';
 import pdp from './policy/pdp.service';
@@ -305,15 +306,20 @@ export class ContractService {
     }
   }
   //
-  public async addPolicy(
+  public async addPolicyFromId(
     contractId: string,
-    policyData: any,
+    policyId: string,
   ): Promise<IContractDB | null> {
     try {
       const contract = await Contract.findById(contractId);
       if (!contract) {
         throw new Error('Contract not found');
       }
+      const policy = await Policy.findById(policyId);
+      if (!policy) {
+        throw new Error('Policy not found');
+      }
+      const policyData = JSON.parse(policy.jsonLD);
       if (policyData.permission) {
         for (const permission of policyData.permission) {
           contract.permission.push(permission);

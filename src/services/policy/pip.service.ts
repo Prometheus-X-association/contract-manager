@@ -42,6 +42,21 @@ export class PIPService {
         action: 'POST',
         conditions: {},
       },
+      {
+        subject: '/pap',
+        action: 'GET',
+        conditions: {},
+      },
+      {
+        subject: '/pap',
+        action: 'PUT',
+        conditions: {},
+      },
+      {
+        subject: '/pap',
+        action: 'DELETE',
+        conditions: {},
+      },
       // Bilateral contrat default authorisation rules
       {
         subject: '/bilaterals',
@@ -51,16 +66,12 @@ export class PIPService {
       {
         subject: '/bilaterals',
         action: 'POST',
-        conditions: {
-          participant: 'admin',
-        },
+        conditions: {},
       },
       {
         subject: '/bilaterals',
         action: 'PUT',
-        conditions: {
-          participant: 'admin',
-        },
+        conditions: {},
       },
       {
         subject: '/bilaterals',
@@ -78,23 +89,17 @@ export class PIPService {
       {
         subject: '/contracts',
         action: 'POST',
-        conditions: {
-          participant: 'admin',
-        },
+        conditions: {},
       },
       {
         subject: '/contracts',
         action: 'PUT',
-        conditions: {
-          participant: 'admin',
-        },
+        conditions: {},
       },
       {
         subject: '/contracts',
         action: 'DELETE',
-        conditions: {
-          participant: 'admin',
-        },
+        conditions: {},
       },
     ];
   }

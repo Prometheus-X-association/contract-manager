@@ -184,13 +184,15 @@ export const injectPolicy = async (
   res: Response,
 ): Promise<void> => {
   try {
-    const { policy, contractId } = req.body as {
-      policy: any;
-      contractId: string;
-    };
-    const updatedContract = await contractService.addPolicy(contractId, policy);
+    const policyId: string = req.body.policyId;
+    const contractId: string = req.params.id;
+    const updatedContract = await contractService.addPolicyFromId(
+      contractId,
+      policyId,
+    );
     res.status(200).json({ contract: updatedContract });
   } catch (error) {
+    logger.error('Error while injecting policy:', error);
     const message = (error as Error).message;
     res.status(500).json({ error: message });
   }

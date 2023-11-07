@@ -1,13 +1,12 @@
 import {
+  Policy,
+  PolicyDocument,
   PolicyReferenceRegistryPolicie,
   PolicyReferenceRegistryPolicieDocument,
 } from './schemas.interface';
 
-export interface IPolicy extends Document {
-  // Tmp fields
-  name: string;
-  description: string;
-}
+export type IPolicy = Policy;
+export type IPolicyDB = PolicyDocument;
 
 export type PDPAction = 'write' | 'POST' | 'GET' | 'PUT' | 'DELETE';
 //

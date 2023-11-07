@@ -1,11 +1,10 @@
 import mongoose, { Schema } from 'mongoose';
-import { IPolicy } from '../interfaces/policy.interface';
+import { IPolicyDB } from '../interfaces/policy.interface';
 
-// Policy mongoose schema
 const policySchema: Schema = new Schema({
-  // Temporary fields
   name: { type: String, required: true },
   description: { type: String, required: true },
+  jsonLD: { type: String, required: true },
 });
-// Create a MongoDB model based on the schema
-export default mongoose.model<IPolicy>('Policy', policySchema);
+policySchema.index({ description: 'text' });
+export default mongoose.model<IPolicyDB>('Policy', policySchema);

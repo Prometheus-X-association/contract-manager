@@ -5,6 +5,7 @@ import {
 import { BilateralContractSignature } from 'interfaces/schemas.interface';
 import BilateralContract from 'models/bilateral.model';
 import DataRegistry from 'models/data.registry.model';
+import Policy from 'models/policy.model';
 import { checkFieldsMatching } from 'utils/utils';
 import pdp from './policy/pdp.service';
 import { logger } from 'utils/logger';
@@ -344,15 +345,20 @@ export class BilateralContractService {
     }
   }
   //
-  public async addPolicy(
+  public async addPolicyFromId(
     contractId: string,
-    policyData: any,
+    policyId: string,
   ): Promise<IBilateralContractDB | null> {
     try {
       const contract = await BilateralContract.findById(contractId);
       if (!contract) {
         throw new Error('Contract not found');
       }
+      const policy = await Policy.findById(policyId);
+      if (!policy) {
+        throw new Error('Policy not found');
+      }
+      const policyData = JSON.parse(policy.jsonLD);
       if (policyData.permission) {
         for (const permission of policyData.permission) {
           contract.permission.push(permission);

@@ -831,6 +831,7 @@ export type DataRegistryDocument = mongoose.Document<
 export type Policy = {
   name: string;
   description: string;
+  jsonLD: string;
   _id: mongoose.Types.ObjectId;
 };
 
@@ -907,6 +908,7 @@ export type PolicyDocument = mongoose.Document<
   PolicyMethods & {
     name: string;
     description: string;
+    jsonLD: string;
     _id: mongoose.Types.ObjectId;
   };
 

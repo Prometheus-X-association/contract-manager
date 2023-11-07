@@ -2,12 +2,14 @@ import mongoose from 'mongoose';
 import { seedPolicyReferenceRegistry } from './policy.reference.registry.seed';
 import { config } from 'config/config';
 import { seedDataRegistry } from './data.registry.seed';
+import { seedPolicies } from './pap.seed';
 
 async function connectAndSeed(url: string) {
   try {
     await mongoose.connect(url, { retryWrites: true });
     await seedPolicyReferenceRegistry();
     await seedDataRegistry();
+    await seedPolicies();
     console.log(`Seed completed successfully for ${url}.`);
   } catch (error: any) {
     console.error(`Seed error for ${url}: ${error.message}`);
