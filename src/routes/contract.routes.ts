@@ -11,6 +11,7 @@ import {
   getContractsFor,
   // getContractsByStatus,
   revokeContractSignature,
+  injectPolicy,
 } from '../controllers/contract.controller';
 
 const router: Router = express.Router();
@@ -33,5 +34,7 @@ router.put('/contracts/sign/:id', signContract);
 router.delete('/contracts/sign/revoke/:id/:did', revokeContractSignature);
 // Check data exploitation
 router.post('/contracts/check-exploitability/:id', checkDataExploitation);
+
+router.post('/contracts/policy', injectPolicy);
 
 export default router;

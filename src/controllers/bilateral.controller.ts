@@ -225,3 +225,23 @@ export const getODRLContract = async (req: Request, res: Response) => {
       .json({ error: 'An error occurred while retrieving the ODRL contract.' });
   }
 };
+
+export const injectPolicy = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const { policy, contractId } = req.body as {
+      policy: any;
+      contractId: string;
+    };
+    const updatedContract = await bilateralContractService.addPolicy(
+      contractId,
+      policy,
+    );
+    res.status(200).json({ contract: updatedContract });
+  } catch (error) {
+    const message = (error as Error).message;
+    res.status(500).json({ error: message });
+  }
+};

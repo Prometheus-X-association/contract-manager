@@ -304,6 +304,33 @@ export class ContractService {
       );
     }
   }
+  //
+  public async addPolicy(
+    contractId: string,
+    policyData: any,
+  ): Promise<IContractDB | null> {
+    try {
+      const contract = await Contract.findById(contractId);
+      if (!contract) {
+        throw new Error('Contract not found');
+      }
+      if (policyData.permission) {
+        for (const permission of policyData.permission) {
+          contract.permission.push(permission);
+        }
+      }
+      if (policyData.prohibition) {
+        for (const prohibition of policyData.prohibition) {
+          contract.prohibition.push(prohibition);
+        }
+      }
+      const updatedContract = await contract.save();
+      return updatedContract;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   private convertContract(contract: IContractDB): any {
     return {};
   }
