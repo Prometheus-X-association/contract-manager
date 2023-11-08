@@ -309,6 +309,7 @@ export class ContractService {
   public async addPolicyFromId(
     contractId: string,
     policyId: string,
+    replacement?: any,
   ): Promise<IContractDB | null> {
     try {
       const contract = await Contract.findById(contractId);
@@ -317,9 +318,25 @@ export class ContractService {
       }
       const policy = await Policy.findById(policyId);
       if (!policy) {
-        throw new Error('Policy not found');
+        throw new Error(`Policy with id ${policyId} not found`);
       }
-      const policyData = JSON.parse(policy.jsonLD);
+
+      let jsonLD = policy.jsonLD;
+      Object.keys(replacement || {}).forEach((key) => {
+        let value = replacement[key];
+        value =
+          typeof value === 'string' ? `"${value}"` : JSON.stringify(value);
+        jsonLD = jsonLD.replace(new RegExp(`"@{${key}}"`, 'g'), value);
+      });
+      const policyData = JSON.parse(jsonLD);
+
+      const missingReplacements = jsonLD.match(/"@{.+?}"/g);
+      if (missingReplacements) {
+        throw new Error(
+          `Missing replacements for: ${missingReplacements.join(', ')}`,
+        );
+      }
+
       if (policyData.permission) {
         for (const permission of policyData.permission) {
           contract.permission.push(permission);

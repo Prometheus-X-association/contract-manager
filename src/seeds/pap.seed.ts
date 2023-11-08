@@ -96,11 +96,9 @@ const policies: IPolicyJson[] = [
     name: 'Pricing',
     description: 'MUST define pricing and value sharing on the use of the data',
     jsonLD: {
-      '@context': 'https://www.w3.org/ns/odrl.jsonld',
-      '@type': 'Offer',
-      action: 'use',
-      target: 'http://provider/service',
       permission: {
+        action: 'use',
+        target: '@{target}',
         constraint: [
           {
             leftOperand: 'annotate',
@@ -122,17 +120,93 @@ const policies: IPolicyJson[] = [
     },
   },
   //
-  // MUST define the precise governance rules
-  // CAN NOT be service or data provider or end user
-  // MUST define clear data policies stating what data is used, for which purposes, the security measures, the third parties it is shared with, if there is an advertisement model in a human and machine readable way
-  // MUST define pricing / value sharing on use of services
-  // MUST inform if AI is used in the product
-  // MUST respect data set terms & conditions
-  // MUST describe risks and safegaurds on AI
+  {
+    name: 'Governance Rules',
+    description: 'MUST define the precise governance rules',
+    jsonLD: {
+      permission: {
+        action: 'use',
+        target: '@{target}',
+        constraint: [],
+      },
+    },
+  },
   //
+  {
+    name: 'Non-Participation Clause',
+    description: 'CAN NOT be service or data provider or end user',
+    jsonLD: {
+      permission: {
+        action: 'use',
+        target: '@{target}',
+        constraint: [],
+      },
+    },
+  },
+  //
+  {
+    name: 'Comprehensive Data Policy',
+    description:
+      'MUST define clear data policies stating what data is used, for which purposes, the security measures, the third parties it is shared with, if there is an advertisement model in a human and machine readable way',
+    jsonLD: {
+      permission: {
+        action: 'use',
+        target: '@{target}',
+        constraint: [],
+      },
+    },
+  },
+  //
+  {
+    name: 'Pricing Clarity',
+    description: 'MUST define pricing / value sharing on use of services',
+    jsonLD: {
+      permission: {
+        action: 'use',
+        target: '@{target}',
+        constraint: [],
+      },
+    },
+  },
+  //
+  {
+    name: 'AI Usage Transparency',
+    description: 'MUST inform if AI is used in the product',
+    jsonLD: {
+      permission: {
+        action: 'use',
+        target: '@{target}',
+        constraint: [],
+      },
+    },
+  },
+  //
+  {
+    name: 'Data Terms Compliance',
+    description: 'MUST respect data set terms & conditions',
+    jsonLD: {
+      permission: {
+        action: 'use',
+        target: '@{target}',
+        constraint: [],
+      },
+    },
+  },
+  //
+  {
+    name: 'AI Risk Disclosure',
+    description: 'MUST describe risks and safegaurds on AI',
+    jsonLD: {
+      permission: {
+        action: 'use',
+        target: '@{target}',
+        constraint: [],
+      },
+    },
+  },
   // No restriction
   {
-    name: 'No restriction',
+    name: 'No Restriction',
     description: 'CAN use data without any restrictions',
     jsonLD: {
       permission: {
@@ -144,25 +218,47 @@ const policies: IPolicyJson[] = [
   },
   // Time interval
   {
-    name: 'Time interval',
+    name: 'Time Interval',
     description: 'MUST use data within a specified time interval',
     jsonLD: {
       permission: {
         action: 'use',
-        target: '@{target}',
-        constraint: [],
+        target: 'http://provider/service',
+        constraint: [
+          {
+            leftOperand: 'dateTime',
+            operator: 'lt',
+            rightOperand: '@{dataBegin}',
+          },
+          {
+            leftOperand: 'dateTime',
+            operator: 'gt',
+            rightOperand: '@{dataBegin}',
+          },
+        ],
       },
     },
   },
   // Time period
   {
-    name: 'Time period',
+    name: 'Time Period',
     description: 'MUST use data for a specified time period',
     jsonLD: {
       permission: {
         action: 'use',
         target: '@{target}',
-        constraint: [],
+        constraint: [
+          {
+            leftOperand: 'dateTime',
+            operator: 'gte',
+            rightOperand: '@{dateBegin}',
+          },
+          {
+            leftOperand: 'dateTime',
+            operator: 'lte',
+            rightOperand: '@{dateEnd}',
+          },
+        ],
       },
     },
   },
@@ -174,7 +270,13 @@ const policies: IPolicyJson[] = [
       permission: {
         action: 'use',
         target: '@{target}',
-        constraint: [],
+        constraint: [
+          {
+            leftOperand: 'count',
+            operator: 'lte',
+            rightOperand: '@{value}',
+          },
+        ],
       },
     },
   },
