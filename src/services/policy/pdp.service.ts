@@ -144,7 +144,7 @@ export class PolicyEvaluator {
     // Add reference policies to the PDP service.
     pdp.pushReferencePolicies(permissions, { build: false });
     pdp.pushReferencePolicies(prohibitions, { build: true, deny: true });
-    // Generate conditions to evaluate with values from the system from the merge of permissions and prohibitions.
+    // Generate reference values from permissions and prohibitions.
     const policies: IAuthorisationPolicy[] = this.genConditions(
       mergeConditions([...permissions, ...prohibitions]),
     );
@@ -170,7 +170,7 @@ export class PolicyEvaluator {
       if (auth?.conditions) {
         auth.conditions = Object.fromEntries(
           Object.entries(auth.conditions).map(([key, value]) => {
-            return [key, this.getRightValue(key)];
+            return [key, this.getRightValue(key, auth.subject)];
           }),
         );
       }
@@ -183,15 +183,15 @@ export class PolicyEvaluator {
    * @param key - authorisation condition key.
    * @returns {unknown} - Value corresponding to the provided key from the system.
    */
-  private getRightValue(key: string): unknown {
+  private getRightValue(key: string, subject: string): unknown {
     const [store, name] = key.split(':');
     let value: unknown | null = 0;
     if (name === undefined) {
-      value = repository.getValue(store);
+      value = repository.getValue(store, subject);
     } else if (store === 'user') {
-      value = repository.getUserValue(this.sessionId, name);
+      value = repository.getUserValue(this.sessionId, name, subject);
     } else {
-      repository.getStoreValue(store, name);
+      repository.getStoreValue(store, name, subject);
     }
     return value;
   }

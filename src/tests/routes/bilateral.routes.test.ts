@@ -50,14 +50,11 @@ describe('Routes for Bilateral Contract API', () => {
       permission: [
         {
           action: 'read',
-          target: 'http://contract-target',
-          constraint: [
-            {
-              leftOperand: 'age',
-              operator: 'gt', // greater than
-              rightOperand: 17,
-            },
-          ],
+          target: 'http://contract-target/policy',
+        },
+        {
+          action: 'use',
+          target: 'http://contract-target/service',
         },
       ],
     };
