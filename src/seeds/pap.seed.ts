@@ -135,11 +135,7 @@ const policies: IPolicyJson[] = [
     requestedFields: ['target'],
   },
   //
-  //
-  //
-  //
-  //
-  //
+  // Governance Rules
   {
     name: 'Governance Rules',
     description: 'MUST define the precise governance rules',
@@ -152,20 +148,20 @@ const policies: IPolicyJson[] = [
             {
               leftOperand: 'fileType',
               operator: 'eq',
-              rightOperand: 'PDF',
+              rightOperand: '@{fileType}',
             },
             {
               leftOperand: 'createdDate',
               operator: 'gt',
-              rightOperand: '2020-01-01',
+              rightOperand: '@{createdDate}',
             },
           ],
         },
       ],
     },
-    requestedFields: ['target'],
+    requestedFields: ['target', 'fileType', 'createdDate'],
   },
-  //
+  // Non-Participation Clause
   {
     name: 'Non-Participation Clause',
     description: 'CAN NOT be service or data provider or end user',
@@ -174,13 +170,19 @@ const policies: IPolicyJson[] = [
         {
           action: 'use',
           target: '@{target}',
-          constraint: [],
+          constraint: [
+            {
+              leftOperand: 'role',
+              operator: 'in',
+              rightOperand: ['service', 'dataProvider', 'endUser'],
+            },
+          ],
         },
       ],
     },
     requestedFields: ['target'],
   },
-  //
+  // Comprehensive Data Policy
   {
     name: 'Comprehensive Data Policy',
     description:
@@ -190,13 +192,34 @@ const policies: IPolicyJson[] = [
         {
           action: 'use',
           target: '@{target}',
-          constraint: [],
+          constraint: [
+            {
+              leftOperand: 'purpose',
+              operator: 'isAnyOf',
+              rightOperand: '@{purpose}',
+            },
+            {
+              leftOperand: 'securityMeasures',
+              operator: 'isAnyOf',
+              rightOperand: ['?', '?'],
+            },
+            {
+              leftOperand: 'thirdParties',
+              operator: 'isAnyOf',
+              rightOperand: ['?', '?'],
+            },
+            {
+              leftOperand: 'advertisementModel',
+              operator: 'eq',
+              rightOperand: true,
+            },
+          ],
         },
       ],
     },
     requestedFields: ['target'],
   },
-  //
+  // Pricing Clarity
   {
     name: 'Pricing Clarity',
     description: 'MUST define pricing / value sharing on use of services',
@@ -205,13 +228,19 @@ const policies: IPolicyJson[] = [
         {
           action: 'use',
           target: '@{target}',
-          constraint: [],
+          constraint: [
+            {
+              leftOperand: 'pricing',
+              operator: 'eq',
+              rightOperand: true,
+            },
+          ],
         },
       ],
     },
     requestedFields: ['target'],
   },
-  //
+  // AI Usage Transparency
   {
     name: 'AI Usage Transparency',
     description: 'MUST inform if AI is used in the product',
@@ -220,13 +249,19 @@ const policies: IPolicyJson[] = [
         {
           action: 'use',
           target: '@{target}',
-          constraint: [],
+          constraint: [
+            {
+              leftOperand: 'aiUsage',
+              operator: 'eq',
+              rightOperand: true,
+            },
+          ],
         },
       ],
     },
     requestedFields: ['target'],
   },
-  //
+  // Data Terms Compliance
   {
     name: 'Data Terms Compliance',
     description: 'MUST respect data set terms & conditions',
@@ -235,7 +270,13 @@ const policies: IPolicyJson[] = [
         {
           action: 'use',
           target: '@{target}',
-          constraint: [],
+          constraint: [
+            {
+              leftOperand: 'dataTermsCompliance',
+              operator: 'eq',
+              rightOperand: true,
+            },
+          ],
         },
       ],
     },
@@ -250,17 +291,18 @@ const policies: IPolicyJson[] = [
         {
           action: 'use',
           target: '@{target}',
-          constraint: [],
+          constraint: [
+            {
+              leftOperand: 'aiRiskDisclosure',
+              operator: 'eq',
+              rightOperand: true,
+            },
+          ],
         },
       ],
     },
     requestedFields: ['target'],
   },
-  //
-  //
-  //
-  //
-  //
   //
   // No restriction
   {
