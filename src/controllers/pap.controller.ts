@@ -73,7 +73,7 @@ export const deletePolicy = async (req: Request, res: Response) => {
 // List all policies
 export const listPolicies = async (req: Request, res: Response) => {
   try {
-    const policies = await Policy.find(); //.select('-jsonLD -__v');
+    const policies = await Policy.find().select('-jsonLD -__v');
     res.json(policies);
   } catch (error: any) {
     res.status(500).json({ error: error.message });

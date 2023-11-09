@@ -26,6 +26,7 @@ const policies: IPolicyJson[] = [
         },
       ],
     },
+    requestedFields: ['target'],
   },
   // Terms of use
   {
@@ -46,6 +47,7 @@ const policies: IPolicyJson[] = [
         },
       ],
     },
+    requestedFields: ['target'],
   },
   // Consent
   {
@@ -77,6 +79,7 @@ const policies: IPolicyJson[] = [
         },
       ],
     },
+    requestedFields: ['target'],
   },
   // Personal data intermediary
   {
@@ -98,6 +101,7 @@ const policies: IPolicyJson[] = [
         },
       ],
     },
+    requestedFields: ['target'],
   },
   // Pricing
   {
@@ -128,7 +132,13 @@ const policies: IPolicyJson[] = [
         },
       ],
     },
+    requestedFields: ['target'],
   },
+  //
+  //
+  //
+  //
+  //
   //
   {
     name: 'Governance Rules',
@@ -138,10 +148,22 @@ const policies: IPolicyJson[] = [
         {
           action: 'use',
           target: '@{target}',
-          constraint: [],
+          constraint: [
+            {
+              leftOperand: 'fileType',
+              operator: 'eq',
+              rightOperand: 'PDF',
+            },
+            {
+              leftOperand: 'createdDate',
+              operator: 'gt',
+              rightOperand: '2020-01-01',
+            },
+          ],
         },
       ],
     },
+    requestedFields: ['target'],
   },
   //
   {
@@ -156,6 +178,7 @@ const policies: IPolicyJson[] = [
         },
       ],
     },
+    requestedFields: ['target'],
   },
   //
   {
@@ -171,6 +194,7 @@ const policies: IPolicyJson[] = [
         },
       ],
     },
+    requestedFields: ['target'],
   },
   //
   {
@@ -185,6 +209,7 @@ const policies: IPolicyJson[] = [
         },
       ],
     },
+    requestedFields: ['target'],
   },
   //
   {
@@ -199,6 +224,7 @@ const policies: IPolicyJson[] = [
         },
       ],
     },
+    requestedFields: ['target'],
   },
   //
   {
@@ -213,6 +239,7 @@ const policies: IPolicyJson[] = [
         },
       ],
     },
+    requestedFields: ['target'],
   },
   //
   {
@@ -227,7 +254,14 @@ const policies: IPolicyJson[] = [
         },
       ],
     },
+    requestedFields: ['target'],
   },
+  //
+  //
+  //
+  //
+  //
+  //
   // No restriction
   {
     name: 'No Restriction',
@@ -241,6 +275,7 @@ const policies: IPolicyJson[] = [
         },
       ],
     },
+    requestedFields: ['target'],
   },
   // Time interval
   {
@@ -255,17 +290,18 @@ const policies: IPolicyJson[] = [
             {
               leftOperand: 'dateTime',
               operator: 'lt',
-              rightOperand: '@{dataBegin}',
+              rightOperand: '@{firstDate}',
             },
             {
               leftOperand: 'dateTime',
               operator: 'gt',
-              rightOperand: '@{dataBegin}',
+              rightOperand: '@{lastDate}',
             },
           ],
         },
       ],
     },
+    requestedFields: ['target', 'firstDate', 'lastDate'],
   },
   // Time period
   {
@@ -291,6 +327,7 @@ const policies: IPolicyJson[] = [
         },
       ],
     },
+    requestedFields: ['target', 'dateBegin', 'dateEnd'],
   },
   // Count
   {
@@ -311,6 +348,7 @@ const policies: IPolicyJson[] = [
         },
       ],
     },
+    requestedFields: ['target', 'value'],
   },
   // Within a time interval
   {
@@ -351,6 +389,7 @@ const policies: IPolicyJson[] = [
         */
       ],
     },
+    requestedFields: ['target', 'dateBegin', 'dateEnd'],
   },
   // Notification message
   {
@@ -371,6 +410,7 @@ const policies: IPolicyJson[] = [
         },
       ],
     },
+    requestedFields: ['target', 'value'],
   },
 ];
 
@@ -378,6 +418,7 @@ export async function seedPolicies() {
   const policiesData: Omit<IPolicy, '_id'>[] = policies.map((policy) => ({
     name: policy.name,
     description: policy.description,
+    requestedFields: policy.requestedFields,
     jsonLD: JSON.stringify(policy.jsonLD),
   }));
 

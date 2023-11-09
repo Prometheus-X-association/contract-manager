@@ -1,7 +1,7 @@
 import { logger } from 'utils/logger';
 
 // Definition of the interface for the Store
-export type StoreElement = Record<string, () => unknown>;
+export type StoreElement = Record<string, (target: string) => unknown>;
 type StoreUserElement = Record<string, StoreElement>;
 interface Store {
   default: StoreElement;
@@ -32,7 +32,7 @@ export class DataRepository {
     return DataRepository.instance;
   }
 
-  public addData(data: Record<string, () => unknown>): void {
+  public addData(data: StoreElement): void {
     if (data) {
       const store = this.store.default || {};
       this.store.default = { ...store, ...data };
@@ -68,16 +68,16 @@ export class DataRepository {
   // Method to get the value of a key from the default Store section
   public getValue(name: string): unknown {
     const store = this.store.default;
-    const f: () => unknown = store?.[name];
-    return f ? f() : null;
+    const f: (target: string) => unknown = store?.[name];
+    return f ? f('') : null;
   }
 
   // Method to get the value of a key from the user-specific Store for a given session
   public getUserValue(sessionId: string, name: string): unknown {
     if (sessionId) {
       const store = this.store.user?.[sessionId];
-      const f: () => unknown = store?.[name];
-      return f ? f() : null;
+      const f: (target: string) => unknown = store?.[name];
+      return f ? f('') : null;
     }
     // Handle undefined sessionId
     logger.error('[DataRepository:getUserValue] Invalid sessionId');
@@ -87,8 +87,8 @@ export class DataRepository {
   // Method to get the value of a key from the specified Store section
   public getStoreValue(target: string, name: string): unknown {
     const store = this.store[target];
-    const f: () => unknown = (store as StoreElement)?.[name];
-    return f ? f() : null;
+    const f: (target: string) => unknown = (store as StoreElement)?.[name];
+    return f ? f('') : null;
   }
 }
 

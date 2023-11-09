@@ -233,7 +233,7 @@ export const injectPolicy = async (
   try {
     const policyId: string = req.body.policyId;
     const contractId: string = req.params.id;
-    const replacement: any = req.body.replacement;
+    const replacement: any = req.body.values;
     const updatedContract = await bilateralContractService.addPolicyFromId(
       contractId,
       policyId,

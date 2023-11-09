@@ -1,106 +1,106 @@
 import repository, { StoreElement } from 'services/data.repository.service';
 // odrl default action
-const odrlLeftOperands: { [key: string]: () => number | string | Date } = {
-  absolutePosition: (): number => {
+const odrlLeftOperands: StoreElement = {
+  absolutePosition: (target: string): number => {
     return 0;
   },
-  absoluteSize: (): number => {
+  absoluteSize: (target: string): number => {
     return 0;
   },
-  absoluteSpatialPosition: (): string => {
+  absoluteSpatialPosition: (target: string): string => {
     return '0,0,0';
   },
-  absoluteTemporalPosition: (): Date => {
+  absoluteTemporalPosition: (target: string): Date => {
     return new Date();
   },
-  count: (): number => {
+  count: (target: string): number => {
     return 0;
   },
-  dateTime: (): Date => {
+  dateTime: (target: string): Date => {
     return new Date();
   },
-  delayPeriod: (): number => {
+  delayPeriod: (target: string): number => {
     return 0;
   },
-  deliveryChannel: (): string => {
+  deliveryChannel: (target: string): string => {
     return 'online';
   },
-  device: (): string => {
+  device: (target: string): string => {
     return 'deviceID';
   },
-  elapsedTime: (): number => {
+  elapsedTime: (target: string): number => {
     return 0;
   },
-  event: (): string => {
+  event: (target: string): string => {
     return 'eventID';
   },
-  fileFormat: (): string => {
+  fileFormat: (target: string): string => {
     return 'text/plain';
   },
-  industry: (): string => {
+  industry: (target: string): string => {
     return 'industryID';
   },
-  language: (): string => {
+  language: (target: string): string => {
     return 'en';
   },
   media: (): string => {
     return 'mediaID';
   },
-  meteredTime: (): number => {
+  meteredTime: (target: string): number => {
     return 0;
   },
-  payAmount: (): number => {
+  payAmount: (target: string): number => {
     return 0;
   },
-  percentage: (): number => {
+  percentage: (target: string): number => {
     return 0;
   },
-  product: (): string => {
+  product: (target: string): string => {
     return 'productID';
   },
-  purpose: (): string => {
+  purpose: (target: string): string => {
     return 'purposeID';
   },
-  recipient: (): string => {
+  recipient: (target: string): string => {
     return 'recipientID';
   },
-  relativePosition: (): number => {
+  relativePosition: (target: string): number => {
     return 0;
   },
-  relativeSize: (): number => {
+  relativeSize: (target: string): number => {
     return 0;
   },
-  relativeSpatialPosition: (): string => {
+  relativeSpatialPosition: (target: string): string => {
     return '0,0,0';
   },
-  relativeTemporalPosition: (): Date => {
+  relativeTemporalPosition: (target: string): Date => {
     return new Date();
   },
-  resolution: (): string => {
+  resolution: (target: string): string => {
     return 'HD';
   },
-  spatial: (): string => {
+  spatial: (target: string): string => {
     return 'locationID';
   },
-  spatialCoordinates: (): string => {
+  spatialCoordinates: (target: string): string => {
     return 'latitude,longitude';
   },
-  system: (): string => {
+  system: (target: string): string => {
     return 'systemID';
   },
-  systemDevice: (): string => {
+  systemDevice: (target: string): string => {
     return 'systemDeviceID';
   },
-  timeInterval: (): number => {
+  timeInterval: (target: string): number => {
     return 0;
   },
-  unitOfCount: (): number => {
+  unitOfCount: (target: string): number => {
     return 0;
   },
-  version: (): string => {
+  version: (target: string): string => {
     return '0.0.0';
   },
-  virtualLocation: (): string => {
+  virtualLocation: (target: string): string => {
     return 'virtualLocationID';
   },
 };
@@ -111,45 +111,45 @@ const vtRuleActions: StoreElement = {
     Ex: MUST describe their organisations and service offerings
     in a machine readable format and human readable
   */
-  machineReadable: (): boolean => {
+  machineReadable: (target: string): boolean => {
     return true;
   },
   /*
   	Ex: MUST define clear data set terms of use
   */
-  termsOfUse: (): boolean => {
+  termsOfUse: (target: string): boolean => {
     return true;
   },
   /*
     Ex: MUST accept and comply with requests from the
     person on data sharing, consent and GDPR rights
   */
-  acceptTracking: (): boolean => {
+  acceptTracking: (target: string): boolean => {
     return true;
   },
-  rgpdCompliant: (): boolean => {
+  rgpdCompliant: (target: string): boolean => {
     return true;
   },
-  userConsent: (): boolean => {
+  userConsent: (target: string): boolean => {
     return true;
   },
   /*
     Ex: MUST use data within a specified time interval
     Ex: MUST use data for a specified time period
   */
-  dateTime: (): number => {
+  dateTime: (target: string): number => {
     return Date.now();
   },
   /*
     Ex: MUST not use data for more than n times
   */
-  count: (): number => {
+  count: (target: string): number => {
     return 0;
   },
   /*
     Ex: CAN use data with notification message
   */
-  notificationMessage: (): string => {
+  notificationMessage: (target: string): string => {
     return '';
   },
 };
