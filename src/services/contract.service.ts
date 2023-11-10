@@ -308,6 +308,76 @@ export class ContractService {
     }
   }
   //
+  private async updatePolicyData(
+    policyId: string,
+    replacement?: any,
+  ): Promise<any> {
+    try {
+      const policy = await Policy.findById(policyId);
+      if (!policy) {
+        throw new Error(`Policy with id ${policyId} not found`);
+      }
+      let jsonLD = policy.jsonLD;
+      Object.keys(replacement || {}).forEach((key) => {
+        let value = replacement[key];
+        value =
+          typeof value === 'string' ? `"${value}"` : JSON.stringify(value);
+        jsonLD = jsonLD.replace(new RegExp(`"@{${key}}"`, 'g'), value);
+      });
+      const policyData = JSON.parse(jsonLD);
+      const missingReplacements = jsonLD.match(/"@{.+?}"/g);
+      if (missingReplacements) {
+        throw new Error(
+          `Missing replacements for: ${missingReplacements.join(', ')}`,
+        );
+      }
+      return policyData;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  //
+  public async addRolePolicyFromId(
+    contractId: string,
+    policyId: string,
+    role: string,
+    replacement?: any,
+  ): Promise<IContractDB | null> {
+    try {
+      const contract = await Contract.findById(contractId);
+      if (!contract) {
+        throw new Error('Contract not found');
+      }
+      const roleEntry = contract.rolesAndObligations.find(
+        (entry) => entry.role === role,
+      );
+      if (!roleEntry) {
+        contract.rolesAndObligations.push({
+          role,
+          policy: { permission: [], prohibition: [] },
+        });
+      }
+      const policyData = await this.updatePolicyData(policyId, replacement);
+      if (roleEntry?.policy) {
+        if (policyData.permission) {
+          for (const permission of policyData.permission) {
+            roleEntry.policy.permission.push(permission);
+          }
+        }
+        if (policyData.prohibition) {
+          for (const prohibition of policyData.prohibition) {
+            roleEntry.policy.prohibition.push(prohibition);
+          }
+        }
+      }
+      const updatedContract = await contract.save();
+      return updatedContract;
+    } catch (error) {
+      throw error;
+    }
+  }
+  //
   public async addPolicyFromId(
     contractId: string,
     policyId: string,
@@ -319,28 +389,7 @@ export class ContractService {
         throw new Error('Contract not found');
       }
       contract.policy = contract.policy || ({} as ContractPolicyDocument);
-
-      const policy = await Policy.findById(policyId);
-      if (!policy) {
-        throw new Error(`Policy with id ${policyId} not found`);
-      }
-
-      let jsonLD = policy.jsonLD;
-      Object.keys(replacement || {}).forEach((key) => {
-        let value = replacement[key];
-        value =
-          typeof value === 'string' ? `"${value}"` : JSON.stringify(value);
-        jsonLD = jsonLD.replace(new RegExp(`"@{${key}}"`, 'g'), value);
-      });
-      const policyData = JSON.parse(jsonLD);
-
-      const missingReplacements = jsonLD.match(/"@{.+?}"/g);
-      if (missingReplacements) {
-        throw new Error(
-          `Missing replacements for: ${missingReplacements.join(', ')}`,
-        );
-      }
-
+      const policyData = await this.updatePolicyData(policyId, replacement);
       if (policyData.permission) {
         for (const permission of policyData.permission) {
           contract.policy.permission.push(permission);
