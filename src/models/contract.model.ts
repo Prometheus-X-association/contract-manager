@@ -44,26 +44,38 @@ const SignatureSchema = new Schema(
   },
   { _id: false },
 );
+//
+const PolicySchema = new Schema(
+  {
+    permission: [
+      {
+        action: String,
+        target: String,
+        constraint: [DefaultConstraintSchema, UnknownConstraintSchema],
+        _id: false,
+      },
+    ],
+    prohibition: [
+      {
+        action: String,
+        target: String,
+        constraint: [DefaultConstraintSchema, UnknownConstraintSchema],
+        _id: false,
+      },
+    ],
+  },
+  { _id: false },
+);
+
 // Contract mongoose schema
 const ContractSchema: Schema = new Schema({
   uid: String,
   profile: String,
-  permission: [
-    {
-      action: String,
-      target: String,
-      constraint: [DefaultConstraintSchema, UnknownConstraintSchema],
-      _id: false,
-    },
-  ],
-  prohibition: [
-    {
-      action: String,
-      target: String,
-      constraint: [DefaultConstraintSchema, UnknownConstraintSchema],
-      _id: false,
-    },
-  ],
+  ecosystem: String,
+  orchestrator: String,
+  members: [{ participant: String, signature: String }],
+  rolesAndObligations: [{ role: String, policy: PolicySchema }],
+  policy: PolicySchema,
   purpose: [PurposeSchema],
   signatures: [SignatureSchema],
   revokedSignatures: [SignatureSchema],

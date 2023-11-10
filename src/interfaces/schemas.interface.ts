@@ -357,14 +357,28 @@ export type BilateralContractDocument = mongoose.Document<
   };
 
 /**
- * Lean version of ContractPermissionConstraintDocument
+ * Lean version of ContractMemberDocument
  *
- * This has all Mongoose getters & functions removed. This type will be returned from `ContractPermissionDocument.toObject()`.
+ * This has all Mongoose getters & functions removed. This type will be returned from `ContractDocument.toObject()`.
  * ```
- * const contractpermissionObject = contractpermission.toObject();
+ * const contractObject = contract.toObject();
  * ```
  */
-export type ContractPermissionConstraint = {
+export type ContractMember = {
+  participant?: string;
+  signature?: string;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of ContractRolesAndObligationPolicyPermissionConstraintDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ContractRolesAndObligationPolicyPermissionDocument.toObject()`.
+ * ```
+ * const contractrolesandobligationpolicypermissionObject = contractrolesandobligationpolicypermission.toObject();
+ * ```
+ */
+export type ContractRolesAndObligationPolicyPermissionConstraint = {
   '@type'?: string;
   leftOperand?: string;
   operator?: string;
@@ -372,28 +386,28 @@ export type ContractPermissionConstraint = {
 };
 
 /**
- * Lean version of ContractPermissionDocument
+ * Lean version of ContractRolesAndObligationPolicyPermissionDocument
  *
- * This has all Mongoose getters & functions removed. This type will be returned from `ContractDocument.toObject()`.
+ * This has all Mongoose getters & functions removed. This type will be returned from `ContractRolesAndObligationPolicyDocument.toObject()`.
  * ```
- * const contractObject = contract.toObject();
+ * const contractrolesandobligationpolicyObject = contractrolesandobligationpolicy.toObject();
  * ```
  */
-export type ContractPermission = {
+export type ContractRolesAndObligationPolicyPermission = {
   action?: string;
   target?: string;
-  constraint: ContractPermissionConstraint[];
+  constraint: ContractRolesAndObligationPolicyPermissionConstraint[];
 };
 
 /**
- * Lean version of ContractProhibitionConstraintDocument
+ * Lean version of ContractRolesAndObligationPolicyProhibitionConstraintDocument
  *
- * This has all Mongoose getters & functions removed. This type will be returned from `ContractProhibitionDocument.toObject()`.
+ * This has all Mongoose getters & functions removed. This type will be returned from `ContractRolesAndObligationPolicyProhibitionDocument.toObject()`.
  * ```
- * const contractprohibitionObject = contractprohibition.toObject();
+ * const contractrolesandobligationpolicyprohibitionObject = contractrolesandobligationpolicyprohibition.toObject();
  * ```
  */
-export type ContractProhibitionConstraint = {
+export type ContractRolesAndObligationPolicyProhibitionConstraint = {
   '@type'?: string;
   leftOperand?: string;
   operator?: string;
@@ -401,17 +415,115 @@ export type ContractProhibitionConstraint = {
 };
 
 /**
- * Lean version of ContractProhibitionDocument
+ * Lean version of ContractRolesAndObligationPolicyProhibitionDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ContractRolesAndObligationPolicyDocument.toObject()`.
+ * ```
+ * const contractrolesandobligationpolicyObject = contractrolesandobligationpolicy.toObject();
+ * ```
+ */
+export type ContractRolesAndObligationPolicyProhibition = {
+  action?: string;
+  target?: string;
+  constraint: ContractRolesAndObligationPolicyProhibitionConstraint[];
+};
+
+/**
+ * Lean version of ContractRolesAndObligationPolicyDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ContractRolesAndObligationDocument.toObject()`.
+ * ```
+ * const contractrolesandobligationObject = contractrolesandobligation.toObject();
+ * ```
+ */
+export type ContractRolesAndObligationPolicy = {
+  permission: ContractRolesAndObligationPolicyPermission[];
+  prohibition: ContractRolesAndObligationPolicyProhibition[];
+};
+
+/**
+ * Lean version of ContractRolesAndObligationDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `ContractDocument.toObject()`.
  * ```
  * const contractObject = contract.toObject();
  * ```
  */
-export type ContractProhibition = {
+export type ContractRolesAndObligation = {
+  role?: string;
+  policy?: ContractRolesAndObligationPolicy;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of ContractPolicyPermissionConstraintDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ContractPolicyPermissionDocument.toObject()`.
+ * ```
+ * const contractpolicypermissionObject = contractpolicypermission.toObject();
+ * ```
+ */
+export type ContractPolicyPermissionConstraint = {
+  '@type'?: string;
+  leftOperand?: string;
+  operator?: string;
+  rightOperand?: any;
+};
+
+/**
+ * Lean version of ContractPolicyPermissionDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ContractPolicyDocument.toObject()`.
+ * ```
+ * const contractpolicyObject = contractpolicy.toObject();
+ * ```
+ */
+export type ContractPolicyPermission = {
   action?: string;
   target?: string;
-  constraint: ContractProhibitionConstraint[];
+  constraint: ContractPolicyPermissionConstraint[];
+};
+
+/**
+ * Lean version of ContractPolicyProhibitionConstraintDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ContractPolicyProhibitionDocument.toObject()`.
+ * ```
+ * const contractpolicyprohibitionObject = contractpolicyprohibition.toObject();
+ * ```
+ */
+export type ContractPolicyProhibitionConstraint = {
+  '@type'?: string;
+  leftOperand?: string;
+  operator?: string;
+  rightOperand?: any;
+};
+
+/**
+ * Lean version of ContractPolicyProhibitionDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ContractPolicyDocument.toObject()`.
+ * ```
+ * const contractpolicyObject = contractpolicy.toObject();
+ * ```
+ */
+export type ContractPolicyProhibition = {
+  action?: string;
+  target?: string;
+  constraint: ContractPolicyProhibitionConstraint[];
+};
+
+/**
+ * Lean version of ContractPolicyDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ContractDocument.toObject()`.
+ * ```
+ * const contractObject = contract.toObject();
+ * ```
+ */
+export type ContractPolicy = {
+  permission: ContractPolicyPermission[];
+  prohibition: ContractPolicyProhibition[];
 };
 
 /**
@@ -479,8 +591,11 @@ export type ContractRevokedSignature = {
 export type Contract = {
   uid?: string;
   profile?: string;
-  permission: ContractPermission[];
-  prohibition: ContractProhibition[];
+  ecosystem?: string;
+  orchestrator?: string;
+  members: ContractMember[];
+  rolesAndObligations: ContractRolesAndObligation[];
+  policy?: ContractPolicy;
   purpose: ContractPurpose[];
   signatures: ContractRevokedSignature[];
   revokedSignatures: ContractRevokedSignature[];
@@ -555,9 +670,20 @@ export type ContractSchema = mongoose.Schema<
 /**
  * Mongoose Subdocument type
  *
- * Type of `ContractPermissionDocument["constraint"]` element.
+ * Type of `ContractDocument["members"]` element.
  */
-export type ContractPermissionConstraintDocument =
+export type ContractMemberDocument = mongoose.Types.Subdocument & {
+  participant?: string;
+  signature?: string;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `ContractRolesAndObligationPolicyPermissionDocument["constraint"]` element.
+ */
+export type ContractRolesAndObligationPolicyPermissionConstraintDocument =
   mongoose.Types.Subdocument & {
     '@type'?: string;
     leftOperand?: string;
@@ -568,20 +694,21 @@ export type ContractPermissionConstraintDocument =
 /**
  * Mongoose Subdocument type
  *
- * Type of `ContractDocument["permission"]` element.
+ * Type of `ContractRolesAndObligationPolicyDocument["permission"]` element.
  */
-export type ContractPermissionDocument = mongoose.Types.Subdocument & {
-  action?: string;
-  target?: string;
-  constraint: mongoose.Types.DocumentArray<ContractPermissionConstraintDocument>;
-};
+export type ContractRolesAndObligationPolicyPermissionDocument =
+  mongoose.Types.Subdocument & {
+    action?: string;
+    target?: string;
+    constraint: mongoose.Types.DocumentArray<ContractRolesAndObligationPolicyPermissionConstraintDocument>;
+  };
 
 /**
  * Mongoose Subdocument type
  *
- * Type of `ContractProhibitionDocument["constraint"]` element.
+ * Type of `ContractRolesAndObligationPolicyProhibitionDocument["constraint"]` element.
  */
-export type ContractProhibitionConstraintDocument =
+export type ContractRolesAndObligationPolicyProhibitionConstraintDocument =
   mongoose.Types.Subdocument & {
     '@type'?: string;
     leftOperand?: string;
@@ -592,13 +719,101 @@ export type ContractProhibitionConstraintDocument =
 /**
  * Mongoose Subdocument type
  *
- * Type of `ContractDocument["prohibition"]` element.
+ * Type of `ContractRolesAndObligationPolicyDocument["prohibition"]` element.
  */
-export type ContractProhibitionDocument = mongoose.Types.Subdocument & {
+export type ContractRolesAndObligationPolicyProhibitionDocument =
+  mongoose.Types.Subdocument & {
+    action?: string;
+    target?: string;
+    constraint: mongoose.Types.DocumentArray<ContractRolesAndObligationPolicyProhibitionConstraintDocument>;
+  };
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const ContractRolesAndObligation = mongoose.model<ContractRolesAndObligationDocument, ContractRolesAndObligationModel>("ContractRolesAndObligation", ContractRolesAndObligationSchema);
+ * ```
+ */
+export type ContractRolesAndObligationPolicyDocument =
+  mongoose.Document<mongoose.Types.ObjectId> & {
+    permission: mongoose.Types.DocumentArray<ContractRolesAndObligationPolicyPermissionDocument>;
+    prohibition: mongoose.Types.DocumentArray<ContractRolesAndObligationPolicyProhibitionDocument>;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `ContractDocument["rolesAndObligations"]` element.
+ */
+export type ContractRolesAndObligationDocument = mongoose.Types.Subdocument & {
+  role?: string;
+  policy?: ContractRolesAndObligationPolicyDocument;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `ContractPolicyPermissionDocument["constraint"]` element.
+ */
+export type ContractPolicyPermissionConstraintDocument =
+  mongoose.Types.Subdocument & {
+    '@type'?: string;
+    leftOperand?: string;
+    operator?: string;
+    rightOperand?: any;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `ContractPolicyDocument["permission"]` element.
+ */
+export type ContractPolicyPermissionDocument = mongoose.Types.Subdocument & {
   action?: string;
   target?: string;
-  constraint: mongoose.Types.DocumentArray<ContractProhibitionConstraintDocument>;
+  constraint: mongoose.Types.DocumentArray<ContractPolicyPermissionConstraintDocument>;
 };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `ContractPolicyProhibitionDocument["constraint"]` element.
+ */
+export type ContractPolicyProhibitionConstraintDocument =
+  mongoose.Types.Subdocument & {
+    '@type'?: string;
+    leftOperand?: string;
+    operator?: string;
+    rightOperand?: any;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `ContractPolicyDocument["prohibition"]` element.
+ */
+export type ContractPolicyProhibitionDocument = mongoose.Types.Subdocument & {
+  action?: string;
+  target?: string;
+  constraint: mongoose.Types.DocumentArray<ContractPolicyProhibitionConstraintDocument>;
+};
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Contract = mongoose.model<ContractDocument, ContractModel>("Contract", ContractSchema);
+ * ```
+ */
+export type ContractPolicyDocument =
+  mongoose.Document<mongoose.Types.ObjectId> & {
+    permission: mongoose.Types.DocumentArray<ContractPolicyPermissionDocument>;
+    prohibition: mongoose.Types.DocumentArray<ContractPolicyProhibitionDocument>;
+  };
 
 /**
  * Mongoose Subdocument type
@@ -660,8 +875,11 @@ export type ContractDocument = mongoose.Document<
   ContractMethods & {
     uid?: string;
     profile?: string;
-    permission: mongoose.Types.DocumentArray<ContractPermissionDocument>;
-    prohibition: mongoose.Types.DocumentArray<ContractProhibitionDocument>;
+    ecosystem?: string;
+    orchestrator?: string;
+    members: mongoose.Types.DocumentArray<ContractMemberDocument>;
+    rolesAndObligations: mongoose.Types.DocumentArray<ContractRolesAndObligationDocument>;
+    policy?: ContractPolicyDocument;
     purpose: mongoose.Types.DocumentArray<ContractPurposeDocument>;
     signatures: mongoose.Types.DocumentArray<ContractRevokedSignatureDocument>;
     revokedSignatures: mongoose.Types.DocumentArray<ContractRevokedSignatureDocument>;

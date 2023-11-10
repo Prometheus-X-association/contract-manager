@@ -5,7 +5,11 @@ import DataRegistry from 'models/data.registry.model';
 import { checkFieldsMatching } from 'utils/utils';
 import pdp from './policy/pdp.service';
 import { logger } from 'utils/logger';
-import { ContractSignature } from 'interfaces/schemas.interface';
+import {
+  ContractPolicy,
+  ContractPolicyDocument,
+  ContractSignature,
+} from 'interfaces/schemas.interface';
 import { IDataRegistry, IDataRegistryDB } from 'interfaces/global.interface';
 import { buildConstraints } from 'services/policy/utils';
 
@@ -216,14 +220,12 @@ export class ContractService {
         // Contract not found
         return false;
       }
+      const policy = contract.policy || ({} as ContractPolicy);
       const { permission, prohibition } = data.policy;
       return pdp.isAuthorised(
         {
-          permission: [...(contract.permission || []), ...(permission || [])],
-          prohibition: [
-            ...(contract.prohibition || []),
-            ...(prohibition || []),
-          ],
+          permission: [...(policy.permission || []), ...(permission || [])],
+          prohibition: [...(policy.prohibition || []), ...(prohibition || [])],
         },
         sessionId,
       );
@@ -316,6 +318,8 @@ export class ContractService {
       if (!contract) {
         throw new Error('Contract not found');
       }
+      contract.policy = contract.policy || ({} as ContractPolicyDocument);
+
       const policy = await Policy.findById(policyId);
       if (!policy) {
         throw new Error(`Policy with id ${policyId} not found`);
@@ -339,12 +343,12 @@ export class ContractService {
 
       if (policyData.permission) {
         for (const permission of policyData.permission) {
-          contract.permission.push(permission);
+          contract.policy.permission.push(permission);
         }
       }
       if (policyData.prohibition) {
         for (const prohibition of policyData.prohibition) {
-          contract.prohibition.push(prohibition);
+          contract.policy.prohibition.push(prohibition);
         }
       }
       const updatedContract = await contract.save();
