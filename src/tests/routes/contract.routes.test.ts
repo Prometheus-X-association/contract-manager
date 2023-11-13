@@ -2,7 +2,7 @@
 import supertest from 'supertest';
 import { expect } from 'chai';
 import app from 'server';
-import { ContractSignature } from 'interfaces/schemas.interface';
+import { ContractMember } from 'interfaces/schemas.interface';
 import contractService from 'services/contract.service';
 import Contract from 'models/contract.model';
 import { config } from 'config/config';
@@ -116,10 +116,10 @@ describe('Routes for Contract API', () => {
     const didOrchestrator: string = 'did:orchestrator';
 
     // Define the signature data for party A for the first time
-    const signatureDataPartyA1: ContractSignature = {
-      did: didPartyA,
-      party: 'partyA',
-      value: 'partyASignature1',
+    const signatureDataPartyA1: ContractMember = {
+      participant: didPartyA,
+      role: 'partyA',
+      signature: 'partyASignature1',
     };
 
     // Send a PUT request to sign the contract for party A the first time
@@ -137,10 +137,10 @@ describe('Routes for Contract API', () => {
     expect(responsePartyA1.status).to.equal(200);
 
     // Define the signature data for party A for the second time
-    const signatureDataPartyA2: ContractSignature = {
-      did: didPartyA,
-      party: 'partyA',
-      value: 'partyASignature2',
+    const signatureDataPartyA2: ContractMember = {
+      participant: didPartyA,
+      role: 'partyA',
+      signature: 'partyASignature2',
     };
 
     // Send a PUT request to sign the contract for party A the second time
@@ -152,10 +152,10 @@ describe('Routes for Contract API', () => {
     // log
     _logObject(responsePartyA2.body);
     // Define the signature data for party B
-    const signatureDataPartyB: ContractSignature = {
-      did: didPartyB,
-      party: 'partyB',
-      value: 'partyBSignature',
+    const signatureDataPartyB: ContractMember = {
+      participant: didPartyB,
+      role: 'partyB',
+      signature: 'partyBSignature',
     };
 
     // Send a PUT request to sign the contract for party B
@@ -173,10 +173,10 @@ describe('Routes for Contract API', () => {
     expect(responsePartyB.status).to.equal(200);
 
     // Define the signature data for the orchestrator
-    const signatureDataOrchestrator: ContractSignature = {
-      did: didOrchestrator,
-      party: 'orchestrator',
-      value: 'orchestratorSignature',
+    const signatureDataOrchestrator: ContractMember = {
+      participant: didOrchestrator,
+      role: 'orchestrator',
+      signature: 'orchestratorSignature',
     };
 
     // Send a PUT request to sign the contract for the orchestrator
@@ -194,26 +194,26 @@ describe('Routes for Contract API', () => {
     expect(responseOrchestrator.status).to.equal(200);
 
     // Check if the response contains the updated contract with the signatures
-    expect(responseOrchestrator.body).to.have.property('signatures');
-    const signatures = responseOrchestrator.body.signatures;
+    expect(responseOrchestrator.body).to.have.property('members');
+    const members = responseOrchestrator.body.members;
 
     // Check if party A's second signature exists in the updated contract
-    const partyASignature2 = signatures.find(
-      (signature: ContractSignature) =>
-        signature.party === 'partyA' && signature.value === 'partyASignature2',
+    const partyASignature2 = members.find(
+      (member: ContractMember) =>
+        member.role === 'partyA' && member.signature === 'partyASignature2',
     );
 
     // Check if party B's signature exists in the updated contract
-    const partyBSignature = signatures.find(
-      (signature: ContractSignature) =>
-        signature.party === 'partyB' && signature.value === 'partyBSignature',
+    const partyBSignature = members.find(
+      (member: ContractMember) =>
+        member.role === 'partyB' && member.signature === 'partyBSignature',
     );
 
     // Check if the orchestrator's signature exists in the updated contract
-    const orchestratorSignature = signatures.find(
-      (signature: ContractSignature) =>
-        signature.party === 'orchestrator' &&
-        signature.value === 'orchestratorSignature',
+    const orchestratorSignature = members.find(
+      (member: ContractMember) =>
+        member.role === 'orchestrator' &&
+        member.signature === 'orchestratorSignature',
     );
 
     // Check if both party A's second signature, party B's signature,
@@ -250,7 +250,7 @@ describe('Routes for Contract API', () => {
   });
 
   // Test case: Revoke a signature
-  it('should revoke a signature and move it to revokedSignatures', async () => {
+  it('should revoke a signature and move it to revokedMembers', async () => {
     // Define the DID for party B
     const didPartyB: string = 'did:partyB';
     // Revoke the signature for party B
@@ -262,24 +262,24 @@ describe('Routes for Contract API', () => {
     _logObject(response.body);
     // Check if the response status is OK (200)
     expect(response.status).to.equal(200);
-    // Check if the response contains the updated contract with revokedSignatures
-    expect(response.body).to.have.property('revokedSignatures');
-    const revokedSignatures = response.body.revokedSignatures;
+    // Check if the response contains the updated contract with revokedMembers
+    expect(response.body).to.have.property('revokedMembers');
+    const revokedMembers = response.body.revokedMembers;
     // Check if the revoked signature exists in the revokedSignatures array
-    const partyBRevokedSignature = revokedSignatures.find(
-      (signature: ContractSignature) =>
-        signature.party === 'partyB' &&
-        signature.value === 'partyBSignature' &&
-        signature.did === didPartyB,
+    const partyBRevokedSignature = revokedMembers.find(
+      (member: ContractMember) =>
+        member.role === 'partyB' &&
+        member.signature === 'partyBSignature' &&
+        member.participant === didPartyB,
     );
-    // Check if the revoked signature exists in revokedSignatures
+    // Check if the revoked signature exists in revokedMembers
     expect(partyBRevokedSignature).to.exist;
     // Check if the revoked signature does NOT exist in signatures
-    const partyBSignatureInSignatures = response.body.signatures.find(
-      (signature: ContractSignature) =>
-        signature.party === 'partyB' &&
-        signature.value === 'partyBSignature' &&
-        signature.did === didPartyB,
+    const partyBSignatureInSignatures = response.body.members.find(
+      (member: ContractMember) =>
+        member.role === 'partyB' &&
+        member.signature === 'partyBSignature' &&
+        member.participant === didPartyB,
     );
     expect(partyBSignatureInSignatures).to.not.exist;
     // Check if the 'status' field is set to 'revoked'

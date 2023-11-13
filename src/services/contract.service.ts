@@ -8,7 +8,7 @@ import { logger } from 'utils/logger';
 import {
   ContractPolicy,
   ContractPolicyDocument,
-  ContractSignature,
+  ContractMember,
 } from 'interfaces/schemas.interface';
 import { IDataRegistry, IDataRegistryDB } from 'interfaces/global.interface';
 import { buildConstraints } from 'services/policy/utils';
@@ -124,7 +124,7 @@ export class ContractService {
   // sign contract
   public async signContract(
     contractId: string,
-    inputSignature: ContractSignature,
+    inputSignature: ContractMember,
   ): Promise<IContract> {
     try {
       // Find the contract by its ID
@@ -139,20 +139,20 @@ export class ContractService {
         throw new Error('The contract does not exist.');
       }
       // Check if the party is the orchestrator
-      const isOrchestrator = inputSignature.party === 'orchestrator';
-      const currentSignature = contract.signatures.find(
-        (signature) => signature.party === inputSignature.party,
+      const isOrchestrator = inputSignature.role === 'orchestrator';
+      const currentMember = contract.members.find(
+        (member) => member.role === inputSignature.role,
       );
-      if (currentSignature) {
+      if (currentMember) {
         // Update the value of an existing signature
-        currentSignature.value = inputSignature.value;
+        currentMember.signature = inputSignature.signature;
       } else {
         // Add a new signature if it doesn't exist
-        contract.signatures.push(inputSignature);
+        contract.members.push(inputSignature);
       }
       // Check if both parties have signed, including the orchestrator
-      const totalSignatures = contract.signatures.length;
-      if (totalSignatures >= 2 && isOrchestrator) {
+      const totalMembers = contract.members.length;
+      if (totalMembers >= 2 && isOrchestrator) {
         // Set the contract status to 'revoked' if there are
         // at least two parties and the orchestrator who signed
         contract.status = 'signed';
@@ -184,18 +184,18 @@ export class ContractService {
         throw new Error('Contract not found');
       }
       // Find the signature in the signatures array
-      const signatureIndex = contract.signatures.findIndex(
-        (signature) => signature.did === did,
+      const index = contract.members.findIndex(
+        (member) => member.participant === did,
       );
       // Check if the signature was found
-      if (signatureIndex === -1) {
-        throw new Error('Signature not found');
+      if (index === -1) {
+        throw new Error('Member signature not found');
       }
       // Retrieve the signature from the signatures array
-      const revokedSignature = contract.signatures[signatureIndex];
-      // Move the signature from the signatures array to the revokedSignatures array
-      contract.signatures.splice(signatureIndex, 1);
-      contract.revokedSignatures.push(revokedSignature);
+      const revoked = contract.members[index];
+      // Move the signature from the signatures array to the revokedMembers array
+      contract.members.splice(index, 1);
+      contract.revokedMembers.push(revoked);
       // Set the contract status to 'revoked'
       contract.status = 'revoked';
       // Save the changes to the database
@@ -243,10 +243,10 @@ export class ContractService {
       const filter: Record<string, any> = {};
       if (hasSigned) {
         // Participant must appear in signatures
-        filter.signatures = { $elemMatch: { did: did } };
+        filter.members = { $elemMatch: { participant: did } };
       } else if (hasSigned === false) {
         // Participant must not appear in signatures
-        filter.signatures = { $not: { $elemMatch: { did: did } } };
+        filter.members = { $not: { $elemMatch: { participant: did } } };
       }
       const contracts = await Contract.find(filter).select('-jsonLD');
       return contracts;

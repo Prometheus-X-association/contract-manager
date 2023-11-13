@@ -2,7 +2,7 @@ import supertest from 'supertest';
 import { expect } from 'chai';
 import app from 'server';
 import { IContractDB } from 'interfaces/contract.interface';
-import { ContractSignature } from 'interfaces/schemas.interface';
+import { ContractMember } from 'interfaces/schemas.interface';
 import contractService from 'services/contract.service';
 import Contract from 'models/contract.model';
 import { config } from 'config/config';
@@ -13,7 +13,7 @@ const _logObject = (data: any) => {
   console.log(`\x1b[90m${JSON.stringify(data, null, 2)}\x1b[37m`);
 };
 // Test suite for the route to get all contracts with filters
-describe('Routes for Contract API - GetAllContractsFor', () => {
+describe('Routes for Contract API', () => {
   let server: any;
   let authToken: string;
   let signedContractId: string;
@@ -45,10 +45,10 @@ describe('Routes for Contract API - GetAllContractsFor', () => {
       .send(signedContractData);
     signedContractId = responseSigned.body._id;
     // Define the signature data for party A
-    const signatureDataPartyA1: ContractSignature = {
-      did: didPartyA,
-      party: 'partyA',
-      value: 'partyASignature1',
+    const signatureDataPartyA1: ContractMember = {
+      participant: didPartyA,
+      role: 'partyA',
+      signature: 'partyASignature1',
     };
     // Send a PUT request to sign the contract for party A
     await supertest(app.router)

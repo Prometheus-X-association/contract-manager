@@ -14,7 +14,7 @@ const _logObject = (data: any) => {
 };
 
 // Test suite for the route to get all contracts with filters
-describe('Routes for Contract API - GetAllContractsFor', () => {
+describe('Routes for Contract API', () => {
   let server: any;
   let authToken: string;
   let signedContractId: string;

@@ -357,20 +357,6 @@ export type BilateralContractDocument = mongoose.Document<
   };
 
 /**
- * Lean version of ContractMemberDocument
- *
- * This has all Mongoose getters & functions removed. This type will be returned from `ContractDocument.toObject()`.
- * ```
- * const contractObject = contract.toObject();
- * ```
- */
-export type ContractMember = {
-  participant?: string;
-  signature?: string;
-  _id: mongoose.Types.ObjectId;
-};
-
-/**
  * Lean version of ContractRolesAndObligationPolicyPermissionConstraintDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `ContractRolesAndObligationPolicyPermissionDocument.toObject()`.
@@ -551,32 +537,32 @@ export type ContractPurpose = {
 };
 
 /**
- * Lean version of ContractSignatureDocument
+ * Lean version of ContractMemberDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `ContractDocument.toObject()`.
  * ```
  * const contractObject = contract.toObject();
  * ```
  */
-export type ContractSignature = {
-  did: string;
-  party: string;
-  value: string;
+export type ContractMember = {
+  participant: string;
+  role: string;
+  signature: string;
   date?: Date;
 };
 
 /**
- * Lean version of ContractRevokedSignatureDocument
+ * Lean version of ContractRevokedMemberDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `ContractDocument.toObject()`.
  * ```
  * const contractObject = contract.toObject();
  * ```
  */
-export type ContractRevokedSignature = {
-  did: string;
-  party: string;
-  value: string;
+export type ContractRevokedMember = {
+  participant: string;
+  role: string;
+  signature: string;
   date?: Date;
 };
 
@@ -593,12 +579,11 @@ export type Contract = {
   profile?: string;
   ecosystem?: string;
   orchestrator?: string;
-  members: ContractMember[];
   rolesAndObligations: ContractRolesAndObligation[];
   policy?: ContractPolicy;
   purpose: ContractPurpose[];
-  signatures: ContractRevokedSignature[];
-  revokedSignatures: ContractRevokedSignature[];
+  members: ContractRevokedMember[];
+  revokedMembers: ContractRevokedMember[];
   status?: 'signed' | 'revoked' | 'pending';
   createdAt?: Date;
   jsonLD?: string;
@@ -666,17 +651,6 @@ export type ContractSchema = mongoose.Schema<
   ContractMethods,
   ContractQueries
 >;
-
-/**
- * Mongoose Subdocument type
- *
- * Type of `ContractDocument["members"]` element.
- */
-export type ContractMemberDocument = mongoose.Types.Subdocument & {
-  participant?: string;
-  signature?: string;
-  _id: mongoose.Types.ObjectId;
-};
 
 /**
  * Mongoose Subdocument type
@@ -839,24 +813,24 @@ export type ContractPurposeDocument = mongoose.Types.Subdocument & {
 /**
  * Mongoose Subdocument type
  *
- * Type of `ContractDocument["signatures"]` element.
+ * Type of `ContractDocument["members"]` element.
  */
-export type ContractSignatureDocument = mongoose.Types.Subdocument & {
-  did: string;
-  party: string;
-  value: string;
+export type ContractMemberDocument = mongoose.Types.Subdocument & {
+  participant: string;
+  role: string;
+  signature: string;
   date?: Date;
 };
 
 /**
  * Mongoose Subdocument type
  *
- * Type of `ContractDocument["revokedSignatures"]` element.
+ * Type of `ContractDocument["revokedMembers"]` element.
  */
-export type ContractRevokedSignatureDocument = mongoose.Types.Subdocument & {
-  did: string;
-  party: string;
-  value: string;
+export type ContractRevokedMemberDocument = mongoose.Types.Subdocument & {
+  participant: string;
+  role: string;
+  signature: string;
   date?: Date;
 };
 
@@ -877,12 +851,11 @@ export type ContractDocument = mongoose.Document<
     profile?: string;
     ecosystem?: string;
     orchestrator?: string;
-    members: mongoose.Types.DocumentArray<ContractMemberDocument>;
     rolesAndObligations: mongoose.Types.DocumentArray<ContractRolesAndObligationDocument>;
     policy?: ContractPolicyDocument;
     purpose: mongoose.Types.DocumentArray<ContractPurposeDocument>;
-    signatures: mongoose.Types.DocumentArray<ContractRevokedSignatureDocument>;
-    revokedSignatures: mongoose.Types.DocumentArray<ContractRevokedSignatureDocument>;
+    members: mongoose.Types.DocumentArray<ContractRevokedMemberDocument>;
+    revokedMembers: mongoose.Types.DocumentArray<ContractRevokedMemberDocument>;
     status?: 'signed' | 'revoked' | 'pending';
     createdAt?: Date;
     jsonLD?: string;

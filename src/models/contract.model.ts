@@ -31,12 +31,12 @@ const UnknownConstraintSchema = new Schema(
   { '@type': String },
   { strict: false, _id: false },
 );
-// Signature mongoose schema
-const SignatureSchema = new Schema(
+// Member signature mongoose schema
+const MemberSchema = new Schema(
   {
-    did: { type: String, required: true },
-    party: { type: String, required: true },
-    value: { type: String, required: true },
+    participant: { type: String, required: true },
+    role: { type: String, required: true },
+    signature: { type: String, required: true },
     date: {
       type: Date,
       default: Date.now,
@@ -73,12 +73,11 @@ const ContractSchema: Schema = new Schema({
   profile: String,
   ecosystem: String,
   orchestrator: String,
-  members: [{ participant: String, signature: String }],
   rolesAndObligations: [{ role: String, policy: PolicySchema }],
   policy: PolicySchema,
   purpose: [PurposeSchema],
-  signatures: [SignatureSchema],
-  revokedSignatures: [SignatureSchema],
+  members: [MemberSchema],
+  revokedMembers: [MemberSchema],
   status: {
     type: String,
     enum: ['signed', 'revoked', 'pending'],

@@ -3,7 +3,7 @@ import { Request, Response } from 'express';
 import { IContract, IContractDB } from 'interfaces/contract.interface';
 import contractService from 'services/contract.service';
 import { logger } from 'utils/logger';
-import { ContractSignature } from 'interfaces/schemas.interface';
+import { ContractMember } from 'interfaces/schemas.interface';
 // Create
 export const createContract = async (req: Request, res: Response) => {
   try {
@@ -69,14 +69,14 @@ export const deleteContract = async (req: Request, res: Response) => {
       .json({ error: 'An error occurred while deleting the contract.' });
   }
 };
-// Sign for a given party and signature
+// Sign for a given role and signature
 export const signContract = async (req: Request, res: Response) => {
   try {
     const contractId: string = req.params.id;
-    const signature: ContractSignature = req.body;
+    const member: ContractMember = req.body;
     const updatedContract = await contractService.signContract(
       contractId,
-      signature,
+      member,
     );
     logger.info('[Contract/Controller: signContract] Successfully called.');
     return res.json(updatedContract);
@@ -193,6 +193,35 @@ export const injectPolicy = async (
       replacement,
     );
     res.status(200).json({ contract: updatedContract });
+  } catch (error) {
+    logger.error('Error while injecting policy:', error);
+    const message = (error as Error).message;
+    res.status(500).json({ error: message });
+  }
+};
+
+export const injectRolePolicy = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const policyId: string = req.body.policyId;
+    const contractId: string = req.params.id;
+    const role: string = req.params.role;
+    if (role) {
+      const replacement: any = req.body.values;
+      const updatedContract = await contractService.addRolePolicyFromId(
+        contractId,
+        policyId,
+        role,
+        replacement,
+      );
+      res.status(200).json({ contract: updatedContract });
+    } else {
+      throw new Error(
+        '[Contract/Controller: injectRolePolicy] Role is not defined.',
+      );
+    }
   } catch (error) {
     logger.error('Error while injecting policy:', error);
     const message = (error as Error).message;
