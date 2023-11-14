@@ -234,6 +234,41 @@ export class ContractService {
     }
   }
 
+  public async checkExploitationByRole(
+    contractId: string,
+    data: any,
+    sessionId: string,
+    role: string,
+  ): Promise<boolean> {
+    try {
+      const contract = await Contract.findById(contractId);
+      if (!contract || !contract.rolesAndObligations) {
+        return false;
+      }
+      const rao = contract.rolesAndObligations.find(
+        (entry) => entry.role === role,
+      );
+      if (!rao) {
+        return false;
+      }
+      const { permission, prohibition } = data.policy;
+      return pdp.isAuthorised(
+        {
+          permission: [
+            ...(rao.policy?.permission || []),
+            ...(permission || []),
+          ],
+          prohibition: [
+            ...(rao.policy?.prohibition || []),
+            ...(prohibition || []),
+          ],
+        },
+        sessionId,
+      );
+    } catch (error) {
+      throw error;
+    }
+  }
   // Get ecosystem contracts for a specific DID with optional filter
   public async getContractsFor(
     did: string,

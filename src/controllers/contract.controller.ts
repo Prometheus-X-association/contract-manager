@@ -125,6 +125,29 @@ export const checkDataExploitation = async (req: Request, res: Response) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+//
+export const checkExploitationByRole = async (req: Request, res: Response) => {
+  const contractId = req.params.id;
+  const role = req.params.role;
+  const data = { policy: req.body };
+  const sessionId = req.session.id;
+  try {
+    const isAuthorised = await contractService.checkExploitationByRole(
+      contractId,
+      data,
+      sessionId,
+      role,
+    );
+    if (isAuthorised) {
+      return res.status(200).json({ authorised: true });
+    } else {
+      return res.status(403).json({ authorised: false });
+    }
+  } catch (error) {
+    logger.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+};
 // Get contrats for a specific DID with optional filter
 export const getContractsFor = async (
   req: Request,
