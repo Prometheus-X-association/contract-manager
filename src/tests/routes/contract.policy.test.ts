@@ -6,6 +6,8 @@ import { config } from 'config/config';
 
 let cookie: any;
 let contractId: any;
+let policyId: string;
+
 const SERVER_PORT = 9999;
 const _logYellow = (value: string) => {
   console.log(`\x1b[93m${value}\x1b[37m`);
@@ -65,10 +67,47 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
 
   it('Should inject a policy', async () => {
     _logYellow('\n-Inject a policy for resource access.');
+    const policyData = {
+      policyId,
+      values: {
+        target: '',
+      },
+    };
+    _logGreen('The input policy set:');
+    _logObject(policyData);
+    const response = await supertest(app.router)
+      .post(`/contracts/policy/${contractId}`)
+      .set('Cookie', cookie)
+      .set('Authorization', `Bearer ${authToken}`)
+      .send(policyData);
+    _logGreen('The new contract in database:');
+    _logObject(response.body);
+    expect(response.status).to.equal(200);
+    contractId = response.body._id;
+    // ...
   });
 
   it('Should inject a policy by role', async () => {
     _logYellow('\n-Inject a policy for resources accessed by a specific role.');
+    const policyData = {
+      policyId,
+      values: {
+        target: '',
+      },
+    };
+    const role = 'participant';
+    _logGreen('The input policy set:');
+    _logObject(policyData);
+    const response = await supertest(app.router)
+      .post(`/contracts/policy/${role}/${contractId}`)
+      .set('Cookie', cookie)
+      .set('Authorization', `Bearer ${authToken}`)
+      .send(policyData);
+    _logGreen('The new contract in database:');
+    _logObject(response.body);
+    expect(response.status).to.equal(200);
+    contractId = response.body._id;
+    // ...
   });
 
   after(async () => {
