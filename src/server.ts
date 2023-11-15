@@ -76,7 +76,7 @@ const startServer = async (url: string) => {
   // Routes
   router.use(
     '/',
-    auth,
+    /*auth,*/
     userRoutes,
     contractRoutes,
     bilateralContractRoutes,
