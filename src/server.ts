@@ -6,7 +6,7 @@ import bilateralContractRoutes from 'routes/bilateral.routes';
 import userRoutes, { login } from 'routes/user.routes';
 import papRoutes from 'routes/pap.routes';
 import auth, { checkSessionCookie } from 'middlewares/auth.middleware';
-import pep from 'middlewares/pep.middlewares';
+// import pep from 'middlewares/pep.middlewares';
 import { logger } from 'utils/logger';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJson from './swagger.json';
@@ -64,7 +64,7 @@ const startServer = async (url: string) => {
   router.use('/', login);
   router.use(checkSessionCookie);
   // Policy enforcement point
-  router.use(pep);
+  // router.use(pep);
   router.use((req, res, next) => {
     if (req.method === 'POST') {
       if (req.headers['content-type'] !== 'application/json') {

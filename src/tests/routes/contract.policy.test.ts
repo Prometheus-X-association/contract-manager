@@ -65,12 +65,28 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
     contractId = response.body._id;
   });
 
+  it('Should get "No Restriction" policy id', async () => {
+    _logYellow('\n-Get policies named "No Restriction".');
+    const policyName = 'No Restriction';
+    const response = await supertest(app.router)
+      .get(`/pap/policies/${policyName}`)
+      .set('Cookie', cookie)
+      .set('Authorization', `Bearer ${authToken}`);
+    _logGreen('The result of the request:');
+    expect(response.status).to.equal(200);
+    _logObject(response.body);
+    expect(response.body).to.be.an('array');
+    expect(response.body).to.not.be.empty;
+    expect(response.body[0]).to.have.property('_id').that.is.a('string');
+    policyId = response.body[0]._id;
+  });
+
   it('Should inject a policy', async () => {
     _logYellow('\n-Inject a policy for resource access.');
     const policyData = {
       policyId,
       values: {
-        target: '',
+        target: 'a-target-uid',
       },
     };
     _logGreen('The input policy set:');
@@ -80,11 +96,13 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
       .set('Cookie', cookie)
       .set('Authorization', `Bearer ${authToken}`)
       .send(policyData);
-    _logGreen('The new contract in database:');
-    _logObject(response.body);
     expect(response.status).to.equal(200);
-    contractId = response.body._id;
-    // ...
+    expect(response.body).to.have.property('contract');
+    const contract = response.body.contract;
+    _logGreen('The new contract in database:');
+    _logObject(contract);
+    expect(contract._id).to.be.a('string');
+    contractId = response.body.contract._id;
   });
 
   it('Should inject a policy by role', async () => {
@@ -92,7 +110,7 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
     const policyData = {
       policyId,
       values: {
-        target: '',
+        target: 'a-target-uid-for-role',
       },
     };
     const role = 'participant';

@@ -91,3 +91,17 @@ export const getPolicy = async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 };
+// Get the policies according to the given name
+export const getPoliciesByName = async (req: Request, res: Response) => {
+  try {
+    const policies = await Policy.find({ name: req.params.name });
+    if (!policies || policies.length === 0) {
+      return res
+        .status(404)
+        .json({ error: 'No policies found with the given name' });
+    }
+    res.json(policies);
+  } catch (error: any) {
+    res.status(500).json({ error: error.message });
+  }
+};
