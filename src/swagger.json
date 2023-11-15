@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "Contract Manager API",
-    "description": "...",
+    "description": "Availables routes through the Contract Manager API",
     "version": "1.0.0"
   },
   "host": "8888",
@@ -229,8 +229,45 @@
         }
       }
     },
+    "/bilaterals/policy/{id}": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "policyId": {
+                  "example": "any"
+                },
+                "values": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
     "/contracts/all/": {
       "get": {
+        "summary": "Get all contracts with optional filter status",
         "description": "",
         "parameters": [
           {
@@ -251,6 +288,7 @@
     },
     "/contracts/for/{did}": {
       "get": {
+        "summary": "Get contracts for a specific DID with an optional filter",
         "description": "",
         "parameters": [
           {
@@ -360,6 +398,7 @@
     },
     "/contracts/sign/{id}": {
       "put": {
+        "summary": "Sign contract",
         "description": "",
         "parameters": [
           {
@@ -381,6 +420,7 @@
     },
     "/contracts/sign/revoke/{id}/{did}": {
       "delete": {
+        "summary": "Revoque signature",
         "description": "",
         "parameters": [
           {
@@ -408,6 +448,7 @@
     },
     "/contracts/check-exploitability/{id}": {
       "post": {
+        "summary": "Check data exploitation",
         "description": "",
         "parameters": [
           {
@@ -423,6 +464,84 @@
           },
           "403": {
             "description": "Forbidden"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/contracts/policy/{id}": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "policyId": {
+                  "example": "any"
+                },
+                "values": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/contracts/policy/{role}/{id}": {
+      "post": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "role",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "body",
+            "in": "body",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "policyId": {
+                  "example": "any"
+                },
+                "values": {
+                  "example": "any"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
           },
           "500": {
             "description": "Internal Server Error"
@@ -449,6 +568,16 @@
           }
         }
       },
+      "get": {
+        "description": "",
+        "responses": {
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/pap/policies/{name}": {
       "get": {
         "description": "",
         "responses": {
@@ -528,6 +657,9 @@
       "put": {
         "description": "",
         "responses": {
+          "200": {
+            "description": "OK"
+          },
           "500": {
             "description": "Internal Server Error"
           }

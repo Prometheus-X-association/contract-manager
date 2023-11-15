@@ -71,6 +71,7 @@ export const deleteContract = async (req: Request, res: Response) => {
 };
 // Sign for a given role and signature
 export const signContract = async (req: Request, res: Response) => {
+  // #swagger.summary = 'Sign contract'
   try {
     const contractId: string = req.params.id;
     const member: ContractMember = req.body;
@@ -89,6 +90,7 @@ export const signContract = async (req: Request, res: Response) => {
 };
 // Revoke a signature on a contract for a given contract id and party did
 export const revokeContractSignature = async (req: Request, res: Response) => {
+  // #swagger.summary = 'Revoque signature'
   const { id, did } = req.params;
   try {
     const revokedSignature = await contractService.revokeSignatureService(
@@ -106,6 +108,7 @@ export const revokeContractSignature = async (req: Request, res: Response) => {
 };
 // Check if data is authorized for exploitation
 export const checkDataExploitation = async (req: Request, res: Response) => {
+  // #swagger.summary = 'Check data exploitation'
   const contractId = req.params.id;
   const data = { policy: req.body };
   const sessionId = req.session.id;
@@ -153,6 +156,7 @@ export const getContractsFor = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
+  // #swagger.summary = 'Get contracts for a specific DID with an optional filter'
   try {
     const did: string | undefined = req.params.did;
     const hasSigned: boolean = req.query.hasSigned !== 'false';
@@ -174,6 +178,7 @@ export const getContracts = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
+  // #swagger.summary = 'Get all contracts with optional filter status'
   try {
     const status = req.query.status ? String(req.query.status) : undefined;
     const contracts: IContractDB[] = await contractService.getContracts(status);
