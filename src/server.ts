@@ -62,7 +62,8 @@ const startServer = async (url: string) => {
     }),
   );
   router.use('/', login);
-  router.use(checkSessionCookie);
+  // router.use(checkSessionCookie);
+
   // Policy enforcement point
   // router.use(pep);
   router.use((req, res, next) => {
