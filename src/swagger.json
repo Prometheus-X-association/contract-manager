@@ -487,10 +487,7 @@
             "schema": {
               "type": "object",
               "properties": {
-                "policyId": {
-                  "example": "any"
-                },
-                "values": {
+                "role": {
                   "example": "any"
                 }
               }
@@ -498,51 +495,6 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
-          }
-        }
-      }
-    },
-    "/contracts/policy/{role}/{id}": {
-      "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "role",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          },
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "policyId": {
-                  "example": "any"
-                },
-                "values": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
           "500": {
             "description": "Internal Server Error"
           }
