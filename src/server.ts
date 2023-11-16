@@ -16,7 +16,8 @@ const router = express();
 
 const startServer = async (url: string) => {
   try {
-    await mongoose.connect(url, { retryWrites: true });
+    // await
+    mongoose.connect(url, { retryWrites: true });
     logger.info('MongoDB connected');
   } catch (error) {
     logger.error('Error connecting to MongoDB:', error);
