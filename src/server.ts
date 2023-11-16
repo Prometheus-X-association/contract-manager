@@ -11,6 +11,7 @@ import { logger } from 'utils/logger';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJson from './swagger.json';
 import session from 'express-session';
+import createMemoryStore from 'memorystore';
 import { config } from 'config/config';
 const router = express();
 
@@ -59,6 +60,7 @@ const startServer = async (url: string) => {
   router.get('/is-it-alive', (req, res, next) => {
     res.json({ message: 'yes it is!' });
   });
+  const MemoryStore = createMemoryStore(session);
   router.use(
     session({
       secret: config.session.secret,
@@ -66,6 +68,9 @@ const startServer = async (url: string) => {
       saveUninitialized: true,
       name: 'contract-manager-session-cookie',
       cookie: { secure: false },
+      store: new MemoryStore({
+        checkPeriod: 86400000,
+      }),
     }),
   );
   router.use('/', login);

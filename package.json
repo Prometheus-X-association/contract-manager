@@ -9,6 +9,7 @@
     "dotenv": "^16.3.1",
     "express-session": "^1.17.3",
     "jsonwebtoken": "^9.0.2",
+    "memorystore": "^1.6.7",
     "mongoose": "^7.5.3",
     "nodemon": "^3.0.1",
     "prettier": "^3.0.3",
