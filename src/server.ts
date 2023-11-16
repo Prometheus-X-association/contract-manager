@@ -5,7 +5,7 @@ import contractRoutes from 'routes/contract.routes';
 import bilateralContractRoutes from 'routes/bilateral.routes';
 import userRoutes, { login } from 'routes/user.routes';
 import papRoutes from 'routes/pap.routes';
-import auth, { checkSessionCookie } from 'middlewares/auth.middleware';
+// import auth, { checkSessionCookie } from 'middlewares/auth.middleware';
 // import pep from 'middlewares/pep.middlewares';
 import { logger } from 'utils/logger';
 import swaggerUi from 'swagger-ui-express';
@@ -17,15 +17,8 @@ const router = express();
 
 const startServer = async (url: string) => {
   try {
-    // await
-    mongoose
-      .connect(url, { retryWrites: true })
-      .then(() => {
-        logger.info('MongoDB connected');
-      })
-      .catch((e) => {
-        logger.info(e);
-      });
+    await mongoose.connect(url, { retryWrites: true });
+    logger.info('MongoDB connected');
   } catch (error) {
     logger.error('Error connecting to MongoDB:', error);
     process.exit(1);
@@ -47,12 +40,10 @@ const startServer = async (url: string) => {
       'Access-Control-Allow-Methods',
       'GET, POST, PUT, PATCH, DELETE, OPTIONS',
     );
-
     res.setHeader(
       'Access-Control-Allow-Headers',
       'Origin, X-Requested-With, Content-Type, Accept, Authorization',
     );
-    // res.setHeader('Access-Control-Allow-Credentials', 'true');
     next();
   });
   // swagger
