@@ -212,6 +212,24 @@ export const injectPolicy = async (
   res: Response,
 ): Promise<void> => {
   try {
+    const role: string = req.body.role;
+    if (role) {
+      await injectRolePolicy(req, res);
+    } else {
+      await injectGlobalPolicy(req, res);
+    }
+  } catch (error) {
+    logger.error('Error while injecting policy:', error);
+    const message = (error as Error).message;
+    res.status(500).json({ error: message });
+  }
+};
+
+export const injectGlobalPolicy = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
     const policyId: string = req.body.policyId;
     const contractId: string = req.params.id;
     const replacement: any = req.body.values;
@@ -235,7 +253,7 @@ export const injectRolePolicy = async (
   try {
     const policyId: string = req.body.policyId;
     const contractId: string = req.params.id;
-    const role: string = req.params.role;
+    const role: string = req.body.role;
     if (role) {
       const replacement: any = req.body.values;
       const updatedContract = await contractService.addRolePolicyFromId(

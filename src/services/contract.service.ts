@@ -371,7 +371,6 @@ export class ContractService {
       throw error;
     }
   }
-
   //
   public async addRolePolicyFromId(
     contractId: string,
@@ -384,26 +383,24 @@ export class ContractService {
       if (!contract) {
         throw new Error('Contract not found');
       }
-      const roleEntry = contract.rolesAndObligations.find(
+      let roleIndex = contract.rolesAndObligations.findIndex(
         (entry) => entry.role === role,
       );
-      if (!roleEntry) {
+      if (roleIndex === -1) {
         contract.rolesAndObligations.push({
           role,
           policy: { permission: [], prohibition: [] },
         });
+        roleIndex = contract.rolesAndObligations.length - 1;
       }
+      const roleEntry = contract.rolesAndObligations[roleIndex];
       const policyData = await this.updatePolicyData(policyId, replacement);
       if (roleEntry?.policy) {
         if (policyData.permission) {
-          for (const permission of policyData.permission) {
-            roleEntry.policy.permission.push(permission);
-          }
+          roleEntry.policy.permission.push(...policyData.permission);
         }
         if (policyData.prohibition) {
-          for (const prohibition of policyData.prohibition) {
-            roleEntry.policy.prohibition.push(prohibition);
-          }
+          roleEntry.policy.prohibition.push(...policyData.prohibition);
         }
       }
       const updatedContract = await contract.save();
@@ -425,6 +422,7 @@ export class ContractService {
       }
       contract.policy = contract.policy || ({} as ContractPolicyDocument);
       const policyData = await this.updatePolicyData(policyId, replacement);
+
       if (policyData.permission) {
         for (const permission of policyData.permission) {
           contract.policy.permission.push(permission);

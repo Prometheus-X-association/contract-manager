@@ -107,17 +107,18 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
 
   it('Should inject a policy by role', async () => {
     _logYellow('\n-Inject a policy for resources accessed by a specific role.');
+    const role = 'participant';
     const policyData = {
+      role,
       policyId,
       values: {
         target: 'a-target-uid-for-role',
       },
     };
-    const role = 'participant';
     _logGreen('The input policy set:');
     _logObject(policyData);
     const response = await supertest(app.router)
-      .post(`/contracts/policy/${role}/${contractId}`)
+      .post(`/contracts/policy/${contractId}`)
       .set('Cookie', cookie)
       .set('Authorization', `Bearer ${authToken}`)
       .send(policyData);
