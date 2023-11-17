@@ -8,7 +8,10 @@ import {
 // Type for the generated mongoose contract
 export type IContractDB = ContractDocument;
 // Type used for the Contract data manipulation within the API
-export type IContract = Contract;
+export type IContract = Contract & {
+  permission?: any[];
+  prohibition?: any[];
+};
 
 // Type for the generated mongoose bilateral contract
 export type IBilateralContractDB = BilateralContractDocument;

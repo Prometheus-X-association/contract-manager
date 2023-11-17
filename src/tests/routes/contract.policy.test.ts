@@ -83,7 +83,9 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
 
   it('Should inject a policy', async () => {
     _logYellow('\n-Inject a policy for resource access.');
+    const role = 'ecosystem';
     const policyData = {
+      role,
       policyId,
       values: {
         target: 'a-target-uid',

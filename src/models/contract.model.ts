@@ -63,6 +63,7 @@ const PolicySchema = new Schema(
         _id: false,
       },
     ],
+    description: String,
   },
   { _id: false },
 );
@@ -73,8 +74,7 @@ const ContractSchema: Schema = new Schema({
   profile: String,
   ecosystem: String,
   orchestrator: String,
-  rolesAndObligations: [{ role: String, policy: PolicySchema }],
-  policy: PolicySchema,
+  rolesAndObligations: [{ role: String, policies: [PolicySchema] }],
   purpose: [PurposeSchema],
   members: [MemberSchema],
   revokedMembers: [MemberSchema],

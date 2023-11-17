@@ -1,4 +1,5 @@
 import {
+  ContractRolesAndObligationPolicie,
   Policy,
   PolicyDocument,
   PolicyReferenceRegistryPolicie,
@@ -7,10 +8,9 @@ import {
 
 export type IPolicy = Policy;
 export type IPolicyDB = PolicyDocument;
-
 export type PDPAction = 'write' | 'POST' | 'GET' | 'PUT' | 'DELETE';
-//
 export type ICondition = Record<string, unknown>;
+export type IContractPolicy = ContractRolesAndObligationPolicie;
 
 export interface IAuthorisationPolicy extends PolicyReferenceRegistryPolicie {
   action: PDPAction;
@@ -26,6 +26,12 @@ export interface IAuthorisationPolicySet {
 export interface IPolicySet {
   permission: unknown[] | undefined;
   prohibition: unknown[] | undefined;
+}
+
+export interface IPolicyInjection {
+  role: String;
+  policyId: string;
+  values: any;
 }
 
 export type IAuthorisationPolicyDB = PolicyReferenceRegistryPolicieDocument;
