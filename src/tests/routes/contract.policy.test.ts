@@ -104,17 +104,16 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
     _logGreen('The new contract in database:');
     _logObject(contract);
     expect(contract._id).to.be.a('string');
-    contractId = response.body.contract._id;
   });
 
-  it('Should inject a policy by role', async () => {
+  it('Should inject a policy by role (participant)', async () => {
     _logYellow('\n-Inject a policy for resources accessed by a specific role.');
     const role = 'participant';
     const policyData = {
       role,
       policyId,
       values: {
-        target: 'a-target-uid-for-role',
+        target: 'a-target-uid-for-participant-role',
       },
     };
     _logGreen('The input policy set:');
@@ -127,8 +126,109 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
     _logGreen('The new contract in database:');
     _logObject(response.body);
     expect(response.status).to.equal(200);
-    contractId = response.body._id;
-    // ...
+  });
+
+  it('Should inject a second policy by role (participant)', async () => {
+    _logYellow(
+      '\n-Inject a second policy for resources accessed by a specific role.',
+    );
+    const role = 'participant';
+    const target = 'a-second-target-uid-for-participant-role';
+    const policyData = {
+      role,
+      policyId,
+      values: {
+        target,
+      },
+    };
+    _logGreen('The input policy set:');
+    _logObject(policyData);
+    const response = await supertest(app.router)
+      .post(`/contracts/policy/${contractId}`)
+      .set('Cookie', cookie)
+      .set('Authorization', `Bearer ${authToken}`)
+      .send(policyData);
+    _logGreen('The new contract in database:');
+    _logObject(response.body);
+    expect(response.status).to.equal(200);
+    expect(response.body.contract).to.be.an('object');
+    const contract = response.body.contract;
+    const roleParticipantEntry = contract.rolesAndObligations.find(
+      (entry: any) => entry.role === 'participant',
+    );
+    expect(roleParticipantEntry).to.be.an('object');
+    expect(roleParticipantEntry.policies).to.be.an('array');
+    expect(roleParticipantEntry.policies.length).to.be.at.least(1);
+    const targetPermission = roleParticipantEntry.policies.find(
+      (policy: any) => {
+        return (
+          policy.permission &&
+          policy.permission.some(
+            (permission: any) => permission.target === target,
+          )
+        );
+      },
+    );
+    expect(targetPermission).to.exist;
+  });
+
+  it('Should inject an array of policies', async () => {
+    _logYellow('\n-Inject a set of policies.');
+
+    const role = 'provider';
+    const policiesArray = [
+      {
+        role,
+        policyId,
+        values: {
+          target: 'target-a',
+        },
+      },
+      {
+        role,
+        policyId,
+        values: {
+          target: 'target-b',
+        },
+      },
+      {
+        role,
+        policyId,
+        values: {
+          target: 'target-c',
+        },
+      },
+    ];
+    _logGreen('The input policies:');
+    _logObject(policiesArray);
+    const response = await supertest(app.router)
+      .post(`/contracts/policies/${contractId}`)
+      .set('Cookie', cookie)
+      .set('Authorization', `Bearer ${authToken}`)
+      .send(policiesArray);
+    _logGreen('The new contract in database:');
+    _logObject(response.body);
+    expect(response.status).to.equal(200);
+    expect(response.body.contract).to.be.an('object');
+    const contract = response.body.contract;
+    const roleParticipantEntry = contract.rolesAndObligations.find(
+      (entry: any) => entry.role === role,
+    );
+    expect(roleParticipantEntry).to.be.an('object');
+    expect(roleParticipantEntry.policies).to.be.an('array');
+    expect(roleParticipantEntry.policies.length).to.be.at.least(
+      policiesArray.length,
+    );
+    policiesArray.forEach((policy) => {
+      const targetPermission = roleParticipantEntry.policies.find(
+        (p: any) =>
+          p.permission &&
+          p.permission.some(
+            (permission: any) => permission.target === policy.values.target,
+          ),
+      );
+      expect(targetPermission).to.exist;
+    });
   });
 
   after(async () => {

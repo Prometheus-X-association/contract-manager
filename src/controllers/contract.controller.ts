@@ -207,33 +207,13 @@ export const getODRLContract = async (req: Request, res: Response) => {
   }
 };
 
-export const injectPolicy = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
-  try {
-    // const role: string = req.body.role;
-    // if (role) {
-    await injectRolePolicy(req, res);
-    /*
-    }  else {
-      await injectGlobalPolicy(req, res);
-    }
-    */
-  } catch (error) {
-    logger.error('Error while injecting policy:', error);
-    const message = (error as Error).message;
-    res.status(500).json({ error: message });
-  }
-};
-/*
-export const injectGlobalPolicy = async (
+export const injectPolicies = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
   try {
     const contractId: string = req.params.id;
-    const updatedContract = await contractService.addPolicyFromId(
+    const updatedContract = await contractService.addRolePolicies(
       contractId,
       req.body,
     );
@@ -244,8 +224,8 @@ export const injectGlobalPolicy = async (
     res.status(500).json({ error: message });
   }
 };
-*/
-export const injectRolePolicy = async (
+
+export const injectPolicy = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
@@ -253,7 +233,7 @@ export const injectRolePolicy = async (
     const role: string = req.body.role;
     const contractId: string = req.params.id;
     if (role) {
-      const updatedContract = await contractService.addRolePolicyFromId(
+      const updatedContract = await contractService.addRolePolicy(
         contractId,
         req.body,
       );

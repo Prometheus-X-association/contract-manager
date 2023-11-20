@@ -394,7 +394,7 @@ export class ContractService {
     }
   }
   //
-  private async updatePolicyData(data: IPolicyInjection): Promise<any> {
+  private async genPolicyFromData(data: IPolicyInjection): Promise<any> {
     try {
       const policyId = data.policyId;
       const replacement = data.values;
@@ -418,12 +418,59 @@ export class ContractService {
       }
       policyData.description = policy.description;
       return policyData;
-    } catch (error) {
+    } catch (error: any) {
       throw error;
     }
   }
   //
-  public async addRolePolicyFromId(
+  public async addPoliciesForRole(
+    contractId: string,
+    data: IPolicyInjection[],
+  ): Promise<IContractDB | null> {
+    return null;
+  }
+  //
+  public async addRolePolicies(
+    contractId: string,
+    data: IPolicyInjection[],
+  ): Promise<IContractDB | null> {
+    try {
+      const contract = await Contract.findById(contractId);
+      if (!contract) {
+        throw new Error('Contract not found');
+      }
+      for (const policyData of data) {
+        try {
+          const role = policyData.role;
+          let roleIndex = contract.rolesAndObligations.findIndex(
+            (entry) => entry.role === role,
+          );
+          if (roleIndex === -1) {
+            contract.rolesAndObligations.push({
+              role,
+              policies: [],
+            });
+            roleIndex = contract.rolesAndObligations.length - 1;
+          }
+          const roleEntry = contract.rolesAndObligations[roleIndex];
+          const updatedPolicyData = await this.genPolicyFromData(policyData);
+          roleEntry.policies.push({
+            description: updatedPolicyData.description,
+            permission: updatedPolicyData.permission || [],
+            prohibition: updatedPolicyData.prohibition || [],
+          });
+        } catch (error) {
+          throw error;
+        }
+      }
+      const updatedContract = await contract.save();
+      return updatedContract;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+  //
+  public async addRolePolicy(
     contractId: string,
     data: IPolicyInjection,
   ): Promise<IContractDB | null> {
@@ -439,67 +486,23 @@ export class ContractService {
       if (roleIndex === -1) {
         contract.rolesAndObligations.push({
           role,
-          policies: [{ permission: [], prohibition: [] }],
+          policies: [],
         });
         roleIndex = contract.rolesAndObligations.length - 1;
       }
       const roleEntry = contract.rolesAndObligations[roleIndex];
-      const policyData = await this.updatePolicyData(data);
-      if (roleEntry?.policies && roleEntry.policies.length > 0) {
-        const lastPolicyIndex = roleEntry.policies.length - 1;
-
-        roleEntry.policies[lastPolicyIndex].description =
-          policyData.description;
-
-        if (policyData.permission) {
-          roleEntry.policies[lastPolicyIndex].permission.push(
-            ...policyData.permission,
-          );
-        }
-        if (policyData.prohibition) {
-          roleEntry.policies[lastPolicyIndex].prohibition.push(
-            ...policyData.prohibition,
-          );
-        }
-      }
+      const policyData = await this.genPolicyFromData(data);
+      roleEntry.policies.push({
+        description: policyData.description,
+        permission: policyData.permission || [],
+        prohibition: policyData.prohibition || [],
+      });
       const updatedContract = await contract.save();
       return updatedContract;
     } catch (error) {
       throw error;
     }
   }
-
-  //
-  /*
-  public async addPolicyFromId(
-    contractId: string,
-    data: IPolicyInjection,
-  ): Promise<IContractDB | null> {
-    try {
-      const contract = await Contract.findById(contractId);
-      if (!contract) {
-        throw new Error('Contract not found');
-      }
-      contract.policy = contract.policy || ({} as ContractPolicyDocument);
-      const policyData = await this.updatePolicyData(data);
-
-      if (policyData.permission) {
-        for (const permission of policyData.permission) {
-          contract.policy.permission.push(permission);
-        }
-      }
-      if (policyData.prohibition) {
-        for (const prohibition of policyData.prohibition) {
-          contract.policy.prohibition.push(prohibition);
-        }
-      }
-      const updatedContract = await contract.save();
-      return updatedContract;
-    } catch (error) {
-      throw error;
-    }
-  }
-  */
 
   private convertContract(contract: IContractDB): any {
     return {};
