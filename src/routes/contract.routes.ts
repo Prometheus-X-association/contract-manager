@@ -11,6 +11,7 @@ import {
   revokeContractSignature,
   injectPolicy,
   injectPolicies,
+  injectPoliciesForRole,
 } from '../controllers/contract.controller';
 
 // Ecosystem Contract Routes
@@ -26,5 +27,6 @@ router.delete('/contracts/sign/revoke/:id/:did', revokeContractSignature);
 router.post('/contracts/check-exploitability/:id', checkDataExploitation);
 router.post('/contracts/policy/:id', injectPolicy);
 router.post('/contracts/policies/:id', injectPolicies);
+router.post('/contracts/policies/role/:id', injectPoliciesForRole);
 
 export default router;

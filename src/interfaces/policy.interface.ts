@@ -29,8 +29,8 @@ export interface IPolicySet {
 }
 
 export interface IPolicyInjection {
-  role: String;
-  policyId: string;
+  role?: String;
+  ruleId: string;
   values: any;
 }
 
