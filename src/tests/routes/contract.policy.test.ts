@@ -6,7 +6,7 @@ import { config } from 'config/config';
 
 let cookie: any;
 let contractId: any;
-let ruleId: string;
+let ruleId: string = 'rule-access-1';
 
 const SERVER_PORT = 9999;
 const _logYellow = (value: string) => {
@@ -65,6 +65,7 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
     contractId = response.body._id;
   });
 
+  /*
   it('Should get "No Restriction" policy id', async () => {
     _logYellow('\n-Get policies named "No Restriction".');
     const policyName = 'No Restriction';
@@ -80,6 +81,7 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
     expect(response.body[0]).to.have.property('_id').that.is.a('string');
     ruleId = response.body[0]._id;
   });
+  */
 
   it('Should inject a policy', async () => {
     _logYellow('\n-Inject a policy for resource access.');

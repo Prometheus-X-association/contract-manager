@@ -13,7 +13,7 @@ const SECRET_AUTH_KEY =
   process.env.SECRET_AUTH_KEY || 'an-unsafe-secret-default-secret-key';
 const SECRET_SESSION_KEY =
   process.env.SECRET_SESSION_KEY || 'an-unsafe-session-default-secret-key';
-const CATALOG_API_URL = process.env.CATALOG_API_URL || '';
+const CATALOG_REGISTRY_API_URL = process.env.CATALOG_REGISTRY_URL || '';
 export const config = {
   mongo: {
     url: MONGO_URL,
@@ -33,6 +33,6 @@ export const config = {
   contract: {},
   bilateralContract: {},
   catalog: {
-    url: CATALOG_API_URL,
+    url: CATALOG_REGISTRY_API_URL,
   },
 };
