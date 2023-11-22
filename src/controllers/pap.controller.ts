@@ -91,7 +91,6 @@ export const getPolicy = async (req: Request, res: Response) => {
     res.status(500).json({ error: error.message });
   }
 };
-// Get the policies according to the given name
 export const getPoliciesByName = async (req: Request, res: Response) => {
   try {
     const policies = await Policy.find({ name: req.params.name });

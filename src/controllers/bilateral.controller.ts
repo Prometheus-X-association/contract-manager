@@ -9,6 +9,7 @@ import { logger } from 'utils/logger';
 import { BilateralContractSignature } from 'interfaces/schemas.interface';
 // Create
 export const createContract = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Bilateral'];
   try {
     const contract: IBilateralContract =
       await bilateralContractService.genContract(req.body);
@@ -23,6 +24,7 @@ export const createContract = async (req: Request, res: Response) => {
 };
 // Read
 export const getContract = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Bilateral'];
   try {
     const contractId: string = req.params.id;
     const contract = await bilateralContractService.getContract(contractId);
@@ -40,6 +42,7 @@ export const getContract = async (req: Request, res: Response) => {
 };
 // Update
 export const updateContract = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Bilateral'];
   try {
     const contractId: string = req.params.id;
     const updates: Partial<IBilateralContractDB> = req.body;
@@ -61,6 +64,7 @@ export const updateContract = async (req: Request, res: Response) => {
 };
 // Delete
 export const deleteContract = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Bilateral'];
   try {
     const contractId: string = req.params.id;
     await bilateralContractService.deleteContract(contractId);
@@ -76,6 +80,7 @@ export const deleteContract = async (req: Request, res: Response) => {
 
 // Add a negociator/participant to a contrat
 export const addContractNegociator = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Bilateral'];
   try {
     const contractId: string = req.params.id;
     const did: string = req.body.did;
@@ -102,6 +107,7 @@ export const addContractNegociator = async (req: Request, res: Response) => {
 
 // Sign for a given party and signature
 export const signContract = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Bilateral'];
   try {
     const contractId: string = req.params.id;
     const signature: BilateralContractSignature = req.body;
@@ -122,6 +128,7 @@ export const signContract = async (req: Request, res: Response) => {
 // Revoke a signature on a contract for a given contract id and party did
 export const revokeContractSignature = async (req: Request, res: Response) => {
   const { id, did } = req.params;
+  // #swagger.tags = ['Bilateral'];
   try {
     const revokedSignature =
       await bilateralContractService.revokeSignatureService(id, did);
@@ -136,6 +143,7 @@ export const revokeContractSignature = async (req: Request, res: Response) => {
 };
 // Check if data is authorized for exploitation
 export const checkDataExploitation = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Bilateral'];
   const contractId = req.params.id;
   const data = { policy: req.body };
   const sessionId = req.session.id;
@@ -160,6 +168,7 @@ export const getContractsFor = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
+  // #swagger.tags = ['Bilateral'];
   try {
     const did: string | undefined = req.params.did;
     const isParticipant: boolean | undefined =
@@ -194,6 +203,7 @@ export const getContracts = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
+  // #swagger.tags = ['Bilateral'];
   try {
     const status = req.query.status ? String(req.query.status) : undefined;
     const contracts: IBilateralContractDB[] =
@@ -207,6 +217,7 @@ export const getContracts = async (
 };
 // get ODRL contract
 export const getODRLContract = async (req: Request, res: Response) => {
+  // #swagger.tags = ['Bilateral'];
   try {
     const contractId: string = req.params.id;
     const contract = await bilateralContractService.getODRLContract(
@@ -230,6 +241,7 @@ export const injectPolicy = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
+  // #swagger.tags = ['Bilateral'];
   try {
     const policyId: string = req.body.policyId;
     const contractId: string = req.params.id;

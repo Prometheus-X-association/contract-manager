@@ -13,6 +13,9 @@
   "paths": {
     "/bilaterals/all/": {
       "get": {
+        "tags": [
+          "Bilateral"
+        ],
         "description": "",
         "parameters": [
           {
@@ -33,6 +36,9 @@
     },
     "/bilaterals/for/{did}": {
       "get": {
+        "tags": [
+          "Bilateral"
+        ],
         "description": "",
         "parameters": [
           {
@@ -64,6 +70,9 @@
     },
     "/bilaterals/": {
       "post": {
+        "tags": [
+          "Bilateral"
+        ],
         "description": "",
         "responses": {
           "201": {
@@ -77,6 +86,9 @@
     },
     "/bilaterals/{id}": {
       "get": {
+        "tags": [
+          "Bilateral"
+        ],
         "description": "",
         "parameters": [
           {
@@ -99,6 +111,9 @@
         }
       },
       "put": {
+        "tags": [
+          "Bilateral"
+        ],
         "description": "",
         "parameters": [
           {
@@ -123,6 +138,9 @@
     },
     "/bilaterals/negociator/{id}": {
       "put": {
+        "tags": [
+          "Bilateral"
+        ],
         "description": "",
         "parameters": [
           {
@@ -159,6 +177,9 @@
     },
     "/bilaterals/sign/{id}": {
       "put": {
+        "tags": [
+          "Bilateral"
+        ],
         "description": "",
         "parameters": [
           {
@@ -180,6 +201,9 @@
     },
     "/bilaterals/sign/revoke/{id}/{did}": {
       "delete": {
+        "tags": [
+          "Bilateral"
+        ],
         "description": "",
         "parameters": [
           {
@@ -207,6 +231,9 @@
     },
     "/bilaterals/check-exploitability/{id}": {
       "post": {
+        "tags": [
+          "Bilateral"
+        ],
         "description": "",
         "parameters": [
           {
@@ -231,6 +258,9 @@
     },
     "/bilaterals/policy/{id}": {
       "post": {
+        "tags": [
+          "Bilateral"
+        ],
         "description": "",
         "parameters": [
           {
@@ -267,6 +297,9 @@
     },
     "/contracts/all/": {
       "get": {
+        "tags": [
+          "Contract"
+        ],
         "summary": "Get all contracts with optional filter status",
         "description": "",
         "parameters": [
@@ -288,6 +321,9 @@
     },
     "/contracts/for/{did}": {
       "get": {
+        "tags": [
+          "Contract"
+        ],
         "summary": "Get contracts for a specific DID with an optional filter",
         "description": "",
         "parameters": [
@@ -315,6 +351,9 @@
     },
     "/contracts/": {
       "post": {
+        "tags": [
+          "Contract"
+        ],
         "description": "",
         "responses": {
           "201": {
@@ -328,6 +367,9 @@
     },
     "/contracts/{id}": {
       "get": {
+        "tags": [
+          "Contract"
+        ],
         "description": "",
         "parameters": [
           {
@@ -350,6 +392,9 @@
         }
       },
       "put": {
+        "tags": [
+          "Contract"
+        ],
         "description": "",
         "parameters": [
           {
@@ -374,6 +419,10 @@
     },
     "/contracts/odrl/{id}": {
       "get": {
+        "tags": [
+          "Contract"
+        ],
+        "summary": "get ODRL contract",
         "description": "",
         "parameters": [
           {
@@ -398,6 +447,9 @@
     },
     "/contracts/sign/{id}": {
       "put": {
+        "tags": [
+          "Contract"
+        ],
         "summary": "Sign contract",
         "description": "",
         "parameters": [
@@ -420,8 +472,11 @@
     },
     "/contracts/sign/revoke/{id}/{did}": {
       "delete": {
+        "tags": [
+          "Contract"
+        ],
         "summary": "Revoque signature",
-        "description": "",
+        "description": "Revoke a signature on a contract for a given contract id and party did",
         "parameters": [
           {
             "name": "id",
@@ -448,8 +503,11 @@
     },
     "/contracts/check-exploitability/{id}": {
       "post": {
+        "tags": [
+          "Contract"
+        ],
         "summary": "Check data exploitation",
-        "description": "",
+        "description": "Check if data is authorized for exploitation",
         "parameters": [
           {
             "name": "id",
@@ -473,6 +531,9 @@
     },
     "/contracts/policy/{id}": {
       "post": {
+        "tags": [
+          "Contract"
+        ],
         "description": "",
         "parameters": [
           {
@@ -495,34 +556,124 @@
           }
         ],
         "responses": {
+          "200": {
+            "description": "OK"
+          },
           "500": {
             "description": "Internal Server Error"
           }
         }
       }
     },
-    "/pap/policies/verify": {
+    "/contracts/policies/{id}": {
       "post": {
+        "tags": [
+          "Contract"
+        ],
         "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
         "responses": {
-          "default": {
-            "description": ""
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/contracts/policies/role/{id}": {
+      "post": {
+        "tags": [
+          "Contract"
+        ],
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
     },
     "/pap/policies/": {
       "post": {
-        "description": "",
+        "tags": [
+          "Pap"
+        ],
+        "summary": "Endpoint to create a new policy.",
+        "description": "Endpoint to create a new policy.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "policy",
+            "in": "body",
+            "description": "Policy object to be created.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Policy"
+            }
+          }
+        ],
         "responses": {
+          "201": {
+            "description": "Policy created successfully.",
+            "schema": {
+              "$ref": "#/definitions/Policy"
+            }
+          },
+          "400": {
+            "description": "Bad request. Error creating the policy.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
           "default": {
             "description": ""
           }
         }
       },
       "get": {
-        "description": "",
+        "tags": [
+          "Pap"
+        ],
+        "summary": "Endpoint to get a list of policies.",
+        "description": "Endpoint to get a list of policies.",
+        "produces": [
+          "application/json"
+        ],
         "responses": {
+          "200": {
+            "description": "List of policies retrieved successfully.",
+            "schema": {
+              "$ref": "#/definitions/PolicyList"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
           "default": {
             "description": ""
           }
@@ -531,8 +682,42 @@
     },
     "/pap/policies/{name}": {
       "get": {
-        "description": "",
+        "tags": [
+          "Pap"
+        ],
+        "summary": "Endpoint to get policies by name.",
+        "description": "Endpoint to get policies by name.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "name",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "Name of the policy."
+          }
+        ],
         "responses": {
+          "200": {
+            "description": "Policy retrieved successfully.",
+            "schema": {
+              "$ref": "#/definitions/Policy"
+            }
+          },
+          "404": {
+            "description": "No policies found with the given name.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
           "default": {
             "description": ""
           }
@@ -541,24 +726,187 @@
     },
     "/pap/policies/{id}": {
       "get": {
-        "description": "",
+        "tags": [
+          "Pap"
+        ],
+        "summary": "Endpoint to get a policy by ID.",
+        "description": "Endpoint to get a policy by ID.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID of the policy."
+          }
+        ],
         "responses": {
+          "200": {
+            "description": "Policy retrieved successfully.",
+            "schema": {
+              "$ref": "#/definitions/Policy"
+            }
+          },
+          "404": {
+            "description": "Policy not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
           "default": {
             "description": ""
           }
         }
       },
       "put": {
-        "description": "",
+        "tags": [
+          "Pap"
+        ],
+        "summary": "Endpoint to update a policy by ID.",
+        "description": "Endpoint to update a policy by ID.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID of the policy."
+          },
+          {
+            "name": "policy",
+            "in": "body",
+            "description": "Updated policy object.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Policy"
+            }
+          }
+        ],
         "responses": {
+          "200": {
+            "description": "Policy updated successfully.",
+            "schema": {
+              "$ref": "#/definitions/Policy"
+            }
+          },
+          "400": {
+            "description": "Bad request. Error updating the policy.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Policy not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
           "default": {
             "description": ""
           }
         }
       },
       "delete": {
-        "description": "",
+        "tags": [
+          "Pap"
+        ],
+        "summary": "Endpoint to delete a policy by ID.",
+        "description": "Endpoint to delete a policy by ID.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID of the policy."
+          }
+        ],
         "responses": {
+          "200": {
+            "description": "Policy deleted successfully.",
+            "schema": {
+              "$ref": "#/definitions/Policy"
+            }
+          },
+          "404": {
+            "description": "Policy not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "default": {
+            "description": ""
+          }
+        }
+      }
+    },
+    "/pap/policies/verify": {
+      "post": {
+        "tags": [
+          "Pap"
+        ],
+        "summary": "Endpoint to verify an ODRL policy.",
+        "description": "Endpoint to verify an ODRL policy.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "policy",
+            "in": "body",
+            "description": "ODRL policy to be verified.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ODRLPolicy"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Policy verification result.",
+            "schema": {
+              "$ref": "#/definitions/VerificationResult"
+            }
+          },
+          "400": {
+            "description": "Bad request. The ODRL policy is not valid.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
           "default": {
             "description": ""
           }
@@ -567,6 +915,9 @@
     },
     "/user/login": {
       "get": {
+        "tags": [
+          "User"
+        ],
         "description": "",
         "responses": {
           "200": {
@@ -577,6 +928,9 @@
     },
     "/user/policies": {
       "post": {
+        "tags": [
+          "User"
+        ],
         "description": "",
         "parameters": [
           {
@@ -607,6 +961,9 @@
     },
     "/user/store": {
       "put": {
+        "tags": [
+          "User"
+        ],
         "description": "",
         "responses": {
           "200": {
@@ -615,6 +972,46 @@
           "500": {
             "description": "Internal Server Error"
           }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "Policy": {
+      "type": "object",
+      "properties": {}
+    },
+    "Error": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "example": "string"
+            }
+          }
+        }
+      }
+    },
+    "ODRLPolicy": {
+      "type": "object",
+      "properties": {}
+    },
+    "PolicyList": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    "VerificationResult": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "boolean"
         }
       }
     }
