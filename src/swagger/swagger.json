@@ -302,19 +302,18 @@
         ],
         "summary": "Get all contracts with optional filter status",
         "description": "",
-        "parameters": [
-          {
-            "name": "status",
-            "in": "query",
-            "type": "string"
-          }
-        ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "List of contracts",
+            "schema": {
+              "$ref": "#/definitions/ContractsList"
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           }
         }
       }
@@ -331,20 +330,29 @@
             "name": "did",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "description": "DID of the participant"
           },
           {
             "name": "hasSigned",
             "in": "query",
-            "type": "string"
+            "description": "Filter contracts based on signature status",
+            "required": false,
+            "type": "boolean"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "List of contracts",
+            "schema": {
+              "$ref": "#/definitions/ContractsList"
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           }
         }
       }
@@ -354,13 +362,31 @@
         "tags": [
           "Contract"
         ],
+        "summary": "Create a new contract",
         "description": "",
+        "parameters": [
+          {
+            "name": "contract",
+            "in": "body",
+            "description": "Contract data for creation.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InputContract"
+            }
+          }
+        ],
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "Newly created contract",
+            "schema": {
+              "$ref": "#/definitions/Contract"
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           }
         }
       }
@@ -370,24 +396,35 @@
         "tags": [
           "Contract"
         ],
+        "summary": "Get contract by ID",
         "description": "",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "description": "ID of the contract"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Contract details",
+            "schema": {
+              "$ref": "#/definitions/Contract"
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "Contract not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           }
         }
       },
@@ -395,24 +432,50 @@
         "tags": [
           "Contract"
         ],
+        "summary": "Update an existing contract by ID",
         "description": "",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "description": "ID of the contract to update"
+          },
+          {
+            "name": "contract",
+            "in": "body",
+            "description": "Updated contract data.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Contract"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Updated contract details",
+            "schema": {
+              "$ref": "#/definitions/Contract"
+            }
+          },
+          "400": {
+            "description": "Bad request, invalid data.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "Contract not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           }
         }
       }
@@ -422,25 +485,35 @@
         "tags": [
           "Contract"
         ],
-        "summary": "get ODRL contract",
+        "summary": "Get ODRL contract by ID",
         "description": "",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "description": "ID of the ODRL contract"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "ODRL contract details",
+            "schema": {
+              "$ref": "#/definitions/ODRLContract"
+            }
           },
           "404": {
-            "description": "Not Found"
+            "description": "ODRL contract not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           }
         }
       }
@@ -450,22 +523,35 @@
         "tags": [
           "Contract"
         ],
-        "summary": "Sign contract",
+        "summary": "Sign an existing contract by ID",
         "description": "",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "description": "ID of the contract to sign"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Contract successfully signed",
+            "schema": {
+              "$ref": "#/definitions/Contract"
+            }
+          },
+          "404": {
+            "description": "Contract not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           }
         }
       }
@@ -475,28 +561,42 @@
         "tags": [
           "Contract"
         ],
-        "summary": "Revoque signature",
-        "description": "Revoke a signature on a contract for a given contract id and party did",
+        "summary": "Revoke the signature of a participant on a contract",
+        "description": "",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "description": "ID of the contract"
           },
           {
             "name": "did",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "description": "DID of the participant"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Signature revoked successfully",
+            "schema": {
+              "$ref": "#/definitions/Contract"
+            }
+          },
+          "404": {
+            "description": "Contract or participant not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           }
         }
       }
@@ -506,25 +606,38 @@
         "tags": [
           "Contract"
         ],
-        "summary": "Check data exploitation",
-        "description": "Check if data is authorized for exploitation",
+        "summary": "Check data exploitability for a contract",
+        "description": "",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "description": "ID of the contract"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Exploitability check result",
+            "schema": {
+              "$ref": "#/definitions/ExploitabilityResult"
+            }
           },
           "403": {
             "description": "Forbidden"
           },
+          "404": {
+            "description": "Contract not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           }
         }
       }
@@ -534,33 +647,50 @@
         "tags": [
           "Contract"
         ],
+        "summary": "Inject a policy into a contract",
         "description": "",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "description": "ID of the contract"
           },
           {
-            "name": "body",
+            "name": "policy",
             "in": "body",
+            "description": "Policy data.",
+            "required": true,
             "schema": {
-              "type": "object",
-              "properties": {
-                "role": {
-                  "example": "any"
-                }
-              }
+              "$ref": "#/definitions/PolicyInjection"
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Policy successfully injected",
+            "schema": {
+              "$ref": "#/definitions/Contract"
+            }
+          },
+          "400": {
+            "description": "Bad request, invalid data.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Contract not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           }
         }
       }
@@ -570,21 +700,50 @@
         "tags": [
           "Contract"
         ],
+        "summary": "Inject multiple policies into a contract",
         "description": "",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "description": "ID of the contract"
+          },
+          {
+            "name": "policies",
+            "in": "body",
+            "description": "Array of policy data.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PoliciesInjections"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Policies successfully injected",
+            "schema": {
+              "$ref": "#/definitions/Contract"
+            }
+          },
+          "400": {
+            "description": "Bad request, invalid data.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Contract not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           }
         }
       }
@@ -594,21 +753,50 @@
         "tags": [
           "Contract"
         ],
+        "summary": "Inject policies for a role into a contract",
         "description": "",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "description": "ID of the contract"
+          },
+          {
+            "name": "policies",
+            "in": "body",
+            "description": "Array of policy data for the role.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/PoliciesInjections"
+            }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Policies for role successfully injected",
+            "schema": {
+              "$ref": "#/definitions/Contract"
+            }
+          },
+          "400": {
+            "description": "Bad request, invalid data.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Contract not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           }
         }
       }
@@ -918,10 +1106,34 @@
         "tags": [
           "User"
         ],
-        "description": "",
+        "summary": "Endpoint to log in a user.",
+        "description": "Endpoint to log in a user.",
+        "produces": [
+          "application/json"
+        ],
+        "parameters": [
+          {
+            "name": "user",
+            "in": "body",
+            "description": "User object for login.",
+            "required": true,
+            "schema": {
+              "$ref": "#/components/schema/User"
+            }
+          }
+        ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "User logged in successfully.",
+            "schema": {
+              "$ref": "#/definitions/LoginResult"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           }
         }
       }
@@ -931,30 +1143,44 @@
         "tags": [
           "User"
         ],
-        "description": "",
+        "summary": "Endpoint to add policies to the user context.",
+        "description": "Endpoint to add policies to the user context.",
+        "produces": [
+          "application/json"
+        ],
         "parameters": [
           {
-            "name": "body",
+            "name": "policies",
             "in": "body",
+            "description": "Array of policies to be added to the user context.",
+            "required": true,
+            "items": {
+              "$ref": "#/definitions/ODRLPolicy"
+            },
             "schema": {
               "type": "object",
-              "properties": {
-                "policies": {
-                  "example": "any"
-                }
-              }
+              "properties": {}
             }
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "New policies injected successfully.",
+            "schema": {
+              "$ref": "#/definitions/SuccessMessage"
+            }
           },
           "400": {
-            "description": "Bad Request"
+            "description": "The following policies are not valid.",
+            "schema": {
+              "$ref": "#/definitions/InvalidPolicies"
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           }
         }
       }
@@ -964,13 +1190,23 @@
         "tags": [
           "User"
         ],
-        "description": "",
+        "summary": "Endpoint to store user data.",
+        "description": "Endpoint to store user data.",
+        "produces": [
+          "application/json"
+        ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Data has been added to the store.",
+            "schema": {
+              "$ref": "#/definitions/SuccessMessage"
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           }
         }
       }
@@ -980,6 +1216,21 @@
     "Policy": {
       "type": "object",
       "properties": {}
+    },
+    "ODRLPolicy": {
+      "type": "object",
+      "properties": {}
+    },
+    "User": {
+      "type": "object",
+      "properties": {}
+    },
+    "PolicyList": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {}
+      }
     },
     "Error": {
       "type": "object",
@@ -995,23 +1246,107 @@
         }
       }
     },
-    "ODRLPolicy": {
-      "type": "object",
-      "properties": {}
-    },
-    "PolicyList": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {}
-      }
-    },
     "VerificationResult": {
       "type": "object",
       "properties": {
         "type": {
           "type": "string",
           "example": "boolean"
+        }
+      }
+    },
+    "ExploitabilityResult": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "boolean"
+        }
+      }
+    },
+    "LoginResult": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "example": "string"
+            }
+          }
+        }
+      }
+    },
+    "SuccessMessage": {
+      "type": "object",
+      "properties": {
+        "message": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "example": "string"
+            }
+          }
+        }
+      }
+    },
+    "InvalidPolicies": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    "ContractsList": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {}
+      }
+    },
+    "InputContract": {
+      "type": "object",
+      "properties": {
+        "permission": {
+          "type": "array",
+          "example": [],
+          "items": {}
+        },
+        "prohibition": {
+          "type": "array",
+          "example": [],
+          "items": {}
+        }
+      }
+    },
+    "Contract": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "Contract"
+        }
+      }
+    },
+    "ODRLContract": {
+      "type": "object",
+      "properties": {}
+    },
+    "PolicyInjection": {
+      "type": "object",
+      "properties": {}
+    },
+    "PoliciesInjections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "example": "PolicyInjection"
+          }
         }
       }
     }

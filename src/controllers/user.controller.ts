@@ -4,7 +4,6 @@ import pipService from 'services/policy/pip.service';
 import repository from 'services/data.repository.service';
 
 export const logUser = (req: Request, res: Response) => {
-  // #swagger.tags = ['User']
   const user = req.body;
   const token = genToken(user);
   res.cookie('authToken', token, { httpOnly: true });
@@ -12,7 +11,6 @@ export const logUser = (req: Request, res: Response) => {
 };
 
 export const addPolicies = async (req: Request, res: Response) => {
-  // #swagger.tags = ['User']
   const newPolicies = req.body.policies;
   try {
     const invalidPolicies = await pipService.addPolicies(req, newPolicies);
@@ -30,7 +28,6 @@ export const addPolicies = async (req: Request, res: Response) => {
 };
 
 export const storeUserData = async (req: Request, res: Response) => {
-  // #swagger.tags = ['User']
   try {
     if (req.session?.id) {
       const data = Object.fromEntries(

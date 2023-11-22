@@ -32,7 +32,7 @@
     "test-scenarios": "mocha --require ts-node/register --exit ./src/tests/scenarios/*.test.ts",
     "watch": "npx nodemon",
     "seed": "ts-node src/seeds/start.ts",
-    "gen-swagger": "ts-node src/swagger.ts",
+    "gen-swagger": "ts-node src/swagger/swagger.ts",
     "gen-docs": "typedoc --out docs"
   },
   "author": "",

@@ -9,7 +9,7 @@ import papRoutes from 'routes/pap.routes';
 // import pep from 'middlewares/pep.middlewares';
 import { logger } from 'utils/logger';
 import swaggerUi from 'swagger-ui-express';
-import swaggerJson from './swagger.json';
+import swaggerJson from './swagger/swagger.json';
 import session from 'express-session';
 import createMemoryStore from 'memorystore';
 import { config } from 'config/config';
@@ -47,7 +47,13 @@ const startServer = async (url: string) => {
     next();
   });
   // swagger
-  router.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerJson));
+  router.use(
+    '/api-docs',
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerJson, {
+      customCss: '.swagger-ui .models { display: none }',
+    }),
+  );
   router.get('/is-it-alive', (req, res, next) => {
     res.json({ message: 'yes it is!' });
   });
