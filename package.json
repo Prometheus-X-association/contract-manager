@@ -30,7 +30,7 @@
     "start": "node build/start.js",
     "test": "mocha --require ts-node/register --exit \"./src/tests/{,!(scenarios)/**/}*.test.ts\"",
     "test-scenarios": "mocha --require ts-node/register --exit ./src/tests/scenarios/*.test.ts",
-    "watch": "npx nodemon",
+    "dev": "npx nodemon",
     "seed": "ts-node src/seeds/start.ts",
     "gen-swagger": "ts-node src/swagger/swagger.ts",
     "gen-docs": "typedoc --out docs"

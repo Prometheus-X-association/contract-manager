@@ -514,9 +514,10 @@ export type Contract = {
   members: ContractRevokedMember[];
   revokedMembers: ContractRevokedMember[];
   status?: 'signed' | 'revoked' | 'pending';
-  createdAt?: Date;
   jsonLD?: string;
   _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 /**
@@ -721,9 +722,10 @@ export type ContractDocument = mongoose.Document<
     members: mongoose.Types.DocumentArray<ContractRevokedMemberDocument>;
     revokedMembers: mongoose.Types.DocumentArray<ContractRevokedMemberDocument>;
     status?: 'signed' | 'revoked' | 'pending';
-    createdAt?: Date;
     jsonLD?: string;
     _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
   };
 
 /**

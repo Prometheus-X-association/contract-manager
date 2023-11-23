@@ -3,7 +3,14 @@
   #swagger.tags = ['Contract']
   #swagger.path = '/contracts/all/'
   #swagger.method = 'get'
-  #swagger.summary = 'Get all contracts with optional filter status'
+  #swagger.summary = 'Get all contracts with optional filter on the contract status'
+  #swagger.parameters['status'] = {
+    in: 'query',
+    description: 'Status of the contract.',
+    required: false,
+    type: 'string',
+    enum: ['signed', 'revoked', 'pending']
+  }
   #swagger.responses[200] = {
     description: 'List of contracts',
     schema: { $ref: '#/definitions/ContractsList' }
@@ -170,6 +177,12 @@
     required: true,
     type: 'string'
   }
+  #swagger.parameters['signature'] = {
+    in: 'body',
+    description: '',
+    required: true,
+    schema: { $ref: '#/definitions/Signature' }
+  }
   #swagger.responses[200] = {
     description: 'Contract successfully signed',
     schema: { $ref: '#/definitions/Contract' }
@@ -298,7 +311,10 @@
     in: 'body',
     description: 'Array of policy data.',
     required: true,
-    schema: { $ref: '#/definitions/PoliciesInjections' }
+    schema: {
+      type: 'array',
+      items: { $ref: '#/definitions/PolicyInjection' }
+    }
   }
   #swagger.responses[200] = {
     description: 'Policies successfully injected',
@@ -333,9 +349,16 @@
   }
   #swagger.parameters['policies'] = {
     in: 'body',
-    description: 'Array of policy data for the role.',
+    description: 'Array of policy data for a given role.',
     required: true,
-    schema: { $ref: '#/definitions/PoliciesInjections' }
+    schema: {
+      type: 'object',
+      role: 'string',
+      injections: {
+        type: 'array',
+        items: { $ref: '#/definitions/PolicyRoleInjection' }
+      }
+    }
   }
   #swagger.responses[200] = {
     description: 'Policies for role successfully injected',

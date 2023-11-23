@@ -39,7 +39,7 @@ Before you begin, ensure you have met the following requirements:
 4. Make sure to seed the database
 
   ```bash
-  npm run seed
+  pnpm seed
   ```
 
 ### Usage for development
@@ -47,7 +47,7 @@ Before you begin, ensure you have met the following requirements:
 1. Watch for changes and automatically restart the server in development:
 
   ```bash
-  npm run watch
+  pnpm dev
   ```
 
   This command will use nodemon to watch for changes and
@@ -58,7 +58,7 @@ Before you begin, ensure you have met the following requirements:
 1. Generate TypeScript types for Mongoose using mongoose-tsgen:
 
   ```bash
-  npm run gen-types
+  pnpm gen-types
   ```
 
   This command will generate TypeScript types based on your Mongoose models.
@@ -66,7 +66,7 @@ Before you begin, ensure you have met the following requirements:
 2. Generate Swagger API doc with:
 
   ```bash
-  npm run gen-swagger
+  pnpm gen-swagger
   ```
 
   This command will generate Swagger documentation,
@@ -75,7 +75,7 @@ Before you begin, ensure you have met the following requirements:
 3. Generate Source Code documentation with:
 
   ```bash
-  npm run gen-docs
+  pnpm gen-docs
   ```
 
   This command will generate documentation using TypeDoc for the source code
@@ -86,7 +86,7 @@ Before you begin, ensure you have met the following requirements:
 1. Build the project:
 
   ```bash
-  npm run build
+  pnpm build
   ```
 
   This command will clean the `build/` directory and compile your TypeScript code.
@@ -94,7 +94,7 @@ Before you begin, ensure you have met the following requirements:
 2. Start your Node.js application:
 
   ```bash
-  npm run start
+  pnpm start
   ```
 
   This command will start your application using the compiled code.
@@ -104,7 +104,7 @@ Before you begin, ensure you have met the following requirements:
 1. Run tests:
 
   ```bash
-  npm run test
+  pnpm test
   ```
 
   This command will run your tests using Mocha. Make sure your tests are
@@ -113,7 +113,7 @@ Before you begin, ensure you have met the following requirements:
 2. Run Scenarios:
 
   ```bash
-  npm run test-scenarios
+  pnpm test-scenarios
   ```
 
 ## License

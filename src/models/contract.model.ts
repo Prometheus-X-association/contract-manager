@@ -69,27 +69,28 @@ const PolicySchema = new Schema(
 );
 
 // Contract mongoose schema
-const ContractSchema: Schema = new Schema({
-  uid: String,
-  profile: String,
-  ecosystem: String,
-  orchestrator: String,
-  rolesAndObligations: [{ role: String, policies: [PolicySchema] }],
-  purpose: [PurposeSchema],
-  members: [MemberSchema],
-  revokedMembers: [MemberSchema],
-  status: {
-    type: String,
-    enum: ['signed', 'revoked', 'pending'],
-    default: 'pending',
+const ContractSchema: Schema = new Schema(
+  {
+    uid: String,
+    profile: String,
+    ecosystem: String,
+    orchestrator: String,
+    rolesAndObligations: [{ role: String, policies: [PolicySchema] }],
+    purpose: [PurposeSchema],
+    members: [MemberSchema],
+    revokedMembers: [MemberSchema],
+    status: {
+      type: String,
+      enum: ['signed', 'revoked', 'pending'],
+      default: 'pending',
+    },
+    jsonLD: {
+      type: String,
+    },
   },
-  createdAt: {
-    type: Date,
-    default: Date.now,
+  {
+    timestamps: true,
   },
-  jsonLD: {
-    type: String,
-  },
-});
+);
 // Create a MongoDB model based on the schema
 export default mongoose.model<IContractDB>('Contract', ContractSchema);

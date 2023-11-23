@@ -300,8 +300,22 @@
         "tags": [
           "Contract"
         ],
-        "summary": "Get all contracts with optional filter status",
+        "summary": "Get all contracts with optional filter on the contract status",
         "description": "",
+        "parameters": [
+          {
+            "name": "status",
+            "in": "query",
+            "description": "Status of the contract.",
+            "required": false,
+            "type": "string",
+            "enum": [
+              "signed",
+              "revoked",
+              "pending"
+            ]
+          }
+        ],
         "responses": {
           "200": {
             "description": "List of contracts",
@@ -532,6 +546,15 @@
             "required": true,
             "type": "string",
             "description": "ID of the contract to sign"
+          },
+          {
+            "name": "signature",
+            "in": "body",
+            "description": "",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/Signature"
+            }
           }
         ],
         "responses": {
@@ -716,7 +739,16 @@
             "description": "Array of policy data.",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/PoliciesInjections"
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "array"
+                },
+                "items": {
+                  "$ref": "#/definitions/PolicyInjection"
+                }
+              }
             }
           }
         ],
@@ -766,10 +798,32 @@
           {
             "name": "policies",
             "in": "body",
-            "description": "Array of policy data for the role.",
+            "description": "Array of policy data for a given role.",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/PoliciesInjections"
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "object"
+                },
+                "role": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "injections": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "array"
+                    },
+                    "items": {
+                      "$ref": "#/definitions/PolicyRoleInjection"
+                    }
+                  }
+                }
+              }
             }
           }
         ],
@@ -1300,24 +1354,112 @@
       }
     },
     "ContractsList": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {}
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "array"
+        },
+        "items": {
+          "$ref": "#/definitions/Contract"
+        }
+      }
+    },
+    "Asset": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "object"
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "target": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            },
+            "action": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            },
+            "condition": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "array"
+                }
+              }
+            },
+            "required": {
+              "type": "array",
+              "example": [
+                "target",
+                "action"
+              ],
+              "items": {
+                "type": "string"
+              }
+            }
+          }
+        }
       }
     },
     "InputContract": {
       "type": "object",
       "properties": {
+        "ecosystem": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "example": "string"
+            }
+          }
+        },
         "permission": {
-          "type": "array",
-          "example": [],
-          "items": {}
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "example": "array"
+            },
+            "items": {
+              "$ref": "#/definitions/Asset"
+            }
+          }
         },
         "prohibition": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "example": "array"
+            },
+            "items": {
+              "$ref": "#/definitions/Asset"
+            }
+          }
+        },
+        "required": {
           "type": "array",
-          "example": [],
-          "items": {}
+          "example": [
+            "ecosystem"
+          ],
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1326,7 +1468,108 @@
       "properties": {
         "type": {
           "type": "string",
-          "example": "Contract"
+          "example": "object"
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "uid": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            },
+            "ecosystem": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            },
+            "orchestrator": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            },
+            "rolesAndObligations": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "array"
+                }
+              }
+            },
+            "members": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "array"
+                }
+              }
+            },
+            "revokedMembers": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "array"
+                }
+              }
+            },
+            "status": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "enum": {
+                  "type": "array",
+                  "example": [
+                    "signed",
+                    "revoked",
+                    "pending"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "default": {
+                  "type": "string",
+                  "example": "pending"
+                }
+              }
+            },
+            "jsonLD": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            }
+          }
+        },
+        "required": {
+          "type": "array",
+          "example": [
+            "ecosystem"
+          ],
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1336,16 +1579,72 @@
     },
     "PolicyInjection": {
       "type": "object",
-      "properties": {}
+      "properties": {
+        "role": {
+          "type": "string",
+          "example": "string"
+        },
+        "ruleId": {
+          "type": "string",
+          "example": "string"
+        },
+        "values": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "example": "object"
+            }
+          }
+        }
+      }
     },
-    "PoliciesInjections": {
-      "type": "array",
-      "items": {
-        "type": "object",
-        "properties": {
-          "type": {
-            "type": "string",
-            "example": "PolicyInjection"
+    "PolicyRoleInjection": {
+      "type": "object",
+      "properties": {
+        "ruleId": {
+          "type": "string",
+          "example": "string"
+        },
+        "values": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "example": "object"
+            }
+          }
+        }
+      }
+    },
+    "Signature": {
+      "type": "object",
+      "properties": {
+        "participant": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "example": "string"
+            }
+          }
+        },
+        "role": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "example": "string"
+            }
+          }
+        },
+        "signature": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "example": "string"
+            }
           }
         }
       }

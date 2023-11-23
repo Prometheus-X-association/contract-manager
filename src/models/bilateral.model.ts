@@ -44,46 +44,47 @@ const BilateralSignatureSchema = new mongoose.Schema(
   { _id: false },
 );
 // Contract mongoose schema
-const BilateralContractSchema: Schema = new Schema({
-  uid: String,
-  profile: String,
-  permission: [
-    {
-      action: String,
-      target: String,
-      constraint: [
-        BilateralDefaultConstraintSchema,
-        BilateralUnknownConstraintSchema,
-      ],
+const BilateralContractSchema: Schema = new Schema(
+  {
+    uid: String,
+    profile: String,
+    permission: [
+      {
+        action: String,
+        target: String,
+        constraint: [
+          BilateralDefaultConstraintSchema,
+          BilateralUnknownConstraintSchema,
+        ],
+      },
+    ],
+    prohibition: [
+      {
+        action: String,
+        target: String,
+        constraint: [
+          BilateralDefaultConstraintSchema,
+          BilateralUnknownConstraintSchema,
+        ],
+      },
+    ],
+    purpose: [BilateralPurposeSchema],
+    signatures: [BilateralSignatureSchema],
+    revokedSignatures: [BilateralSignatureSchema],
+    negotiators: [{ did: String }],
+    status: {
+      type: String,
+      enum: ['signed', 'revoked', 'under_negotiation', 'pending'],
+      default: 'pending',
     },
-  ],
-  prohibition: [
-    {
-      action: String,
-      target: String,
-      constraint: [
-        BilateralDefaultConstraintSchema,
-        BilateralUnknownConstraintSchema,
-      ],
+    jsonLD: {
+      type: String,
     },
-  ],
-  purpose: [BilateralPurposeSchema],
-  signatures: [BilateralSignatureSchema],
-  revokedSignatures: [BilateralSignatureSchema],
-  negotiators: [{ did: String }],
-  createdAt: {
-    type: Date,
-    default: Date.now,
   },
-  status: {
-    type: String,
-    enum: ['signed', 'revoked', 'under_negotiation', 'pending'],
-    default: 'pending',
+  {
+    timestamps: true,
   },
-  jsonLD: {
-    type: String,
-  },
-});
+);
 // Create a MongoDB model based on the schema
 export default mongoose.model<IBilateralContractDB>(
   'BilateralContract',
