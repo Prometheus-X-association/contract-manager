@@ -6,7 +6,6 @@ import { logger } from 'utils/logger';
 import { ContractMember } from 'interfaces/schemas.interface';
 
 export const createContract = async (req: Request, res: Response) => {
-  // #swagger.tags = ['Contract']
   try {
     const contract: IContract = await contractService.genContract(req.body);
     logger.info('[Contract/Controller: createContract] Successfully called.');
@@ -19,7 +18,6 @@ export const createContract = async (req: Request, res: Response) => {
   }
 };
 export const getContract = async (req: Request, res: Response) => {
-  // #swagger.tags = ['Contract']
   try {
     const contractId: string = req.params.id;
     const contract = await contractService.getContract(contractId);
@@ -36,7 +34,6 @@ export const getContract = async (req: Request, res: Response) => {
   }
 };
 export const updateContract = async (req: Request, res: Response) => {
-  // #swagger.tags = ['Contract']
   try {
     const contractId: string = req.params.id;
     const updates: Partial<IContractDB> = req.body;
@@ -57,7 +54,6 @@ export const updateContract = async (req: Request, res: Response) => {
   }
 };
 export const deleteContract = async (req: Request, res: Response) => {
-  // #swagger.tags = ['Contract']
   try {
     const contractId: string = req.params.id;
     await contractService.deleteContract(contractId);
@@ -70,10 +66,7 @@ export const deleteContract = async (req: Request, res: Response) => {
       .json({ error: 'An error occurred while deleting the contract.' });
   }
 };
-// Sign for a given role and signature
 export const signContract = async (req: Request, res: Response) => {
-  // #swagger.tags = ['Contract']
-  // #swagger.summary = 'Sign contract'
   try {
     const contractId: string = req.params.id;
     const member: ContractMember = req.body;
@@ -91,9 +84,6 @@ export const signContract = async (req: Request, res: Response) => {
   }
 };
 export const revokeContractSignature = async (req: Request, res: Response) => {
-  // #swagger.tags = ['Contract']
-  // #swagger.summary = 'Revoque signature'
-  // #swagger.description = 'Revoke a signature on a contract for a given contract id and party did'
   const { id, did } = req.params;
   try {
     const revokedSignature = await contractService.revokeSignatureService(
@@ -110,9 +100,6 @@ export const revokeContractSignature = async (req: Request, res: Response) => {
   }
 };
 export const checkDataExploitation = async (req: Request, res: Response) => {
-  // #swagger.tags = ['Contract']
-  // #swagger.summary = 'Check data exploitation'
-  // #swagger.description = 'Check if data is authorized for exploitation'
   const contractId = req.params.id;
   const data = { policy: req.body };
   const sessionId = req.session.id;
@@ -132,9 +119,7 @@ export const checkDataExploitation = async (req: Request, res: Response) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
-//
 export const checkExploitationByRole = async (req: Request, res: Response) => {
-  // #swagger.tags = ['Contract']
   const contractId = req.params.id;
   const role = req.params.role;
   const data = { policy: req.body };
@@ -160,8 +145,6 @@ export const getContractsFor = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
-  // #swagger.tags = ['Contract']
-  // #swagger.summary = 'Get contracts for a specific DID with an optional filter'
   try {
     const did: string | undefined = req.params.did;
     const hasSigned: boolean = req.query.hasSigned !== 'false';
@@ -182,8 +165,6 @@ export const getContracts = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
-  // #swagger.tags = ['Contract']
-  // #swagger.summary = 'Get all contracts with optional filter status'
   try {
     const status = req.query.status ? String(req.query.status) : undefined;
     const contracts: IContractDB[] = await contractService.getContracts(status);
@@ -195,8 +176,6 @@ export const getContracts = async (
   }
 };
 export const getODRLContract = async (req: Request, res: Response) => {
-  // #swagger.tags = ['Contract']
-  // #swagger.summary = 'get ODRL contract'
   try {
     const contractId: string = req.params.id;
     const contract = await contractService.getODRLContract(contractId, false);
@@ -212,12 +191,10 @@ export const getODRLContract = async (req: Request, res: Response) => {
       .json({ error: 'An error occurred while retrieving the ODRL contract.' });
   }
 };
-
 export const injectPoliciesForRole = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
-  // #swagger.tags = ['Contract']
   try {
     const contractId: string = req.params.id;
     const updatedContract = await contractService.addPoliciesForRole(
@@ -231,12 +208,10 @@ export const injectPoliciesForRole = async (
     res.status(500).json({ error: message });
   }
 };
-
 export const injectPolicies = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
-  // #swagger.tags = ['Contract']
   try {
     const contractId: string = req.params.id;
     const updatedContract = await contractService.addRolePolicies(
@@ -250,12 +225,10 @@ export const injectPolicies = async (
     res.status(500).json({ error: message });
   }
 };
-
 export const injectPolicy = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
-  // #swagger.tags = ['Contract']
   try {
     const role: string = req.body.role;
     const contractId: string = req.params.id;

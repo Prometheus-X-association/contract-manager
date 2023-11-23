@@ -47,6 +47,7 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
   it('should generate an ecosystem contract', async () => {
     _logYellow('\n-Generate a contract with the following odrl policy');
     const contract = {
+      ecosystem: 'ecosystem-id',
       '@context': 'http://www.w3.org/ns/odrl/2/',
       '@type': 'Offer',
       permission: [],

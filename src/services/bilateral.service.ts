@@ -71,7 +71,7 @@ export class BilateralContractService {
   ): Promise<IBilateralContract> {
     try {
       // Validate the contract input data against the contract model
-      await this.isValid(contractData);
+      // await this.isValid(contractData);
       // Generate the contrat after validation
       const newContract = new BilateralContract(contractData);
       return newContract.save();

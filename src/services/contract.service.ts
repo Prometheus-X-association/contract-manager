@@ -65,7 +65,7 @@ export class ContractService {
   // Generate a contract based on the contract data
   public async genContract(contractData: IContract): Promise<IContract> {
     try {
-      await this.isValid(contractData);
+      // await this.isValid(contractData);
       const { permission, prohibition, ...rest } = contractData;
       const newContract = new Contract({
         ...rest,
