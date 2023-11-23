@@ -12,6 +12,7 @@ import {
   injectPolicy,
   injectPolicies,
   injectPoliciesForRole,
+  injectPoliciesForRoles,
 } from '../controllers/contract.controller';
 
 // Ecosystem Contract Routes
@@ -28,5 +29,5 @@ router.post('/contracts/check-exploitability/:id', checkDataExploitation);
 router.post('/contracts/policy/:id', injectPolicy);
 router.post('/contracts/policies/:id', injectPolicies);
 router.post('/contracts/policies/role/:id', injectPoliciesForRole);
-
+router.post('/contracts/policies/roles/:id', injectPoliciesForRoles);
 export default router;

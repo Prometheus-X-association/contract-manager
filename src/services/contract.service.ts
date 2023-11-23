@@ -390,34 +390,6 @@ export class ContractService {
       throw error;
     }
   }
-
-  /*
-  private async genPolicyFromRule(injection: IPolicyInjection): Promise<any> {
-    try {
-      const ruleId = injection.ruleId;
-      const replacement = injection.values;
-      const ruleUrl = `${config.catalog.url}/static/rules/${ruleId}`;
-      const response = await axios.get(ruleUrl);
-      if (response.status !== 200) {
-        throw new Error(`Failed to fetch rule with id ${ruleId}`);
-      }
-      const rule = response.data;
-      let jsonLD = JSON.stringify(rule.policy);
-      Object.keys(replacement || {}).forEach((key) => {
-        let value = replacement[key];
-        value =
-          typeof value === 'string' ? `"${value}"` : JSON.stringify(value);
-        jsonLD = jsonLD.replace(new RegExp(`"@{${key}}"`, 'g'), value);
-      });
-      const policyData = JSON.parse(jsonLD);
-      policyData.description = rule.description;
-      return policyData;
-    } catch (error: any) {
-      throw error;
-    }
-  }
-  */
-  //
   /*
   private async genPolicyFromRule(injection: IPolicyInjection): Promise<any> {
     try {
@@ -448,10 +420,61 @@ export class ContractService {
     }
   }
   */
+  public async addPoliciesForRoles(
+    contractId: string,
+    data: { roles: string[]; policies: IPolicyInjection[] }[],
+  ): Promise<IContractDB | null> {
+    try {
+      const contract = await Contract.findById(contractId);
+      if (!contract) {
+        throw new Error('Contract not found');
+      }
+      for (const entry of data) {
+        try {
+          const roles = entry.roles;
+          const policies = entry.policies;
+          if (!roles || !Array.isArray(roles) || roles.length === 0) {
+            throw new Error('Roles are not defined or empty');
+          }
+          for (const role of roles) {
+            let roleIndex = contract.rolesAndObligations.findIndex(
+              (roleEntry) => roleEntry.role === role,
+            );
+            if (roleIndex === -1) {
+              contract.rolesAndObligations.push({
+                role,
+                policies: [],
+              });
+              roleIndex = contract.rolesAndObligations.length - 1;
+            }
+            const roleEntry = contract.rolesAndObligations[roleIndex];
+            for (const injection of policies) {
+              try {
+                const policy = await this.genPolicyFromRule(injection);
+                roleEntry.policies.push({
+                  description: policy.description,
+                  permission: policy.permission || [],
+                  prohibition: policy.prohibition || [],
+                });
+              } catch (error) {
+                throw error;
+              }
+            }
+          }
+        } catch (error) {
+          throw error;
+        }
+      }
+      const updatedContract = await contract.save();
+      return updatedContract;
+    } catch (error: any) {
+      throw error;
+    }
+  }
   //
   public async addPoliciesForRole(
     contractId: string,
-    data: { role: string; injections: IPolicyInjection[] },
+    data: { role: string; policies: IPolicyInjection[] },
   ): Promise<IContractDB | null> {
     try {
       const role = data.role;
@@ -462,7 +485,7 @@ export class ContractService {
       if (!contract) {
         throw new Error('Contract not found');
       }
-      for (const injection of data.injections) {
+      for (const injection of data.policies) {
         try {
           let roleIndex = contract.rolesAndObligations.findIndex(
             (roleEntry) => roleEntry.role === role,
@@ -492,7 +515,7 @@ export class ContractService {
     }
   }
   //
-  public async addRolePolicies(
+  public async addPolicies(
     contractId: string,
     injections: IPolicyInjection[],
   ): Promise<IContractDB | null> {
@@ -532,7 +555,7 @@ export class ContractService {
     }
   }
   //
-  public async addRolePolicy(
+  public async addPolicy(
     contractId: string,
     injection: IPolicyInjection,
   ): Promise<IContractDB | null> {

@@ -239,7 +239,7 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
     const role = 'service';
     const data = {
       role,
-      injections: [
+      policies: [
         {
           ruleId,
           values: {
@@ -278,9 +278,9 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
     expect(roleParticipantEntry).to.be.an('object');
     expect(roleParticipantEntry.policies).to.be.an('array');
     expect(roleParticipantEntry.policies.length).to.be.at.least(
-      data.injections.length,
+      data.policies.length,
     );
-    data.injections.forEach((policy) => {
+    data.policies.forEach((policy) => {
       const targetPermission = roleParticipantEntry.policies.find(
         (p: any) =>
           p.permission &&
@@ -289,6 +289,80 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
           ),
       );
       expect(targetPermission).to.exist;
+    });
+  });
+
+  it('Should iterate over an array, injecting policies for a specified list of roles.', async () => {
+    _logYellow('\n-Inject a set of policies.');
+    const data = [
+      {
+        roles: ['role-1', 'role-2'],
+        policies: [
+          {
+            ruleId,
+            values: {
+              target: 'multiple-role-target-a',
+            },
+          },
+          {
+            ruleId,
+            values: {
+              target: 'multiple-role-target-b',
+            },
+          },
+        ],
+      },
+      {
+        roles: ['role-3', 'role-4'],
+        policies: [
+          {
+            ruleId,
+            values: {
+              target: 'multiple-role-target-c',
+            },
+          },
+          {
+            ruleId,
+            values: {
+              target: 'multiple-role-target-d',
+            },
+          },
+        ],
+      },
+    ];
+    _logGreen('The input policies information to be injected:');
+    _logObject(data);
+    const response = await supertest(app.router)
+      .post(`/contracts/policies/roles/${contractId}`)
+      .set('Cookie', cookie)
+      .set('Authorization', `Bearer ${authToken}`)
+      .send(data);
+    _logGreen('The new contract in the database:');
+    _logObject(response.body);
+    expect(response.status).to.equal(200);
+    expect(response.body.contract).to.be.an('object');
+    const contract = response.body.contract;
+    data.forEach((entry) => {
+      entry.roles.forEach((role) => {
+        const roleParticipantEntry = contract.rolesAndObligations.find(
+          (entry: any) => entry.role === role,
+        );
+        expect(roleParticipantEntry).to.be.an('object');
+        expect(roleParticipantEntry.policies).to.be.an('array');
+        expect(roleParticipantEntry.policies.length).to.be.at.least(
+          entry.policies.length,
+        );
+        entry.policies.forEach((policy) => {
+          const targetPermission = roleParticipantEntry.policies.find(
+            (p: any) =>
+              p.permission &&
+              p.permission.some(
+                (permission: any) => permission.target === policy.values.target,
+              ),
+          );
+          expect(targetPermission).to.exist;
+        });
+      });
     });
   });
 

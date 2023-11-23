@@ -191,6 +191,23 @@ export const getODRLContract = async (req: Request, res: Response) => {
       .json({ error: 'An error occurred while retrieving the ODRL contract.' });
   }
 };
+export const injectPoliciesForRoles = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const contractId: string = req.params.id;
+    const updatedContract = await contractService.addPoliciesForRoles(
+      contractId,
+      req.body,
+    );
+    res.status(200).json({ contract: updatedContract });
+  } catch (error) {
+    logger.error('Error while injecting policy:', error);
+    const message = (error as Error).message;
+    res.status(500).json({ error: message });
+  }
+};
 export const injectPoliciesForRole = async (
   req: Request,
   res: Response,
@@ -214,7 +231,7 @@ export const injectPolicies = async (
 ): Promise<void> => {
   try {
     const contractId: string = req.params.id;
-    const updatedContract = await contractService.addRolePolicies(
+    const updatedContract = await contractService.addPolicies(
       contractId,
       req.body,
     );
@@ -233,7 +250,7 @@ export const injectPolicy = async (
     const role: string = req.body.role;
     const contractId: string = req.params.id;
     if (role) {
-      const updatedContract = await contractService.addRolePolicy(
+      const updatedContract = await contractService.addPolicy(
         contractId,
         req.body,
       );
