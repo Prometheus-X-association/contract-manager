@@ -811,7 +811,7 @@
                   "type": "string",
                   "example": "string"
                 },
-                "injections": {
+                "policies": {
                   "type": "object",
                   "properties": {
                     "type": {
@@ -820,6 +820,119 @@
                     },
                     "items": {
                       "$ref": "#/definitions/PolicyRoleInjection"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Policies for role successfully injected",
+            "schema": {
+              "$ref": "#/definitions/Contract"
+            }
+          },
+          "400": {
+            "description": "Bad request, invalid data.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Contract not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/contracts/policies/roles/{id}": {
+      "post": {
+        "tags": [
+          "Contract"
+        ],
+        "summary": "Inject policies for specified groups of role",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID of the contract"
+          },
+          {
+            "name": "policies",
+            "in": "body",
+            "description": "Array of policies associated with a group of roles.",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "array"
+                },
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "object"
+                    },
+                    "properties": {
+                      "type": "object",
+                      "properties": {
+                        "roles": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "array"
+                            },
+                            "items": {
+                              "type": "object",
+                              "properties": {
+                                "type": {
+                                  "type": "string",
+                                  "example": "string"
+                                }
+                              }
+                            }
+                          }
+                        },
+                        "policies": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "array"
+                            },
+                            "items": {
+                              "$ref": "#/definitions/PolicyRoleInjection"
+                            }
+                          }
+                        }
+                      }
+                    },
+                    "required": {
+                      "type": "array",
+                      "example": [
+                        "roles",
+                        "policies"
+                      ],
+                      "items": {
+                        "type": "string"
+                      }
                     }
                   }
                 }

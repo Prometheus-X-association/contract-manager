@@ -354,9 +354,59 @@
     schema: {
       type: 'object',
       role: 'string',
-      injections: {
+      policies: {
         type: 'array',
         items: { $ref: '#/definitions/PolicyRoleInjection' }
+      }
+    }
+  }
+  #swagger.responses[200] = {
+    description: 'Policies for role successfully injected',
+    schema: { $ref: '#/definitions/Contract' }
+  }
+  #swagger.responses[400] = {
+    description: 'Bad request, invalid data.',
+    schema: { $ref: '#/definitions/Error' }
+  }
+  #swagger.responses[404] = {
+    description: 'Contract not found.',
+    schema: { $ref: '#/definitions/Error' }
+  }
+  #swagger.responses[500] = {
+    description: 'Internal server error.',
+    schema: { $ref: '#/definitions/Error' }
+  }
+*/
+// #swagger.end
+
+// #swagger.start
+/*
+  #swagger.tags = ['Contract']
+  #swagger.path = '/contracts/policies/roles/{id}'
+  #swagger.method = 'post'
+  #swagger.summary = 'Inject policies for specified groups of role'
+  #swagger.parameters['id'] = {
+    in: 'path',
+    description: 'ID of the contract',
+    required: true,
+    type: 'string'
+  }
+  #swagger.parameters['policies'] = {
+    in: 'body',
+    description: 'Array of policies associated with a group of roles.',
+    required: true,
+    schema: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          roles: { type: 'array', items: { type: 'string' } },
+          policies: {
+            type: 'array',
+            items: { $ref: '#/definitions/PolicyRoleInjection' }
+          }
+        },
+        required: ['roles', 'policies']
       }
     }
   }
