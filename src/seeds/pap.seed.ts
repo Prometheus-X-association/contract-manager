@@ -1,17 +1,13 @@
-import { IPolicy } from 'interfaces/policy.interface';
-import Policy from 'models/policy.model';
+import { IRule } from 'interfaces/policy.interface';
+import Policy from 'models/rule.model';
 
-interface IPolicyJson extends Omit<IPolicy, '_id'> {
-  jsonLD: any;
-}
-
-const policies: IPolicyJson[] = [
+const policies: IRule[] = [
   // Machine readable
   {
     name: 'Machine readable',
     description:
       'MUST describe their organisations and service offerings in a machine readable format and human readable',
-    jsonLD: {
+    policy: {
       permission: [
         {
           action: 'use',
@@ -32,7 +28,7 @@ const policies: IPolicyJson[] = [
   {
     name: 'Terms of use',
     description: 'MUST define clear data set terms of use',
-    jsonLD: {
+    policy: {
       permission: [
         {
           target: '@{target}',
@@ -54,7 +50,7 @@ const policies: IPolicyJson[] = [
     name: 'Consent',
     description:
       'MUST accept and comply with requests from the person on data sharing, consent and GDPR rights',
-    jsonLD: {
+    policy: {
       action: 'use',
       target: '@{target}',
       permission: [
@@ -86,7 +82,7 @@ const policies: IPolicyJson[] = [
     name: 'Personal data intermediary',
     description:
       'MUST accept Personal Data Intermediary as valid representation of people',
-    jsonLD: {
+    policy: {
       permission: [
         {
           target: '@{target}',
@@ -107,7 +103,7 @@ const policies: IPolicyJson[] = [
   {
     name: 'Pricing',
     description: 'MUST define pricing and value sharing on the use of the data',
-    jsonLD: {
+    policy: {
       permission: [
         {
           action: 'use',
@@ -139,7 +135,7 @@ const policies: IPolicyJson[] = [
   {
     name: 'Governance Rules',
     description: 'MUST define the precise governance rules',
-    jsonLD: {
+    policy: {
       permission: [
         {
           action: 'use',
@@ -165,7 +161,7 @@ const policies: IPolicyJson[] = [
   {
     name: 'Non-Participation Clause',
     description: 'CAN NOT be service or data provider or end user',
-    jsonLD: {
+    policy: {
       permission: [
         {
           action: 'use',
@@ -187,7 +183,7 @@ const policies: IPolicyJson[] = [
     name: 'Comprehensive Data Policy',
     description:
       'MUST define clear data policies stating what data is used, for which purposes, the security measures, the third parties it is shared with, if there is an advertisement model in a human and machine readable way',
-    jsonLD: {
+    policy: {
       permission: [
         {
           action: 'use',
@@ -223,7 +219,7 @@ const policies: IPolicyJson[] = [
   {
     name: 'Pricing Clarity',
     description: 'MUST define pricing / value sharing on use of services',
-    jsonLD: {
+    policy: {
       permission: [
         {
           action: 'use',
@@ -244,7 +240,7 @@ const policies: IPolicyJson[] = [
   {
     name: 'AI Usage Transparency',
     description: 'MUST inform if AI is used in the product',
-    jsonLD: {
+    policy: {
       permission: [
         {
           action: 'use',
@@ -265,7 +261,7 @@ const policies: IPolicyJson[] = [
   {
     name: 'Data Terms Compliance',
     description: 'MUST respect data set terms & conditions',
-    jsonLD: {
+    policy: {
       permission: [
         {
           action: 'use',
@@ -286,7 +282,7 @@ const policies: IPolicyJson[] = [
   {
     name: 'AI Risk Disclosure',
     description: 'MUST describe risks and safegaurds on AI',
-    jsonLD: {
+    policy: {
       permission: [
         {
           action: 'use',
@@ -308,7 +304,7 @@ const policies: IPolicyJson[] = [
   {
     name: 'No Restriction',
     description: 'CAN use data without any restrictions',
-    jsonLD: {
+    policy: {
       permission: [
         {
           action: 'use',
@@ -323,7 +319,7 @@ const policies: IPolicyJson[] = [
   {
     name: 'Time Interval',
     description: 'MUST use data within a specified time interval',
-    jsonLD: {
+    policy: {
       permission: [
         {
           action: 'use',
@@ -349,7 +345,7 @@ const policies: IPolicyJson[] = [
   {
     name: 'Time Period',
     description: 'MUST use data for a specified time period',
-    jsonLD: {
+    policy: {
       permission: [
         {
           action: 'use',
@@ -375,7 +371,7 @@ const policies: IPolicyJson[] = [
   {
     name: 'Count',
     description: 'MUST not use data for more than n times',
-    jsonLD: {
+    policy: {
       permission: [
         {
           action: 'use',
@@ -397,7 +393,7 @@ const policies: IPolicyJson[] = [
     name: 'Within a time interval',
     description:
       'MUST use data within a specified time interval and MUST delete the data at the specified time stamp',
-    jsonLD: {
+    policy: {
       permission: [
         {
           action: 'use',
@@ -437,7 +433,7 @@ const policies: IPolicyJson[] = [
   {
     name: 'Notification message',
     description: 'CAN use data with notification message',
-    jsonLD: {
+    policy: {
       permission: [
         {
           action: 'use',
@@ -457,16 +453,9 @@ const policies: IPolicyJson[] = [
 ];
 
 export async function seedPolicies() {
-  const policiesData: Omit<IPolicy, '_id'>[] = policies.map((policy) => ({
-    name: policy.name,
-    description: policy.description,
-    requestedFields: policy.requestedFields,
-    jsonLD: JSON.stringify(policy.jsonLD),
-  }));
-
   try {
     await Policy.deleteMany({});
-    await Policy.insertMany(policiesData);
+    await Policy.insertMany(policies);
   } catch (error: any) {
     throw new Error(`Seed error for data: ${error.message}`);
   }

@@ -151,10 +151,11 @@ export type BilateralContract = {
   signatures: BilateralContractRevokedSignature[];
   revokedSignatures: BilateralContractRevokedSignature[];
   negotiators: BilateralContractNegotiator[];
-  createdAt?: Date;
   status?: 'signed' | 'revoked' | 'under_negotiation' | 'pending';
   jsonLD?: string;
   _id: mongoose.Types.ObjectId;
+  createdAt?: Date;
+  updatedAt?: Date;
 };
 
 /**
@@ -350,10 +351,11 @@ export type BilateralContractDocument = mongoose.Document<
     signatures: mongoose.Types.DocumentArray<BilateralContractRevokedSignatureDocument>;
     revokedSignatures: mongoose.Types.DocumentArray<BilateralContractRevokedSignatureDocument>;
     negotiators: mongoose.Types.DocumentArray<BilateralContractNegotiatorDocument>;
-    createdAt?: Date;
     status?: 'signed' | 'revoked' | 'under_negotiation' | 'pending';
     jsonLD?: string;
     _id: mongoose.Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
   };
 
 /**
@@ -878,100 +880,6 @@ export type DataRegistryDocument = mongoose.Document<
   };
 
 /**
- * Lean version of PolicyDocument
- *
- * This has all Mongoose getters & functions removed. This type will be returned from `PolicyDocument.toObject()`. To avoid conflicts with model names, use the type alias `PolicyObject`.
- * ```
- * const policyObject = policy.toObject();
- * ```
- */
-export type Policy = {
-  name: string;
-  description: string;
-  requestedFields: string[];
-  jsonLD: string;
-  _id: mongoose.Types.ObjectId;
-};
-
-/**
- * Lean version of PolicyDocument (type alias of `Policy`)
- *
- * Use this type alias to avoid conflicts with model names:
- * ```
- * import { Policy } from "../models"
- * import { PolicyObject } from "../interfaces/mongoose.gen.ts"
- *
- * const policyObject: PolicyObject = policy.toObject();
- * ```
- */
-export type PolicyObject = Policy;
-
-/**
- * Mongoose Query type
- *
- * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
- */
-export type PolicyQuery = mongoose.Query<any, PolicyDocument, PolicyQueries> &
-  PolicyQueries;
-
-/**
- * Mongoose Query helper types
- *
- * This type represents `PolicySchema.query`. For most use cases, you should not need to use this type explicitly.
- */
-export type PolicyQueries = {};
-
-export type PolicyMethods = {};
-
-export type PolicyStatics = {};
-
-/**
- * Mongoose Model type
- *
- * Pass this type to the Mongoose Model constructor:
- * ```
- * const Policy = mongoose.model<PolicyDocument, PolicyModel>("Policy", PolicySchema);
- * ```
- */
-export type PolicyModel = mongoose.Model<PolicyDocument, PolicyQueries> &
-  PolicyStatics;
-
-/**
- * Mongoose Schema type
- *
- * Assign this type to new Policy schema instances:
- * ```
- * const PolicySchema: PolicySchema = new mongoose.Schema({ ... })
- * ```
- */
-export type PolicySchema = mongoose.Schema<
-  PolicyDocument,
-  PolicyModel,
-  PolicyMethods,
-  PolicyQueries
->;
-
-/**
- * Mongoose Document type
- *
- * Pass this type to the Mongoose Model constructor:
- * ```
- * const Policy = mongoose.model<PolicyDocument, PolicyModel>("Policy", PolicySchema);
- * ```
- */
-export type PolicyDocument = mongoose.Document<
-  mongoose.Types.ObjectId,
-  PolicyQueries
-> &
-  PolicyMethods & {
-    name: string;
-    description: string;
-    requestedFields: mongoose.Types.Array<string>;
-    jsonLD: string;
-    _id: mongoose.Types.ObjectId;
-  };
-
-/**
  * Lean version of PolicyReferenceRegistryPolicieDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `PolicyReferenceRegistryDocument.toObject()`.
@@ -1089,6 +997,99 @@ export type PolicyReferenceRegistryDocument = mongoose.Document<
 > &
   PolicyReferenceRegistryMethods & {
     policies: mongoose.Types.DocumentArray<PolicyReferenceRegistryPolicieDocument>;
+    _id: mongoose.Types.ObjectId;
+  };
+
+/**
+ * Lean version of RuleDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `RuleDocument.toObject()`. To avoid conflicts with model names, use the type alias `RuleObject`.
+ * ```
+ * const ruleObject = rule.toObject();
+ * ```
+ */
+export type Rule = {
+  name: string;
+  description: string;
+  requestedFields: string[];
+  policy: any;
+  _id: mongoose.Types.ObjectId;
+};
+
+/**
+ * Lean version of RuleDocument (type alias of `Rule`)
+ *
+ * Use this type alias to avoid conflicts with model names:
+ * ```
+ * import { Rule } from "../models"
+ * import { RuleObject } from "../interfaces/mongoose.gen.ts"
+ *
+ * const ruleObject: RuleObject = rule.toObject();
+ * ```
+ */
+export type RuleObject = Rule;
+
+/**
+ * Mongoose Query type
+ *
+ * This type is returned from query functions. For most use cases, you should not need to use this type explicitly.
+ */
+export type RuleQuery = mongoose.Query<any, RuleDocument, RuleQueries> &
+  RuleQueries;
+
+/**
+ * Mongoose Query helper types
+ *
+ * This type represents `RuleSchema.query`. For most use cases, you should not need to use this type explicitly.
+ */
+export type RuleQueries = {};
+
+export type RuleMethods = {};
+
+export type RuleStatics = {};
+
+/**
+ * Mongoose Model type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Rule = mongoose.model<RuleDocument, RuleModel>("Rule", RuleSchema);
+ * ```
+ */
+export type RuleModel = mongoose.Model<RuleDocument, RuleQueries> & RuleStatics;
+
+/**
+ * Mongoose Schema type
+ *
+ * Assign this type to new Rule schema instances:
+ * ```
+ * const RuleSchema: RuleSchema = new mongoose.Schema({ ... })
+ * ```
+ */
+export type RuleSchema = mongoose.Schema<
+  RuleDocument,
+  RuleModel,
+  RuleMethods,
+  RuleQueries
+>;
+
+/**
+ * Mongoose Document type
+ *
+ * Pass this type to the Mongoose Model constructor:
+ * ```
+ * const Rule = mongoose.model<RuleDocument, RuleModel>("Rule", RuleSchema);
+ * ```
+ */
+export type RuleDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  RuleQueries
+> &
+  RuleMethods & {
+    name: string;
+    description: string;
+    requestedFields: mongoose.Types.Array<string>;
+    policy: any;
     _id: mongoose.Types.ObjectId;
   };
 

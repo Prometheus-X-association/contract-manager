@@ -5,12 +5,11 @@ import {
 import { BilateralContractSignature } from 'interfaces/schemas.interface';
 import BilateralContract from 'models/bilateral.model';
 import DataRegistry from 'models/data.registry.model';
-import Policy from 'models/policy.model';
-import { checkFieldsMatching } from 'utils/utils';
+import Rule from 'models/rule.model';
+import { checkFieldsMatching, replaceValues } from 'utils/utils';
 import pdp from './policy/pdp.service';
 import { logger } from 'utils/logger';
 import { IDataRegistry, IDataRegistryDB } from 'interfaces/global.interface';
-import { buildConstraints } from 'services/policy/utils';
 
 // Bilateral Contract Service
 export class BilateralContractService {
@@ -347,7 +346,7 @@ export class BilateralContractService {
   //
   public async addPolicyFromId(
     contractId: string,
-    policyId: string,
+    ruleId: string,
     replacement?: any,
   ): Promise<IBilateralContractDB | null> {
     try {
@@ -355,34 +354,18 @@ export class BilateralContractService {
       if (!contract) {
         throw new Error('Contract not found');
       }
-      const policy = await Policy.findById(policyId);
-      if (!policy) {
-        throw new Error(`Policy with id ${policyId} not found`);
+      const rule = await Rule.findById(ruleId).lean();
+      if (!rule) {
+        throw new Error(`Rule with id ${ruleId} not found`);
       }
-
-      let jsonLD = policy.jsonLD;
-      Object.keys(replacement || {}).forEach((key) => {
-        let value = replacement[key];
-        value =
-          typeof value === 'string' ? `"${value}"` : JSON.stringify(value);
-        jsonLD = jsonLD.replace(new RegExp(`"@{${key}}"`, 'g'), value);
-      });
-      const policyData = JSON.parse(jsonLD);
-
-      const missingReplacements = jsonLD.match(/"@{.+?}"/g);
-      if (missingReplacements) {
-        throw new Error(
-          `Missing replacements for: ${missingReplacements.join(', ')}`,
-        );
-      }
-
-      if (policyData.permission) {
-        for (const permission of policyData.permission) {
+      replaceValues(rule.policy, replacement);
+      if (rule.policy.permission) {
+        for (const permission of rule.policy.permission) {
           contract.permission.push(permission);
         }
       }
-      if (policyData.prohibition) {
-        for (const prohibition of policyData.prohibition) {
+      if (rule.policy.prohibition) {
+        for (const prohibition of rule.policy.prohibition) {
           contract.prohibition.push(prohibition);
         }
       }

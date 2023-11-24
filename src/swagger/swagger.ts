@@ -32,7 +32,12 @@ const doc = {
   host: `${config.server.port}`,
   schemes: ['http'],
   definitions: {
-    Policy: {},
+    Policy: {
+      name: { type: 'string' },
+      description: { type: 'string' },
+      requestedFields: { type: 'array', items: { type: 'string' } },
+      policy: { type: 'object' },
+    },
     ODRLPolicy: {},
     User: {},
     PolicyList: [{}],

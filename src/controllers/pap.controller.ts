@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import pap from 'services/policy/pap.service';
-import Policy from 'models/policy.model';
+import Rule from 'models/rule.model';
 import policyProviderService from 'services/policy/policy.provider.service';
 
 /**
@@ -73,7 +73,7 @@ export const deletePolicy = async (req: Request, res: Response) => {
 // List all policies
 export const listPolicies = async (req: Request, res: Response) => {
   try {
-    const policies = await Policy.find().select('-jsonLD -__v');
+    const policies = await Rule.find().select('-jsonLD -__v');
     res.json(policies);
   } catch (error: any) {
     res.status(500).json({ error: error.message });
@@ -82,7 +82,7 @@ export const listPolicies = async (req: Request, res: Response) => {
 // Get a policy by ID
 export const getPolicy = async (req: Request, res: Response) => {
   try {
-    const policy = await Policy.findById(req.params.id);
+    const policy = await Rule.findById(req.params.id);
     if (!policy) {
       return res.status(404).json({ error: 'Policy not found' });
     }
@@ -93,7 +93,7 @@ export const getPolicy = async (req: Request, res: Response) => {
 };
 export const getPoliciesByName = async (req: Request, res: Response) => {
   try {
-    const policies = await Policy.find({ name: req.params.name });
+    const policies = await Rule.find({ name: req.params.name });
     if (!policies || policies.length === 0) {
       return res
         .status(404)

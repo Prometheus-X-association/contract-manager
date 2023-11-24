@@ -2,7 +2,7 @@ import { IContract, IContractDB } from 'interfaces/contract.interface';
 import Contract from 'models/contract.model';
 import axios from 'axios';
 import DataRegistry from 'models/data.registry.model';
-import { checkFieldsMatching } from 'utils/utils';
+import { checkFieldsMatching, replaceValues } from 'utils/utils';
 import pdp from './policy/pdp.service';
 import { logger } from 'utils/logger';
 import { ContractMember } from 'interfaces/schemas.interface';
@@ -360,67 +360,30 @@ export class ContractService {
     try {
       const ruleId = injection.ruleId;
       const replacement = injection.values;
-      const ruleUrl = `${config.catalog.url}/static/rules/${ruleId}.json`;
+      const catalogUrl = config.catalog.registry.url.replace(/\/$/, '');
+      const ruleUrl = `${catalogUrl}/${ruleId}.json`;
       const response = await axios.get(ruleUrl);
-      if (response.status !== 200) {
-        throw new Error(`Failed to fetch rule with id ${ruleId}`);
-      }
       const rule = response.data;
-      const replaceValues = (obj: any, replacements: any) => {
-        for (const key in obj) {
-          if (obj.hasOwnProperty(key)) {
-            if (typeof obj[key] === 'object') {
-              replaceValues(obj[key], replacements);
-            } else if (
-              typeof obj[key] === 'string' &&
-              obj[key].startsWith('@')
-            ) {
-              const replacementKey = obj[key].substring(2, obj[key].length - 1);
-              if (replacements[replacementKey] !== undefined) {
-                obj[key] = replacements[replacementKey];
-              }
-            }
-          }
-        }
-      };
       replaceValues(rule.policy, replacement);
-      rule.policy.description = rule.description;
+      rule.policy.description =
+        rule.description &&
+        Array.isArray(rule.description) &&
+        rule.description.length > 0
+          ? rule.description[0]['@value']
+          : typeof rule.description === 'string'
+          ? rule.description
+          : '';
       return rule.policy;
     } catch (error: any) {
-      const message = `[contract/genPolicyFromRule] Something went wrong: ${error.message}`;
+      const response = error.response;
+      const status = response?.status;
+      const message = `[contract/genPolicyFromRule] ${error.message} ${
+        status ? `url: ${error.response.config.url}` : ''
+      }`;
       throw new Error(message);
     }
   }
-  /*
-  private async genPolicyFromRule(injection: IPolicyInjection): Promise<any> {
-    try {
-      const ruleId = injection.ruleId;
-      const replacement = injection.values;
-      const rule = await Rule.findById(ruleId);
-      if (!rule) {
-        throw new Error(`Rule with id ${ruleId} not found`);
-      }
-      let jsonLD = rule.jsonLD;
-      Object.keys(replacement || {}).forEach((key) => {
-        let value = replacement[key];
-        value =
-          typeof value === 'string' ? `"${value}"` : JSON.stringify(value);
-        jsonLD = jsonLD.replace(new RegExp(`"@{${key}}"`, 'g'), value);
-      });
-      const policyData = JSON.parse(jsonLD);
-      const missingReplacements = jsonLD.match(/"@{.+?}"/g);
-      if (missingReplacements) {
-        throw new Error(
-          `Missing replacements for: ${missingReplacements.join(', ')}`,
-        );
-      }
-      policyData.description = rule.description;
-      return policyData;
-    } catch (error: any) {
-      throw error;
-    }
-  }
-  */
+  //
   public async addPoliciesForRoles(
     contractId: string,
     data: { roles: string[]; policies: IPolicyInjection[] }[],

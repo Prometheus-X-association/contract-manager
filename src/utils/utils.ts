@@ -1,7 +1,6 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { logger } from './logger';
-import { IAuthorisationPolicy } from 'interfaces/policy.interface';
 
 export const urlToOriginal = (
   url: string,
@@ -55,4 +54,20 @@ export const checkFieldsMatching = (a: any, b: any) => {
     success: recursiveFieldComparison(a, b),
     field: currentField,
   };
+};
+
+// Todo: missing replacement
+export const replaceValues = (obj: any, replacements: any) => {
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      if (typeof obj[key] === 'object') {
+        replaceValues(obj[key], replacements);
+      } else if (typeof obj[key] === 'string' && obj[key].startsWith('@')) {
+        const replacementKey = obj[key].substring(2, obj[key].length - 1);
+        if (replacements[replacementKey] !== undefined) {
+          obj[key] = replacements[replacementKey];
+        }
+      }
+    }
+  }
 };

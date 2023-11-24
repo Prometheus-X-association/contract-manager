@@ -1,13 +1,13 @@
 import {
   ContractRolesAndObligationPolicie,
-  Policy,
-  PolicyDocument,
+  Rule,
+  RuleDocument,
   PolicyReferenceRegistryPolicie,
   PolicyReferenceRegistryPolicieDocument,
 } from './schemas.interface';
 
-export type IPolicy = Policy;
-export type IPolicyDB = PolicyDocument;
+export type IRule = Omit<Rule, '_id'>;
+export type IRuleDB = RuleDocument;
 export type PDPAction = 'write' | 'POST' | 'GET' | 'PUT' | 'DELETE';
 export type ICondition = Record<string, unknown>;
 export type IContractPolicy = ContractRolesAndObligationPolicie;
