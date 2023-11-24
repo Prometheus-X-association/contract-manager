@@ -387,7 +387,8 @@ export class ContractService {
       rule.policy.description = rule.description;
       return rule.policy;
     } catch (error: any) {
-      throw error;
+      const message = `[contract/genPolicyFromRule] Something went wrong: ${error.message}`;
+      throw new Error(message);
     }
   }
   /*

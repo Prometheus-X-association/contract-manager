@@ -93,9 +93,10 @@ const startServer = async (url: string) => {
     papRoutes,
   );
   router.use((req, res, next) => {
-    const message = 'Not found!';
+    const message = 'Route not found or incorrect method request!';
+    const { method, url } = req;
     logger.info(`404 ${message}`);
-    return res.status(404).json({ message });
+    return res.status(404).json({ message, method, url });
   });
 
   return http.createServer(router);
