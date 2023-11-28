@@ -17,7 +17,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository_owner }}/${{ github.repository_name }}
+          images: ghcr.io/${{ github.repository }}
           tags: |
             type=sha
             type=semver,pattern={{version}}
