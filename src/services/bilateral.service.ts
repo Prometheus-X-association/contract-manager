@@ -10,6 +10,7 @@ import { checkFieldsMatching, replaceValues } from 'utils/utils';
 import pdp from './policy/pdp.service';
 import { logger } from 'utils/logger';
 import { IDataRegistry, IDataRegistryDB } from 'interfaces/global.interface';
+import { genPolicyFromRule } from './policy/utils';
 
 // Bilateral Contract Service
 export class BilateralContractService {
@@ -358,20 +359,20 @@ export class BilateralContractService {
       if (!contract) {
         throw new Error('Contract not found');
       }
-      const rule = await Rule.findById(ruleId).lean();
-      if (!rule) {
-        throw new Error(`Rule with id ${ruleId} not found`);
-      }
-      replaceValues(rule.policy, replacement);
-      if (rule.policy.permission) {
-        for (const permission of rule.policy.permission) {
-          contract.permission.push(permission);
-        }
-      }
-      if (rule.policy.prohibition) {
-        for (const prohibition of rule.policy.prohibition) {
-          contract.prohibition.push(prohibition);
-        }
+      const policy = await genPolicyFromRule(replacement);
+      const index = contract.policy.findIndex((entry) => entry.uid === ruleId);
+      if (index !== -1) {
+        const contractPolicy = contract.policy[index];
+        contractPolicy.description = policy.description;
+        contractPolicy.permission = policy.permission || [];
+        contractPolicy.prohibition = policy.prohibition || [];
+      } else {
+        contract.policy.push({
+          ruleId,
+          description: policy.description,
+          permission: policy.permission || [],
+          prohibition: policy.prohibition || [],
+        });
       }
       const updatedContract = await contract.save();
       return updatedContract;

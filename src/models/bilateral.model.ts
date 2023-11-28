@@ -45,6 +45,8 @@ const BilateralSignatureSchema = new mongoose.Schema(
 //
 const PolicySchema = new Schema(
   {
+    uid: String,
+    description: String,
     permission: [
       {
         action: String,
@@ -67,7 +69,6 @@ const PolicySchema = new Schema(
         _id: false,
       },
     ],
-    description: String,
   },
   { _id: false },
 );

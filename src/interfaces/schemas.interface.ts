@@ -74,9 +74,10 @@ export type BilateralContractPolicyProhibition = {
  * ```
  */
 export type BilateralContractPolicy = {
+  uid?: string;
+  description?: string;
   permission: BilateralContractPolicyPermission[];
   prohibition: BilateralContractPolicyProhibition[];
-  description?: string;
 };
 
 /**
@@ -298,9 +299,10 @@ export type BilateralContractPolicyProhibitionDocument =
  * Type of `BilateralContractDocument["policy"]` element.
  */
 export type BilateralContractPolicyDocument = mongoose.Types.Subdocument & {
+  uid?: string;
+  description?: string;
   permission: mongoose.Types.DocumentArray<BilateralContractPolicyPermissionDocument>;
   prohibition: mongoose.Types.DocumentArray<BilateralContractPolicyProhibitionDocument>;
-  description?: string;
 };
 
 /**
@@ -461,9 +463,10 @@ export type ContractRolesAndObligationPolicieProhibition = {
  * ```
  */
 export type ContractRolesAndObligationPolicie = {
+  uid?: string;
+  description?: string;
   permission: ContractRolesAndObligationPoliciePermission[];
   prohibition: ContractRolesAndObligationPolicieProhibition[];
-  description?: string;
 };
 
 /**
@@ -677,9 +680,10 @@ export type ContractRolesAndObligationPolicieProhibitionDocument =
  */
 export type ContractRolesAndObligationPolicieDocument =
   mongoose.Types.Subdocument & {
+    uid?: string;
+    description?: string;
     permission: mongoose.Types.DocumentArray<ContractRolesAndObligationPoliciePermissionDocument>;
     prohibition: mongoose.Types.DocumentArray<ContractRolesAndObligationPolicieProhibitionDocument>;
-    description?: string;
   };
 
 /**
