@@ -47,13 +47,14 @@ const startServer = async (url: string) => {
     next();
   });
   // swagger
-  router.use(
-    '/api-docs',
-    swaggerUi.serve,
+  router.use('/api-docs', swaggerUi.serve, (req: any, res: any, next: any) => {
+    const baseUrl = `${req.get('host')}`;
+    swaggerJson.host = baseUrl;
     swaggerUi.setup(swaggerJson, {
       customCss: '.swagger-ui .models { display: none }',
-    }),
-  );
+    })(req, res, next);
+  });
+
   router.get('/is-it-alive', (req, res, next) => {
     res.json({ message: 'yes it is!' });
   });
