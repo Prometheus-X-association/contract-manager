@@ -7,19 +7,24 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest 
-
+    services:
+      mongodb:
+        image: mongo
+        ports:
+          - 27017:27017
     steps:
     - uses: actions/checkout@v2
     - name: Set up Node.js
       uses: actions/setup-node@v2
       with:
-        node-version: '18.15'  # Specify your Node.js version
+        node-version: '18.15' 
 
     - name: Install pnpm
       run: npm install -g pnpm
 
     - name: Install dependencies
       run: pnpm install
-
+    - name: Seed the database
+      run: pnpm seed
     - name: Run tests
       run: pnpm test
