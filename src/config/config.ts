@@ -13,7 +13,9 @@ const SECRET_AUTH_KEY =
   process.env.SECRET_AUTH_KEY || 'an-unsafe-secret-default-secret-key';
 const SECRET_SESSION_KEY =
   process.env.SECRET_SESSION_KEY || 'an-unsafe-session-default-secret-key';
-const REGISTRY_URL = process.env.CATALOG_REGISTRY_URL || '';
+const REGISTRY_URL = process.env.CATALOG_REGISTRY_URL || '/rules/';
+const REGISTRY_DEFINED = !!process.env.CATALOG_REGISTRY_URL;
+const SERVER_URL = process.env.SERVER_URL || 'http://localhost';
 export const config = {
   mongo: {
     url: MONGO_URL,
@@ -23,6 +25,7 @@ export const config = {
   },
   server: {
     port: SERVER_PORT,
+    url: SERVER_URL,
   },
   auth: {
     secret: SECRET_AUTH_KEY,
@@ -35,6 +38,7 @@ export const config = {
   catalog: {
     registry: {
       url: REGISTRY_URL,
+      defined: REGISTRY_DEFINED,
     },
   },
 };

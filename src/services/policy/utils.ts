@@ -197,11 +197,7 @@ export const genPolicyFromRule = async (
         : '';
     return rule.policy;
   } catch (error: any) {
-    const response = error.response;
-    const status = response?.status;
-    const message = `[contract/genPolicyFromRule] ${error.message} ${
-      status ? `url: ${error.response.config.url}` : ''
-    }`;
+    const message = `[contract/genPolicyFromRule] ${error.message} url: ${error.response}`;
     throw new Error(message);
   }
 };

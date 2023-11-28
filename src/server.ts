@@ -13,6 +13,8 @@ import swaggerJson from './swagger/swagger.json';
 import session from 'express-session';
 import createMemoryStore from 'memorystore';
 import { config } from 'config/config';
+import path from 'path';
+
 const router = express();
 
 const startServer = async (url: string) => {
@@ -46,6 +48,10 @@ const startServer = async (url: string) => {
     );
     next();
   });
+  router.use(
+    '/rules',
+    express.static(path.join(__dirname, '..', 'public/rules')),
+  );
   // swagger
   router.use('/api-docs', swaggerUi.serve, (req: any, res: any, next: any) => {
     const baseUrl = `${req.get('host')}`;

@@ -70,10 +70,20 @@ export class BilateralContractService {
     contractData: IBilateralContract,
   ): Promise<IBilateralContract> {
     try {
+      if (
+        !contractData.dataProvider ||
+        !contractData.dataConsumer ||
+        !contractData.serviceOffering
+      ) {
+        throw new Error(
+          `Missing required fields: ${
+            !contractData.dataProvider ? 'dataProvider ' : ''
+          }${!contractData.dataConsumer ? 'dataConsumer ' : ''}${
+            !contractData.serviceOffering ? 'serviceOffering' : ''
+          }`,
+        );
+      }
       // Validate the contract input data against the contract model
-      // Validation
-      // dataProvider, dataConsumer, serviceOffering;
-
       // await this.isValid(contractData);
       // Generate the contrat after validation
       const newContract = new BilateralContract(contractData);

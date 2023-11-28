@@ -3,12 +3,21 @@ import { expect } from 'chai';
 import app from 'server';
 import Contract from 'models/contract.model';
 import { config } from 'config/config';
+import axios from 'axios';
+import http from 'http';
 
 let cookie: any;
 let contractId: any;
 let ruleId: string = 'rule-access-1';
 
 const SERVER_PORT = 9999;
+if (!config.catalog.registry.defined) {
+  let url = config.server.url;
+  if (url.endsWith('/')) {
+    url = url.slice(0, -1);
+  }
+  axios.defaults.baseURL = `${config.server.url}:${SERVER_PORT}/`;
+}
 const _logYellow = (value: string) => {
   console.log(`\x1b[93m${value}\x1b[37m`);
 };
@@ -19,7 +28,7 @@ const _logObject = (data: any) => {
   console.log(`\x1b[90m${JSON.stringify(data, null, 2)}\x1b[37m`);
 };
 describe('Create an ecosystem contract, then inject policies in it.', () => {
-  let server: any;
+  let server: http.Server;
   let authToken: string;
   before(async () => {
     server = await app.startServer(config.mongo.testUrl);

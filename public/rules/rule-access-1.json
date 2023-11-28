@@ -1,0 +1,15 @@
+{
+  "uid": "rule-access-1",
+  "name": "No Restriction",
+  "description": "CAN use data without any restrictions",
+  "policy": {
+    "permission": [
+      {
+        "action": "use",
+        "target": "@{target}",
+        "constraint": []
+      }
+    ]
+  },
+  "requestedFields": ["target"]
+}

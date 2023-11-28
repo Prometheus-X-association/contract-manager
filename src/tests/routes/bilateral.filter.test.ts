@@ -40,7 +40,11 @@ describe('Routes for Contract API', () => {
     authToken = authResponse.body.token;
 
     // Create a signed contract
-    const signedContractData = {};
+    const signedContractData = {
+      dataProvider: 'first-provider',
+      dataConsumer: 'first-consumer',
+      serviceOffering: 'first-offering',
+    };
     const responseSigned = await supertest(app.router)
       .post(`${API_ROUTE_BASE}`)
       .set('Cookie', authTokenCookie)
@@ -94,7 +98,11 @@ describe('Routes for Contract API', () => {
       .send(signatureDataPartyB);
 
     // Create a third contract
-    const thirdContractData = {};
+    const thirdContractData = {
+      dataProvider: 'third-provider',
+      dataConsumer: 'third-consumer',
+      serviceOffering: 'third-offering',
+    };
     const responseThird = await supertest(app.router)
       .post(`${API_ROUTE_BASE}`)
       .set('Cookie', authTokenCookie)
@@ -110,7 +118,11 @@ describe('Routes for Contract API', () => {
       .send(negotiatorDataA);
 
     // Create an unsigned contract
-    const unsignedContractData = {};
+    const unsignedContractData = {
+      dataProvider: 'second-provider',
+      dataConsumer: 'second-consumer',
+      serviceOffering: 'second-offering',
+    };
     const responseUnsigned = await supertest(app.router)
       .post(`${API_ROUTE_BASE}`)
       .set('Cookie', authTokenCookie)
