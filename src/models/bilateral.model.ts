@@ -8,12 +8,11 @@ const BilateralPurposeSchema = new mongoose.Schema({
   action: String,
   assigner: String,
   assignee: String,
-  purposeCategory: String,
+  piiCategory: [String],
   consentType: String,
-  piiCategory: String,
-  primaryPurpose: String,
+  primaryPurpose: Boolean,
   termination: String,
-  thirdPartyDisclosure: String,
+  thirdPartyDisclosure: Boolean,
   thirdPartyName: String,
 });
 // Constraints mongoose schemas
@@ -43,11 +42,9 @@ const BilateralSignatureSchema = new mongoose.Schema(
   },
   { _id: false },
 );
-// Contract mongoose schema
-const BilateralContractSchema: Schema = new Schema(
+//
+const PolicySchema = new Schema(
   {
-    uid: String,
-    profile: String,
     permission: [
       {
         action: String,
@@ -56,6 +53,7 @@ const BilateralContractSchema: Schema = new Schema(
           BilateralDefaultConstraintSchema,
           BilateralUnknownConstraintSchema,
         ],
+        _id: false,
       },
     ],
     prohibition: [
@@ -66,8 +64,22 @@ const BilateralContractSchema: Schema = new Schema(
           BilateralDefaultConstraintSchema,
           BilateralUnknownConstraintSchema,
         ],
+        _id: false,
       },
     ],
+    description: String,
+  },
+  { _id: false },
+);
+// Contract mongoose schema
+const BilateralContractSchema: Schema = new Schema(
+  {
+    uid: String,
+    dataProvider: String,
+    dataConsumer: String,
+    serviceOffering: String,
+    profile: String,
+    policy: [PolicySchema],
     purpose: [BilateralPurposeSchema],
     signatures: [BilateralSignatureSchema],
     revokedSignatures: [BilateralSignatureSchema],
@@ -77,6 +89,12 @@ const BilateralContractSchema: Schema = new Schema(
       enum: ['signed', 'revoked', 'under_negotiation', 'pending'],
       default: 'pending',
     },
+    terminationAndValidity: {
+      effectiveDate: Date,
+      terminationPeriod: Date,
+    },
+    limitationOfLiability: Date,
+    termsAndConditions: String,
     jsonLD: {
       type: String,
     },

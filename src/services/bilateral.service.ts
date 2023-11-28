@@ -70,6 +70,9 @@ export class BilateralContractService {
   ): Promise<IBilateralContract> {
     try {
       // Validate the contract input data against the contract model
+      // Validation
+      // dataProvider, dataConsumer, serviceOffering;
+
       // await this.isValid(contractData);
       // Generate the contrat after validation
       const newContract = new BilateralContract(contractData);
@@ -228,18 +231,19 @@ export class BilateralContractService {
     sessionId: string,
   ): Promise<boolean> {
     try {
-      // Retrieve contract data by ID
       const contract = await BilateralContract.findById(contractId);
-      if (!contract) {
-        // Contract not found
+      if (!contract || !contract.policy) {
         return false;
       }
       const { permission, prohibition } = data.policy;
       return pdp.isAuthorised(
         {
-          permission: [...(contract.permission || []), ...(permission || [])],
+          permission: [
+            ...contract.policy.map((p) => p.permission),
+            ...(permission || []),
+          ],
           prohibition: [
-            ...(contract.prohibition || []),
+            ...contract.policy.map((p) => p.prohibition),
             ...(prohibition || []),
           ],
         },
