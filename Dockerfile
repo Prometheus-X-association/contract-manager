@@ -17,12 +17,19 @@ RUN pnpm install
 # Copy the rest of the app files to the working directory
 COPY . .
 
-# Compile TypeScript code
-RUN npm run build
-
 # Define env variable related to the server
-ENV CONTRAT_MODEL_PATH="data/contract-model.json"
-ENV MONGO_URL="mongodb://127.0.0.1:27017"
+ENV MONGO_URL="mongodb://127.0.0.1:27017/contract-dev"
+ENV MONGO_TEST_URL="mongodb://127.0.0.1:27017/contract-test-cases"
 ENV SERVER_PORT="8888"
+ENV SERVER_BASE_URL="http://localhost"
+
+# Compile TypeScript code
+RUN pnpm build
+
+# Seed database
+RUN pnpm seed
+
+# Run test
+RUN pnpm test
 
 CMD ["pnpm", "start"]
