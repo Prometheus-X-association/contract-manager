@@ -8,6 +8,11 @@ permissions:
   packages: write
 jobs:
   publish:
+    services:
+      mongodb:
+        image: mongo
+        ports:
+          - 27017:27017
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
