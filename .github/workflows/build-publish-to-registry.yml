@@ -40,3 +40,6 @@ jobs:
           push: true
           tags: |
             ${{ steps.meta.outputs.tags }}
+        env:
+          ENV MONGO_URL: mongodb://mongodb:27017/contract-dev
+          ENV MONGO_TEST_URL: mongodb://mongodb:27017/contract-test-cases
