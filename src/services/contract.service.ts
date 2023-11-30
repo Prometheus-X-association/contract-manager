@@ -1,6 +1,5 @@
 import { IContract, IContractDB } from 'interfaces/contract.interface';
 import Contract from 'models/contract.model';
-import axios from 'axios';
 import DataRegistry from 'models/data.registry.model';
 import { checkFieldsMatching, replaceValues } from 'utils/utils';
 import pdp from './policy/pdp.service';
@@ -8,7 +7,7 @@ import { logger } from 'utils/logger';
 import { ContractMember } from 'interfaces/schemas.interface';
 import { IDataRegistry, IDataRegistryDB } from 'interfaces/global.interface';
 import { IContractPolicy, IPolicyInjection } from 'interfaces/policy.interface';
-import { config } from 'config/config';
+import { genPolicyFromRule } from './policy/utils';
 
 // Ecosystem Contract Service
 export class ContractService {
@@ -356,34 +355,6 @@ export class ContractService {
     }
   }
   //
-  private async genPolicyFromRule(injection: IPolicyInjection): Promise<any> {
-    try {
-      const ruleId = injection.ruleId;
-      const replacement = injection.values;
-      const catalogUrl = config.catalog.registry.url.replace(/\/$/, '');
-      const ruleUrl = `${catalogUrl}/${ruleId}.json`;
-      const response = await axios.get(ruleUrl);
-      const rule = response.data;
-      replaceValues(rule.policy, replacement);
-      rule.policy.description =
-        rule.description &&
-        Array.isArray(rule.description) &&
-        rule.description.length > 0
-          ? rule.description[0]['@value']
-          : typeof rule.description === 'string'
-          ? rule.description
-          : '';
-      return rule.policy;
-    } catch (error: any) {
-      const response = error.response;
-      const status = response?.status;
-      const message = `[contract/genPolicyFromRule] ${error.message} ${
-        status ? `url: ${error.response.config.url}` : ''
-      }`;
-      throw new Error(message);
-    }
-  }
-  //
   public async addPoliciesForRoles(
     contractId: string,
     data: { roles: string[]; policies: IPolicyInjection[] }[],
@@ -414,7 +385,7 @@ export class ContractService {
             const roleEntry = contract.rolesAndObligations[roleIndex];
             for (const injection of policies) {
               try {
-                const policy = await this.genPolicyFromRule(injection);
+                const policy = await genPolicyFromRule(injection);
                 roleEntry.policies.push({
                   description: policy.description,
                   permission: policy.permission || [],
@@ -462,7 +433,7 @@ export class ContractService {
             roleIndex = contract.rolesAndObligations.length - 1;
           }
           const roleEntry = contract.rolesAndObligations[roleIndex];
-          const policy = await this.genPolicyFromRule(injection);
+          const policy = await genPolicyFromRule(injection);
           roleEntry.policies.push({
             description: policy.description,
             permission: policy.permission || [],
@@ -502,7 +473,7 @@ export class ContractService {
             roleIndex = contract.rolesAndObligations.length - 1;
           }
           const roleEntry = contract.rolesAndObligations[roleIndex];
-          const policy = await this.genPolicyFromRule(injection);
+          const policy = await genPolicyFromRule(injection);
           roleEntry.policies.push({
             description: policy.description,
             permission: policy.permission || [],
@@ -540,7 +511,7 @@ export class ContractService {
         roleIndex = contract.rolesAndObligations.length - 1;
       }
       const roleEntry = contract.rolesAndObligations[roleIndex];
-      const policy = await this.genPolicyFromRule(injection);
+      const policy = await genPolicyFromRule(injection);
       roleEntry.policies.push({
         description: policy.description,
         permission: policy.permission || [],

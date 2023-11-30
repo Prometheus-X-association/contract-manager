@@ -8,14 +8,14 @@
 import mongoose from 'mongoose';
 
 /**
- * Lean version of BilateralContractPermissionConstraintDocument
+ * Lean version of BilateralContractPolicyPermissionConstraintDocument
  *
- * This has all Mongoose getters & functions removed. This type will be returned from `BilateralContractPermissionDocument.toObject()`.
+ * This has all Mongoose getters & functions removed. This type will be returned from `BilateralContractPolicyPermissionDocument.toObject()`.
  * ```
- * const bilateralcontractpermissionObject = bilateralcontractpermission.toObject();
+ * const bilateralcontractpolicypermissionObject = bilateralcontractpolicypermission.toObject();
  * ```
  */
-export type BilateralContractPermissionConstraint = {
+export type BilateralContractPolicyPermissionConstraint = {
   '@type'?: string;
   leftOperand?: string;
   operator?: string;
@@ -23,29 +23,28 @@ export type BilateralContractPermissionConstraint = {
 };
 
 /**
- * Lean version of BilateralContractPermissionDocument
+ * Lean version of BilateralContractPolicyPermissionDocument
  *
- * This has all Mongoose getters & functions removed. This type will be returned from `BilateralContractDocument.toObject()`.
+ * This has all Mongoose getters & functions removed. This type will be returned from `BilateralContractPolicyDocument.toObject()`.
  * ```
- * const bilateralcontractObject = bilateralcontract.toObject();
+ * const bilateralcontractpolicyObject = bilateralcontractpolicy.toObject();
  * ```
  */
-export type BilateralContractPermission = {
+export type BilateralContractPolicyPermission = {
   action?: string;
   target?: string;
-  constraint: BilateralContractPermissionConstraint[];
-  _id: mongoose.Types.ObjectId;
+  constraint: BilateralContractPolicyPermissionConstraint[];
 };
 
 /**
- * Lean version of BilateralContractProhibitionConstraintDocument
+ * Lean version of BilateralContractPolicyProhibitionConstraintDocument
  *
- * This has all Mongoose getters & functions removed. This type will be returned from `BilateralContractProhibitionDocument.toObject()`.
+ * This has all Mongoose getters & functions removed. This type will be returned from `BilateralContractPolicyProhibitionDocument.toObject()`.
  * ```
- * const bilateralcontractprohibitionObject = bilateralcontractprohibition.toObject();
+ * const bilateralcontractpolicyprohibitionObject = bilateralcontractpolicyprohibition.toObject();
  * ```
  */
-export type BilateralContractProhibitionConstraint = {
+export type BilateralContractPolicyProhibitionConstraint = {
   '@type'?: string;
   leftOperand?: string;
   operator?: string;
@@ -53,18 +52,32 @@ export type BilateralContractProhibitionConstraint = {
 };
 
 /**
- * Lean version of BilateralContractProhibitionDocument
+ * Lean version of BilateralContractPolicyProhibitionDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BilateralContractPolicyDocument.toObject()`.
+ * ```
+ * const bilateralcontractpolicyObject = bilateralcontractpolicy.toObject();
+ * ```
+ */
+export type BilateralContractPolicyProhibition = {
+  action?: string;
+  target?: string;
+  constraint: BilateralContractPolicyProhibitionConstraint[];
+};
+
+/**
+ * Lean version of BilateralContractPolicyDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `BilateralContractDocument.toObject()`.
  * ```
  * const bilateralcontractObject = bilateralcontract.toObject();
  * ```
  */
-export type BilateralContractProhibition = {
-  action?: string;
-  target?: string;
-  constraint: BilateralContractProhibitionConstraint[];
-  _id: mongoose.Types.ObjectId;
+export type BilateralContractPolicy = {
+  uid?: string;
+  description?: string;
+  permission: BilateralContractPolicyPermission[];
+  prohibition: BilateralContractPolicyProhibition[];
 };
 
 /**
@@ -81,12 +94,11 @@ export type BilateralContractPurpose = {
   action?: string;
   assigner?: string;
   assignee?: string;
-  purposeCategory?: string;
+  piiCategory: string[];
   consentType?: string;
-  piiCategory?: string;
-  primaryPurpose?: string;
+  primaryPurpose?: boolean;
   termination?: string;
-  thirdPartyDisclosure?: string;
+  thirdPartyDisclosure?: boolean;
   thirdPartyName?: string;
   _id: mongoose.Types.ObjectId;
 };
@@ -144,14 +156,22 @@ export type BilateralContractNegotiator = {
  */
 export type BilateralContract = {
   uid?: string;
+  dataProvider?: string;
+  dataConsumer?: string;
+  serviceOffering?: string;
   profile?: string;
-  permission: BilateralContractPermission[];
-  prohibition: BilateralContractProhibition[];
+  policy: BilateralContractPolicy[];
   purpose: BilateralContractPurpose[];
   signatures: BilateralContractRevokedSignature[];
   revokedSignatures: BilateralContractRevokedSignature[];
   negotiators: BilateralContractNegotiator[];
   status?: 'signed' | 'revoked' | 'under_negotiation' | 'pending';
+  terminationAndValidity: {
+    effectiveDate?: Date;
+    terminationPeriod?: Date;
+  };
+  limitationOfLiability?: Date;
+  termsAndConditions?: string;
   jsonLD?: string;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
@@ -226,9 +246,9 @@ export type BilateralContractSchema = mongoose.Schema<
 /**
  * Mongoose Subdocument type
  *
- * Type of `BilateralContractPermissionDocument["constraint"]` element.
+ * Type of `BilateralContractPolicyPermissionDocument["constraint"]` element.
  */
-export type BilateralContractPermissionConstraintDocument =
+export type BilateralContractPolicyPermissionConstraintDocument =
   mongoose.Types.Subdocument & {
     '@type'?: string;
     leftOperand?: string;
@@ -239,40 +259,51 @@ export type BilateralContractPermissionConstraintDocument =
 /**
  * Mongoose Subdocument type
  *
- * Type of `BilateralContractDocument["permission"]` element.
+ * Type of `BilateralContractPolicyDocument["permission"]` element.
  */
-export type BilateralContractPermissionDocument = mongoose.Types.Subdocument & {
-  action?: string;
-  target?: string;
-  constraint: mongoose.Types.DocumentArray<BilateralContractPermissionConstraintDocument>;
-  _id: mongoose.Types.ObjectId;
-};
-
-/**
- * Mongoose Subdocument type
- *
- * Type of `BilateralContractProhibitionDocument["constraint"]` element.
- */
-export type BilateralContractProhibitionConstraintDocument =
-  mongoose.Types.Subdocument & {
-    '@type'?: string;
-    leftOperand?: string;
-    operator?: string;
-    rightOperand?: any;
-  };
-
-/**
- * Mongoose Subdocument type
- *
- * Type of `BilateralContractDocument["prohibition"]` element.
- */
-export type BilateralContractProhibitionDocument =
+export type BilateralContractPolicyPermissionDocument =
   mongoose.Types.Subdocument & {
     action?: string;
     target?: string;
-    constraint: mongoose.Types.DocumentArray<BilateralContractProhibitionConstraintDocument>;
-    _id: mongoose.Types.ObjectId;
+    constraint: mongoose.Types.DocumentArray<BilateralContractPolicyPermissionConstraintDocument>;
   };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `BilateralContractPolicyProhibitionDocument["constraint"]` element.
+ */
+export type BilateralContractPolicyProhibitionConstraintDocument =
+  mongoose.Types.Subdocument & {
+    '@type'?: string;
+    leftOperand?: string;
+    operator?: string;
+    rightOperand?: any;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `BilateralContractPolicyDocument["prohibition"]` element.
+ */
+export type BilateralContractPolicyProhibitionDocument =
+  mongoose.Types.Subdocument & {
+    action?: string;
+    target?: string;
+    constraint: mongoose.Types.DocumentArray<BilateralContractPolicyProhibitionConstraintDocument>;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `BilateralContractDocument["policy"]` element.
+ */
+export type BilateralContractPolicyDocument = mongoose.Types.Subdocument & {
+  uid?: string;
+  description?: string;
+  permission: mongoose.Types.DocumentArray<BilateralContractPolicyPermissionDocument>;
+  prohibition: mongoose.Types.DocumentArray<BilateralContractPolicyProhibitionDocument>;
+};
 
 /**
  * Mongoose Subdocument type
@@ -285,12 +316,11 @@ export type BilateralContractPurposeDocument = mongoose.Types.Subdocument & {
   action?: string;
   assigner?: string;
   assignee?: string;
-  purposeCategory?: string;
+  piiCategory: mongoose.Types.Array<string>;
   consentType?: string;
-  piiCategory?: string;
-  primaryPurpose?: string;
+  primaryPurpose?: boolean;
   termination?: string;
-  thirdPartyDisclosure?: string;
+  thirdPartyDisclosure?: boolean;
   thirdPartyName?: string;
   _id: mongoose.Types.ObjectId;
 };
@@ -344,14 +374,22 @@ export type BilateralContractDocument = mongoose.Document<
 > &
   BilateralContractMethods & {
     uid?: string;
+    dataProvider?: string;
+    dataConsumer?: string;
+    serviceOffering?: string;
     profile?: string;
-    permission: mongoose.Types.DocumentArray<BilateralContractPermissionDocument>;
-    prohibition: mongoose.Types.DocumentArray<BilateralContractProhibitionDocument>;
+    policy: mongoose.Types.DocumentArray<BilateralContractPolicyDocument>;
     purpose: mongoose.Types.DocumentArray<BilateralContractPurposeDocument>;
     signatures: mongoose.Types.DocumentArray<BilateralContractRevokedSignatureDocument>;
     revokedSignatures: mongoose.Types.DocumentArray<BilateralContractRevokedSignatureDocument>;
     negotiators: mongoose.Types.DocumentArray<BilateralContractNegotiatorDocument>;
     status?: 'signed' | 'revoked' | 'under_negotiation' | 'pending';
+    terminationAndValidity: {
+      effectiveDate?: Date;
+      terminationPeriod?: Date;
+    };
+    limitationOfLiability?: Date;
+    termsAndConditions?: string;
     jsonLD?: string;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
@@ -425,9 +463,10 @@ export type ContractRolesAndObligationPolicieProhibition = {
  * ```
  */
 export type ContractRolesAndObligationPolicie = {
+  uid?: string;
+  description?: string;
   permission: ContractRolesAndObligationPoliciePermission[];
   prohibition: ContractRolesAndObligationPolicieProhibition[];
-  description?: string;
 };
 
 /**
@@ -641,9 +680,10 @@ export type ContractRolesAndObligationPolicieProhibitionDocument =
  */
 export type ContractRolesAndObligationPolicieDocument =
   mongoose.Types.Subdocument & {
+    uid?: string;
+    description?: string;
     permission: mongoose.Types.DocumentArray<ContractRolesAndObligationPoliciePermissionDocument>;
     prohibition: mongoose.Types.DocumentArray<ContractRolesAndObligationPolicieProhibitionDocument>;
-    description?: string;
   };
 
 /**

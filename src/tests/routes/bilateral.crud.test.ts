@@ -45,6 +45,9 @@ describe('Routes for Bilateral Contract API', () => {
   // Test case: Create a new contract
   it('should create a new bilateral contract', async () => {
     const contractData = {
+      dataProvider: 'provider',
+      dataConsumer: 'consumer',
+      serviceOffering: 'offering',
       '@context': 'http://www.w3.org/ns/odrl/2/',
       '@type': 'Offer',
       permission: [

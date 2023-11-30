@@ -56,7 +56,6 @@ export const checkFieldsMatching = (a: any, b: any) => {
   };
 };
 
-// Todo: missing replacement
 export const replaceValues = (obj: any, replacements: any) => {
   for (const key in obj) {
     if (obj.hasOwnProperty(key)) {

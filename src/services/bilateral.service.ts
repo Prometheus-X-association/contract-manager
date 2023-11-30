@@ -10,6 +10,7 @@ import { checkFieldsMatching, replaceValues } from 'utils/utils';
 import pdp from './policy/pdp.service';
 import { logger } from 'utils/logger';
 import { IDataRegistry, IDataRegistryDB } from 'interfaces/global.interface';
+import { genPolicyFromRule } from './policy/utils';
 
 // Bilateral Contract Service
 export class BilateralContractService {
@@ -69,6 +70,19 @@ export class BilateralContractService {
     contractData: IBilateralContract,
   ): Promise<IBilateralContract> {
     try {
+      if (
+        !contractData.dataProvider ||
+        !contractData.dataConsumer ||
+        !contractData.serviceOffering
+      ) {
+        throw new Error(
+          `Missing required fields: ${
+            !contractData.dataProvider ? 'dataProvider ' : ''
+          }${!contractData.dataConsumer ? 'dataConsumer ' : ''}${
+            !contractData.serviceOffering ? 'serviceOffering' : ''
+          }`,
+        );
+      }
       // Validate the contract input data against the contract model
       // await this.isValid(contractData);
       // Generate the contrat after validation
@@ -228,18 +242,19 @@ export class BilateralContractService {
     sessionId: string,
   ): Promise<boolean> {
     try {
-      // Retrieve contract data by ID
       const contract = await BilateralContract.findById(contractId);
-      if (!contract) {
-        // Contract not found
+      if (!contract || !contract.policy) {
         return false;
       }
       const { permission, prohibition } = data.policy;
       return pdp.isAuthorised(
         {
-          permission: [...(contract.permission || []), ...(permission || [])],
+          permission: [
+            ...contract.policy.map((p) => p.permission),
+            ...(permission || []),
+          ],
           prohibition: [
-            ...(contract.prohibition || []),
+            ...contract.policy.map((p) => p.prohibition),
             ...(prohibition || []),
           ],
         },
@@ -354,20 +369,20 @@ export class BilateralContractService {
       if (!contract) {
         throw new Error('Contract not found');
       }
-      const rule = await Rule.findById(ruleId).lean();
-      if (!rule) {
-        throw new Error(`Rule with id ${ruleId} not found`);
-      }
-      replaceValues(rule.policy, replacement);
-      if (rule.policy.permission) {
-        for (const permission of rule.policy.permission) {
-          contract.permission.push(permission);
-        }
-      }
-      if (rule.policy.prohibition) {
-        for (const prohibition of rule.policy.prohibition) {
-          contract.prohibition.push(prohibition);
-        }
+      const policy = await genPolicyFromRule(replacement);
+      const index = contract.policy.findIndex((entry) => entry.uid === ruleId);
+      if (index !== -1) {
+        const contractPolicy = contract.policy[index];
+        contractPolicy.description = policy.description;
+        contractPolicy.permission = policy.permission || [];
+        contractPolicy.prohibition = policy.prohibition || [];
+      } else {
+        contract.policy.push({
+          ruleId,
+          description: policy.description,
+          permission: policy.permission || [],
+          prohibition: policy.prohibition || [],
+        });
       }
       const updatedContract = await contract.save();
       return updatedContract;

@@ -13,6 +13,8 @@ import swaggerJson from './swagger/swagger.json';
 import session from 'express-session';
 import createMemoryStore from 'memorystore';
 import { config } from 'config/config';
+import path from 'path';
+
 const router = express();
 
 const startServer = async (url: string) => {
@@ -46,14 +48,19 @@ const startServer = async (url: string) => {
     );
     next();
   });
-  // swagger
   router.use(
-    '/api-docs',
-    swaggerUi.serve,
+    '/rules',
+    express.static(path.join(__dirname, '..', 'public/rules')),
+  );
+  // swagger
+  router.use('/api-docs', swaggerUi.serve, (req: any, res: any, next: any) => {
+    const baseUrl = `${req.get('host')}`;
+    swaggerJson.host = baseUrl;
     swaggerUi.setup(swaggerJson, {
       customCss: '.swagger-ui .models { display: none }',
-    }),
-  );
+    })(req, res, next);
+  });
+
   router.get('/is-it-alive', (req, res, next) => {
     res.json({ message: 'yes it is!' });
   });

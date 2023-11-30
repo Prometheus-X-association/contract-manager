@@ -1,6 +1,13 @@
-import { IAuthorisationPolicy, ICondition } from 'interfaces/policy.interface';
+import {
+  IAuthorisationPolicy,
+  ICondition,
+  IPolicyInjection,
+} from 'interfaces/policy.interface';
 import { logger } from 'utils/logger';
 import { PDPAction } from 'interfaces/policy.interface';
+import { replaceValues } from 'utils/utils';
+import axios from 'axios';
+import { config } from 'config/config';
 
 // temporary odrl policy schema to put in data base
 const operators: any = Object.freeze({
@@ -167,4 +174,30 @@ export const mergeConditions = (
   }) as IAuthorisationPolicy[];
 
   return mergedAuthorisations;
+};
+
+export const genPolicyFromRule = async (
+  injection: IPolicyInjection,
+): Promise<any> => {
+  try {
+    const ruleId = injection.ruleId;
+    const replacement = injection.values;
+    const catalogUrl = config.catalog.registry.url.replace(/\/$/, '');
+    const ruleUrl = `${catalogUrl}/${ruleId}.json`;
+    const response = await axios.get(ruleUrl);
+    const rule = response.data;
+    replaceValues(rule.policy, replacement);
+    rule.policy.description =
+      rule.description &&
+      Array.isArray(rule.description) &&
+      rule.description.length > 0
+        ? rule.description[0]['@value']
+        : typeof rule.description === 'string'
+        ? rule.description
+        : '';
+    return rule.policy;
+  } catch (error: any) {
+    const message = `[contract/genPolicyFromRule] ${error.message} url: ${error.response}`;
+    throw new Error(message);
+  }
 };
