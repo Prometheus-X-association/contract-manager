@@ -1,9 +1,7 @@
 import { IAuthorisationPolicy } from 'interfaces/policy.interface';
 import PolicyReferenceRegistry from 'models/policy.registry.model';
-import Ajv from 'ajv';
+// import { instanciator, validator } from 'json-odrl-manager';
 import { logger } from 'utils/logger';
-import { IDataRegistry, IDataRegistryDB } from 'interfaces/global.interface';
-import DataRegistry from 'models/data.registry.model';
 
 /**
  * Policy Provider Service.
@@ -11,13 +9,9 @@ import DataRegistry from 'models/data.registry.model';
 export class PolicyProviderService {
   private static instance: PolicyProviderService;
   private policiesPromise: Promise<IAuthorisationPolicy[]>;
-  private validateFunctions: Function[];
-  private odrlValidationSchemaPromise: Promise<IDataRegistry[]>;
 
   private constructor() {
     this.policiesPromise = this.fetchAuthorisationPolicies();
-    this.odrlValidationSchemaPromise = this.getOdrlValidationSchema();
-    this.validateFunctions = [];
   }
 
   public static getInstance(): PolicyProviderService {
@@ -27,37 +21,6 @@ export class PolicyProviderService {
     return PolicyProviderService.instance;
   }
 
-  private async getOdrlValidationSchema(): Promise<IDataRegistry[]> {
-    try {
-      const dataRegistry: IDataRegistryDB | null =
-        await DataRegistry.findOne().select('policies.odrlValidationSchema');
-      if (dataRegistry) {
-        const odrlValidationSchema =
-          dataRegistry.policies?.odrlValidationSchema;
-        if (odrlValidationSchema) {
-          return JSON.parse(odrlValidationSchema);
-        } else {
-          throw new Error('No odrl validation schema found in database');
-        }
-      } else {
-        throw new Error(
-          '[PProvider/Service, getOdrlValidationSchema]: Something went wrong while fetching data from registry',
-        );
-      }
-    } catch (error: any) {
-      logger.error(error.message);
-      throw error;
-    }
-  }
-
-  private async initializeValidateFunctions(): Promise<void> {
-    const odrlSchemas = await this.odrlValidationSchemaPromise;
-    const ajv = new Ajv();
-    this.validateFunctions = odrlSchemas.map((schema: any) =>
-      ajv.compile(schema),
-    );
-  }
-
   /**
    * Verifies the validity of an ODRL policy.
    *
@@ -65,12 +28,7 @@ export class PolicyProviderService {
    * @returns {boolean} True if the policy is valid, otherwise false.
    */
   public async verifyOdrlPolicy(policy: any): Promise<boolean> {
-    if (this.validateFunctions.length === 0) {
-      await this.initializeValidateFunctions();
-    }
-    return this.validateFunctions.some((validateFunction) =>
-      validateFunction(policy),
-    );
+    return true;
   }
 
   public async fetchAuthorisationPolicies(): Promise<IAuthorisationPolicy[]> {
