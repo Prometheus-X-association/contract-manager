@@ -237,24 +237,6 @@ export const getODRLContract = async (req: Request, res: Response) => {
   }
 };
 
-export const injectPolicies = async (
-  req: Request,
-  res: Response,
-): Promise<void> => {
-  try {
-    const contractId: string = req.params.id;
-    const updatedContract = await bilateralContractService.addPolicies(
-      contractId,
-      req.body,
-    );
-    res.status(200).json({ contract: updatedContract });
-  } catch (error) {
-    logger.error('Error while injecting policy:', error);
-    const message = (error as Error).message;
-    res.status(500).json({ error: message });
-  }
-};
-
 export const injectPolicy = async (
   req: Request,
   res: Response,
