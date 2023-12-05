@@ -7,10 +7,10 @@ import {
   checkDataExploitation,
   getContracts,
   getContractsFor,
-  // getContractsByStatus,
   revokeContractSignature,
   addContractNegociator,
   injectPolicy,
+  injectPolicies,
 } from '../controllers/bilateral.controller';
 
 const router: Router = express.Router();
@@ -35,5 +35,6 @@ router.delete('/bilaterals/sign/revoke/:id/:did', revokeContractSignature);
 router.post('/bilaterals/check-exploitability/:id', checkDataExploitation);
 
 router.post('/bilaterals/policy/:id', injectPolicy);
+router.post('/bilaterals/policies/:id', injectPolicies);
 
 export default router;
