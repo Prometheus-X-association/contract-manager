@@ -75,6 +75,24 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
     contractId = response.body._id;
   });
 
+  /*
+  it('Should get "No Restriction" policy id', async () => {
+    _logYellow('\n-Get policies named "No Restriction".');
+    const policyName = 'No Restriction';
+    const response = await supertest(app.router)
+      .get(`/pap/policies/${policyName}`)
+      .set('Cookie', cookie)
+      .set('Authorization', `Bearer ${authToken}`);
+    _logGreen('The result of the request:');
+    expect(response.status).to.equal(200);
+    _logObject(response.body);
+    expect(response.body).to.be.an('array');
+    expect(response.body).to.not.be.empty;
+    expect(response.body[0]).to.have.property('_id').that.is.a('string');
+    ruleId = response.body[0]._id;
+  });
+  */
+
   it('Should inject a policy', async () => {
     _logYellow('\n-Inject a policy for resource access.');
     const role = 'ecosystem';

@@ -11,7 +11,6 @@ import pdp from './policy/pdp.service';
 import { logger } from 'utils/logger';
 import { IDataRegistry, IDataRegistryDB } from 'interfaces/global.interface';
 import { genPolicyFromRule } from './policy/utils';
-import { IPolicyInjection } from 'interfaces/policy.interface';
 
 // Bilateral Contract Service
 export class BilateralContractService {
@@ -360,57 +359,17 @@ export class BilateralContractService {
     }
   }
   //
-  public async addPolicies(
-    contractId: string,
-    injections: IPolicyInjection[],
-  ): Promise<IBilateralContractDB | null> {
-    try {
-      const contract = await BilateralContract.findById(contractId);
-      if (!contract) {
-        throw new Error('Contract not found');
-      }
-      for (const injection of injections) {
-        try {
-          const { ruleId } = injection;
-          const policy = await genPolicyFromRule(injection);
-          const index = contract.policy.findIndex(
-            (entry) => entry.uid === ruleId,
-          );
-          if (index !== -1) {
-            const contractPolicy = contract.policy[index];
-            contractPolicy.description = policy.description;
-            contractPolicy.permission = policy.permission || [];
-            contractPolicy.prohibition = policy.prohibition || [];
-          } else {
-            contract.policy.push({
-              ruleId,
-              description: policy.description,
-              permission: policy.permission || [],
-              prohibition: policy.prohibition || [],
-            });
-          }
-        } catch (error: any) {
-          console.error(`Error injecting policy: ${error.message}`);
-        }
-      }
-      const updatedContract = await contract.save();
-      return updatedContract;
-    } catch (error: any) {
-      throw error;
-    }
-  }
-  //
   public async addPolicyFromId(
     contractId: string,
     ruleId: string,
-    values?: any,
+    replacement?: any,
   ): Promise<IBilateralContractDB | null> {
     try {
       const contract = await BilateralContract.findById(contractId);
       if (!contract) {
         throw new Error('Contract not found');
       }
-      const policy = await genPolicyFromRule(values);
+      const policy = await genPolicyFromRule(replacement);
       const index = contract.policy.findIndex((entry) => entry.uid === ruleId);
       if (index !== -1) {
         const contractPolicy = contract.policy[index];
