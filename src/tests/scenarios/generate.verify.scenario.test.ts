@@ -92,7 +92,7 @@ describe('Scenario creating an ecosystem contract and verify a policy', () => {
     _logYellow('\n-Verify the odrl format of the user policy');
     policy = {
       '@context': 'http://www.w3.org/ns/odrl/2/',
-      '@type': 'authorisation',
+      '@type': 'Set',
       permission: [
         {
           action: 'read',

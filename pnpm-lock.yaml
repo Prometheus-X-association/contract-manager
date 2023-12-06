@@ -26,6 +26,9 @@ dependencies:
   express-session:
     specifier: ^1.17.3
     version: 1.17.3
+  json-odrl-manager:
+    specifier: github:Prometheus-X-association/odrl-manager
+    version: github.com/Prometheus-X-association/odrl-manager/d7ce42a0fb16378e061b6f22de8b9c6b57197586
   jsonwebtoken:
     specifier: ^9.0.2
     version: 9.0.2
@@ -3116,4 +3119,12 @@ packages:
       validator: 13.11.0
     optionalDependencies:
       commander: 9.5.0
+    dev: false
+
+  github.com/Prometheus-X-association/odrl-manager/d7ce42a0fb16378e061b6f22de8b9c6b57197586:
+    resolution: {tarball: https://codeload.github.com/Prometheus-X-association/odrl-manager/tar.gz/d7ce42a0fb16378e061b6f22de8b9c6b57197586}
+    name: json-odrl-manager
+    version: 1.0.0
+    engines: {node: '>=18.15.0 <18.18.0'}
+    requiresBuild: true
     dev: false
