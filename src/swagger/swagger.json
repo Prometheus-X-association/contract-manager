@@ -295,6 +295,68 @@
         }
       }
     },
+    "/bilaterals/policies/{id}": {
+      "post": {
+        "tags": [
+          "Bilateral"
+        ],
+        "summary": "Inject multiple policies into a contract",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID of the contract"
+          },
+          {
+            "name": "policies",
+            "in": "body",
+            "description": "Array of policy data.",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "array"
+                },
+                "items": {
+                  "$ref": "#/definitions/PolicyBilateralInjection"
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Policies successfully injected",
+            "schema": {
+              "$ref": "#/definitions/Bilateral"
+            }
+          },
+          "400": {
+            "description": "Bad request, invalid data.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Contract not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/contracts/all/": {
       "get": {
         "tags": [
@@ -1622,6 +1684,239 @@
         }
       }
     },
+    "Bilateral": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "object"
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "uid": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            },
+            "dataProvider": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            },
+            "dataConsumer": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            },
+            "serviceOffering": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            },
+            "profile": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            },
+            "policy": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "array"
+                }
+              }
+            },
+            "purpose": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "array"
+                }
+              }
+            },
+            "signatures": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "array"
+                }
+              }
+            },
+            "revokedSignatures": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "array"
+                }
+              }
+            },
+            "negotiators": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "array"
+                },
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "object"
+                    },
+                    "properties": {
+                      "type": "object",
+                      "properties": {
+                        "did": {
+                          "type": "object",
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "example": "string"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "status": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "enum": {
+                  "type": "array",
+                  "example": [
+                    "signed",
+                    "revoked",
+                    "under_negotiation",
+                    "pending"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "default": {
+                  "type": "string",
+                  "example": "pending"
+                }
+              }
+            },
+            "terminationAndValidity": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "object"
+                },
+                "properties": {
+                  "type": "object",
+                  "properties": {
+                    "effectiveDate": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "string"
+                        },
+                        "format": {
+                          "type": "string",
+                          "example": "date-time"
+                        }
+                      }
+                    },
+                    "terminationPeriod": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "string"
+                        },
+                        "format": {
+                          "type": "string",
+                          "example": "date-time"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "limitationOfLiability": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "format": {
+                  "type": "string",
+                  "example": "date-time"
+                }
+              }
+            },
+            "termsAndConditions": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            },
+            "jsonLD": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "string"
+                }
+              }
+            }
+          }
+        },
+        "required": {
+          "type": "array",
+          "example": [
+            "dataProvider",
+            "dataConsumer"
+          ],
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "Contract": {
       "type": "object",
       "properties": {
@@ -1735,6 +2030,24 @@
     "ODRLContract": {
       "type": "object",
       "properties": {}
+    },
+    "PolicyBilateralInjection": {
+      "type": "object",
+      "properties": {
+        "ruleId": {
+          "type": "string",
+          "example": "string"
+        },
+        "values": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "example": "object"
+            }
+          }
+        }
+      }
     },
     "PolicyInjection": {
       "type": "object",

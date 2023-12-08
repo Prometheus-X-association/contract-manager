@@ -1,6 +1,6 @@
 import { IAuthorisationPolicy } from 'interfaces/policy.interface';
 import PolicyReferenceRegistry from 'models/policy.registry.model';
-// import { instanciator, validator } from 'json-odrl-manager';
+import { instanciator } from 'json-odrl-manager';
 import { logger } from 'utils/logger';
 
 /**
@@ -28,7 +28,17 @@ export class PolicyProviderService {
    * @returns {boolean} True if the policy is valid, otherwise false.
    */
   public async verifyOdrlPolicy(policy: any): Promise<boolean> {
-    return true;
+    try {
+      instanciator.genPolicyFrom(policy);
+      if (instanciator.policy) {
+        const isValid = await instanciator.policy?.launchValidation();
+        return isValid;
+      }
+      return false;
+    } catch (error) {
+      console.error('Error verifying ODRL policy:', error);
+      return false;
+    }
   }
 
   public async fetchAuthorisationPolicies(): Promise<IAuthorisationPolicy[]> {

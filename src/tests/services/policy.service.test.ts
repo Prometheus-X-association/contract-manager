@@ -82,7 +82,7 @@ describe('genPolicies', () => {
           {
             leftOperand: 'machineReadable',
             operator: 'eq',
-            rightOperand: { '@value': 'true', '@type': 'xsd:boolean' },
+            rightOperand: true,
           },
         ],
       },
@@ -136,7 +136,7 @@ describe('genPolicies', () => {
             {
               leftOperand: 'userIsRegistered',
               operator: 'eq',
-              rightOperand: { '@value': 'true', '@type': 'xsd:boolean' },
+              rightOperand: true,
             },
           ],
         },
@@ -147,7 +147,7 @@ describe('genPolicies', () => {
             {
               leftOperand: 'userCanRemove',
               operator: 'eq',
-              rightOperand: { '@value': 'true', '@type': 'xsd:boolean' },
+              rightOperand: true,
             },
           ],
         },

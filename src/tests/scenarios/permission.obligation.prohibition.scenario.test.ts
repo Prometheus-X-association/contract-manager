@@ -103,7 +103,7 @@ describe('Scenario creating an ecosystem contract\n\tthen process an input polic
   it('should process the user policy hover the contract', async () => {
     const policy = {
       '@context': 'http://www.w3.org/ns/odrl/2/',
-      '@type': 'authorisation',
+      '@type': 'Set',
       permission: [
         {
           action: 'read',

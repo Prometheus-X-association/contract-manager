@@ -1,5 +1,45 @@
 import { config } from 'config/config';
 import swaggerAutogen from 'swagger-autogen';
+const bilateralContractModel = {
+  type: 'object',
+  properties: {
+    uid: { type: 'string' },
+    dataProvider: { type: 'string' },
+    dataConsumer: { type: 'string' },
+    serviceOffering: { type: 'string' },
+    profile: { type: 'string' },
+    policy: { type: 'array' },
+    purpose: { type: 'array' },
+    signatures: { type: 'array' },
+    revokedSignatures: { type: 'array' },
+    negotiators: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          did: { type: 'string' },
+        },
+      },
+    },
+    status: {
+      type: 'string',
+      enum: ['signed', 'revoked', 'under_negotiation', 'pending'],
+      default: 'pending',
+    },
+    terminationAndValidity: {
+      type: 'object',
+      properties: {
+        effectiveDate: { type: 'string', format: 'date-time' },
+        terminationPeriod: { type: 'string', format: 'date-time' },
+      },
+    },
+    limitationOfLiability: { type: 'string', format: 'date-time' },
+    termsAndConditions: { type: 'string' },
+    jsonLD: { type: 'string' },
+  },
+  required: ['dataProvider', 'dataConsumer'],
+};
+
 const contractModel = {
   type: 'object',
   properties: {
@@ -63,8 +103,13 @@ const doc = {
       prohibition: { type: 'array', items: { $ref: '#/definitions/Asset' } },
       required: ['ecosystem'],
     },
+    Bilateral: bilateralContractModel,
     Contract: contractModel,
     ODRLContract: {},
+    PolicyBilateralInjection: {
+      ruleId: 'string',
+      values: { type: 'object' },
+    },
     PolicyInjection: {
       role: 'string',
       ruleId: 'string',
@@ -87,6 +132,7 @@ const endpointsFiles: string[] = [
   './pap.swagger.ts',
   './user.swagger.ts',
   './contract.swagger.ts',
+  './bilateral.swagger.ts',
 ];
 const swagger = swaggerAutogen();
 swagger(outputFile, endpointsFiles, doc);
