@@ -283,6 +283,62 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
     });
   });
 
+  it('Should inject an array of policies from a given offering id and\na list of injections information', async () => {
+    _logYellow('\n-Inject a set of policies.');
+    const serviceOffering = 'offering';
+    const data = {
+      serviceOffering,
+      policies: [
+        {
+          ruleId,
+          values: {
+            target: 'target-offering-a',
+          },
+        },
+        {
+          ruleId,
+          values: {
+            target: 'target-offering-b',
+          },
+        },
+        {
+          ruleId,
+          values: {
+            target: 'target-offering-c',
+          },
+        },
+      ],
+    };
+    _logGreen('The input policies information to be injected:');
+    _logObject(data);
+    const response = await supertest(app.router)
+      .post(`/contracts/policies/offering/${contractId}`)
+      .set('Cookie', cookie)
+      .set('Authorization', `Bearer ${authToken}`)
+      .send(data);
+    _logGreen('The new contract in database:');
+    _logObject(response.body);
+    expect(response.status).to.equal(200);
+    expect(response.body.contract).to.be.an('object');
+    const contract = response.body.contract;
+    const entry = contract.serviceOfferings.find(
+      (entry: any) => entry.serviceOffering === serviceOffering,
+    );
+    expect(entry).to.be.an('object');
+    expect(entry.policies).to.be.an('array');
+    expect(entry.policies.length).to.be.at.least(data.policies.length);
+    data.policies.forEach((policy) => {
+      const targetPermission = entry.policies.find(
+        (p: any) =>
+          p.permission &&
+          p.permission.some(
+            (permission: any) => permission.target === policy.values.target,
+          ),
+      );
+      expect(targetPermission).to.exist;
+    });
+  });
+
   it('Should iterate over an array, injecting policies for a specified list of roles.', async () => {
     _logYellow('\n-Inject a set of policies.');
     const data = [

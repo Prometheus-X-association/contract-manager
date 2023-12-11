@@ -1030,6 +1030,81 @@
         }
       }
     },
+    "/contracts/policies/offering/{id}": {
+      "post": {
+        "tags": [
+          "Contract"
+        ],
+        "summary": "Inject policies for an offering into a contract",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID of the contract"
+          },
+          {
+            "name": "policies",
+            "in": "body",
+            "description": "Array of policy data for a given role.",
+            "required": true,
+            "schema": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "object"
+                },
+                "serviceOffering": {
+                  "type": "string",
+                  "example": "string"
+                },
+                "policies": {
+                  "type": "object",
+                  "properties": {
+                    "type": {
+                      "type": "string",
+                      "example": "array"
+                    },
+                    "items": {
+                      "$ref": "#/definitions/PolicyRoleInjection"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Policies for role successfully injected",
+            "schema": {
+              "$ref": "#/definitions/Contract"
+            }
+          },
+          "400": {
+            "description": "Bad request, invalid data.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Contract not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/pap/policies/": {
       "post": {
         "tags": [

@@ -13,6 +13,7 @@ import {
   injectPolicies,
   injectPoliciesForRole,
   injectPoliciesForRoles,
+  injectOfferingPolicies,
 } from '../controllers/contract.controller';
 
 // Ecosystem Contract Routes
@@ -30,4 +31,5 @@ router.post('/contracts/policy/:id', injectPolicy);
 router.post('/contracts/policies/:id', injectPolicies);
 router.post('/contracts/policies/role/:id', injectPoliciesForRole);
 router.post('/contracts/policies/roles/:id', injectPoliciesForRoles);
+router.post('/contracts/policies/offering/:id', injectOfferingPolicies);
 export default router;

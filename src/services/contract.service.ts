@@ -526,7 +526,7 @@ export class ContractService {
 
   public async addOfferingPolicies(
     contractId: string,
-    offeringId: string,
+    serviceOffering: string,
     injections: IPolicyInjection[],
   ): Promise<IContractDB | null> {
     try {
@@ -534,16 +534,18 @@ export class ContractService {
       if (!contract) {
         throw new Error('Contract not found');
       }
-      const offeringIndex = contract.serviceOfferings.findIndex(
-        (entry) => entry.serviceOffering === offeringId,
+      let offeringIndex = contract.serviceOfferings.findIndex(
+        (entry) => entry.serviceOffering === serviceOffering,
       );
       if (offeringIndex === -1) {
         contract.serviceOfferings.push({
-          offering: offeringId,
+          serviceOffering: serviceOffering,
           policies: [],
         });
+        offeringIndex = contract.serviceOfferings.length - 1;
       }
-      const offering = contract.rolesAndObligations[offeringIndex];
+      const offering = contract.serviceOfferings[offeringIndex];
+      console.log(offering, '<<');
       for (const injection of injections) {
         try {
           const policy = await genPolicyFromRule(injection);

@@ -286,13 +286,22 @@ export const injectOfferingPolicies = async (
 ): Promise<void> => {
   try {
     const contractId: string = req.params.id;
-    const updatedContract = await contractService.addOfferingPolicies(
-      contractId,
-      req.body,
-    );
-    res.status(200).json({ contract: updatedContract });
+    const { serviceOffering, policies } = req.body;
+    if (contractId && serviceOffering && policies) {
+      const updatedContract = await contractService.addOfferingPolicies(
+        contractId,
+        serviceOffering,
+        policies,
+      );
+      res.status(200).json({ contract: updatedContract });
+    } else {
+      throw new Error('Invalid paylaod.');
+    }
   } catch (error) {
-    logger.error('Error while injecting offering policies:', error);
+    logger.error(
+      '[Contract/injectOfferingPolicies]: Error while injecting offering policies:',
+      error,
+    );
     const message = (error as Error).message;
     res.status(500).json({ error: message });
   }
