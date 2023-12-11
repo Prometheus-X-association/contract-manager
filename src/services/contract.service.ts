@@ -524,6 +524,45 @@ export class ContractService {
     }
   }
 
+  public async addOfferingPolicies(
+    contractId: string,
+    offeringId: string,
+    injections: IPolicyInjection[],
+  ): Promise<IContractDB | null> {
+    try {
+      const contract = await Contract.findById(contractId);
+      if (!contract) {
+        throw new Error('Contract not found');
+      }
+      const offeringIndex = contract.serviceOfferings.findIndex(
+        (entry) => entry.serviceOffering === offeringId,
+      );
+      if (offeringIndex === -1) {
+        contract.serviceOfferings.push({
+          offering: offeringId,
+          policies: [],
+        });
+      }
+      const offering = contract.rolesAndObligations[offeringIndex];
+      for (const injection of injections) {
+        try {
+          const policy = await genPolicyFromRule(injection);
+          offering.policies.push({
+            description: policy.description,
+            permission: policy.permission || [],
+            prohibition: policy.prohibition || [],
+          });
+        } catch (error) {
+          throw error;
+        }
+      }
+      const updatedContract = await contract.save();
+      return updatedContract;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
   private convertContract(contract: IContractDB): any {
     return {};
   }

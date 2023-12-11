@@ -33,6 +33,7 @@ export const getContract = async (req: Request, res: Response) => {
       .json({ error: 'An error occurred while retrieving the contract.' });
   }
 };
+
 export const updateContract = async (req: Request, res: Response) => {
   try {
     const contractId: string = req.params.id;
@@ -53,6 +54,7 @@ export const updateContract = async (req: Request, res: Response) => {
       .json({ error: 'An error occurred while updating the contract.' });
   }
 };
+
 export const deleteContract = async (req: Request, res: Response) => {
   try {
     const contractId: string = req.params.id;
@@ -66,6 +68,7 @@ export const deleteContract = async (req: Request, res: Response) => {
       .json({ error: 'An error occurred while deleting the contract.' });
   }
 };
+
 export const signContract = async (req: Request, res: Response) => {
   try {
     const contractId: string = req.params.id;
@@ -83,6 +86,7 @@ export const signContract = async (req: Request, res: Response) => {
       .json({ error: 'An error occurred while signing the contract.' });
   }
 };
+
 export const revokeContractSignature = async (req: Request, res: Response) => {
   const { id, did } = req.params;
   try {
@@ -99,6 +103,7 @@ export const revokeContractSignature = async (req: Request, res: Response) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 export const checkDataExploitation = async (req: Request, res: Response) => {
   const contractId = req.params.id;
   const data = { policy: req.body };
@@ -119,6 +124,7 @@ export const checkDataExploitation = async (req: Request, res: Response) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 export const checkExploitationByRole = async (req: Request, res: Response) => {
   const contractId = req.params.id;
   const role = req.params.role;
@@ -141,6 +147,7 @@ export const checkExploitationByRole = async (req: Request, res: Response) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 export const getContractsFor = async (
   req: Request,
   res: Response,
@@ -161,6 +168,7 @@ export const getContractsFor = async (
     res.status(500).json({ error: error.message });
   }
 };
+
 export const getContracts = async (
   req: Request,
   res: Response,
@@ -175,6 +183,7 @@ export const getContracts = async (
     res.status(500).json({ error: error.message });
   }
 };
+
 export const getODRLContract = async (req: Request, res: Response) => {
   try {
     const contractId: string = req.params.id;
@@ -191,6 +200,7 @@ export const getODRLContract = async (req: Request, res: Response) => {
       .json({ error: 'An error occurred while retrieving the ODRL contract.' });
   }
 };
+
 export const injectPoliciesForRoles = async (
   req: Request,
   res: Response,
@@ -203,11 +213,12 @@ export const injectPoliciesForRoles = async (
     );
     res.status(200).json({ contract: updatedContract });
   } catch (error) {
-    logger.error('Error while injecting policy:', error);
+    logger.error('Error while injecting policies:', error);
     const message = (error as Error).message;
     res.status(500).json({ error: message });
   }
 };
+
 export const injectPoliciesForRole = async (
   req: Request,
   res: Response,
@@ -220,11 +231,12 @@ export const injectPoliciesForRole = async (
     );
     res.status(200).json({ contract: updatedContract });
   } catch (error) {
-    logger.error('Error while injecting policy:', error);
+    logger.error('Error while injecting policies:', error);
     const message = (error as Error).message;
     res.status(500).json({ error: message });
   }
 };
+
 export const injectPolicies = async (
   req: Request,
   res: Response,
@@ -237,11 +249,12 @@ export const injectPolicies = async (
     );
     res.status(200).json({ contract: updatedContract });
   } catch (error) {
-    logger.error('Error while injecting policy:', error);
+    logger.error('Error while injecting policies:', error);
     const message = (error as Error).message;
     res.status(500).json({ error: message });
   }
 };
+
 export const injectPolicy = async (
   req: Request,
   res: Response,
@@ -262,6 +275,24 @@ export const injectPolicy = async (
     }
   } catch (error) {
     logger.error('Error while injecting policy:', error);
+    const message = (error as Error).message;
+    res.status(500).json({ error: message });
+  }
+};
+
+export const injectOfferingPolicies = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    const contractId: string = req.params.id;
+    const updatedContract = await contractService.addOfferingPolicies(
+      contractId,
+      req.body,
+    );
+    res.status(200).json({ contract: updatedContract });
+  } catch (error) {
+    logger.error('Error while injecting offering policies:', error);
     const message = (error as Error).message;
     res.status(500).json({ error: message });
   }
