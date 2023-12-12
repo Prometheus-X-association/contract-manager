@@ -447,6 +447,7 @@
     required: true,
     schema: {
       type: 'object',
+      participant: 'string',
       serviceOffering: 'string',
       policies: {
         type: 'array',

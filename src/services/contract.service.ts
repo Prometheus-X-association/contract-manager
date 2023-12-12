@@ -527,6 +527,7 @@ export class ContractService {
   public async addOfferingPolicies(
     contractId: string,
     serviceOffering: string,
+    participant: string,
     injections: IPolicyInjection[],
   ): Promise<IContractDB | null> {
     try {
@@ -539,13 +540,13 @@ export class ContractService {
       );
       if (offeringIndex === -1) {
         contract.serviceOfferings.push({
+          participant: participant,
           serviceOffering: serviceOffering,
           policies: [],
         });
         offeringIndex = contract.serviceOfferings.length - 1;
       }
       const offering = contract.serviceOfferings[offeringIndex];
-      console.log(offering, '<<');
       for (const injection of injections) {
         try {
           const policy = await genPolicyFromRule(injection);

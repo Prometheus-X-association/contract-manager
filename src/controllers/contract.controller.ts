@@ -286,11 +286,12 @@ export const injectOfferingPolicies = async (
 ): Promise<void> => {
   try {
     const contractId: string = req.params.id;
-    const { serviceOffering, policies } = req.body;
-    if (contractId && serviceOffering && policies) {
+    const { serviceOffering, policies, participant } = req.body;
+    if (contractId && serviceOffering && participant && policies) {
       const updatedContract = await contractService.addOfferingPolicies(
         contractId,
         serviceOffering,
+        participant,
         policies,
       );
       res.status(200).json({ contract: updatedContract });

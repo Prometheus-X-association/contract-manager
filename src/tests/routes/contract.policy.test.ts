@@ -285,8 +285,10 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
 
   it('Should inject an array of policies from a given offering id and\na list of injections information', async () => {
     _logYellow('\n-Inject a set of policies.');
+    const participant = 'participant';
     const serviceOffering = 'offering';
     const data = {
+      participant,
       serviceOffering,
       policies: [
         {

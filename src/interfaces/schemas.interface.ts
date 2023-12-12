@@ -478,6 +478,7 @@ export type ContractServiceOfferingPolicie = {
  * ```
  */
 export type ContractServiceOffering = {
+  participant: string;
   serviceOffering: string;
   policies: ContractServiceOfferingPolicie[];
   _id: mongoose.Types.ObjectId;
@@ -780,6 +781,7 @@ export type ContractServiceOfferingPolicieDocument =
  * Type of `ContractDocument["serviceOfferings"]` element.
  */
 export type ContractServiceOfferingDocument = mongoose.Types.Subdocument & {
+  participant: string;
   serviceOffering: string;
   policies: mongoose.Types.DocumentArray<ContractServiceOfferingPolicieDocument>;
   _id: mongoose.Types.ObjectId;

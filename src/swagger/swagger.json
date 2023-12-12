@@ -1057,6 +1057,10 @@
                   "type": "string",
                   "example": "object"
                 },
+                "participant": {
+                  "type": "string",
+                  "example": "string"
+                },
                 "serviceOffering": {
                   "type": "string",
                   "example": "string"
