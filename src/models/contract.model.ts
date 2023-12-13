@@ -68,6 +68,11 @@ const PolicySchema = new Schema(
   },
   { _id: false },
 );
+const OfferingSchema = new Schema({
+  participant: { type: String, required: true },
+  serviceOffering: { type: String, required: true },
+  policies: [PolicySchema],
+});
 
 // Contract mongoose schema
 const ContractSchema: Schema = new Schema(
@@ -76,6 +81,7 @@ const ContractSchema: Schema = new Schema(
     profile: String,
     ecosystem: String,
     orchestrator: String,
+    serviceOfferings: [OfferingSchema],
     rolesAndObligations: [{ role: String, policies: [PolicySchema] }],
     purpose: [PurposeSchema],
     members: [MemberSchema],
