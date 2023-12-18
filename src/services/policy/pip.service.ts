@@ -110,11 +110,6 @@ export class PIPService {
   ): IAuthorisationPolicy[] {
     // Filter the user policies to include only those relevant to the current target resource URL.
     // Retains policies where the 'subject' property matches the base URL of the current request.
-
-    /*
-    const original = urlToOriginal(req.baseUrl + req.path, req.params);
-    const subject = original.replace(/\/$/g, '');
-    */
     const subject = `/${req.originalUrl.replace(/\/$/, '').split('/')[1]}`;
     return policies.filter((policy) => {
       return (

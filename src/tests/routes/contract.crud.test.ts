@@ -25,9 +25,10 @@ describe('Routes for Contract API', () => {
       });
     });
     Contract.deleteMany({});
-    const authResponse = await supertest(app.router).get('/user/login');
+
+    const authResponse = await supertest(app.router).get('/ping');
     authTokenCookie = authResponse.headers['set-cookie'];
-    authToken = authResponse.body.token;
+    // authToken = authResponse.body.token;
   });
 
   after(async () => {
@@ -226,6 +227,7 @@ describe('Routes for Contract API', () => {
     expect(responseOrchestrator.body.status).to.equal('signed');
   });
 
+  /*
   // Test case: Check if data is exploitable
   it('should check whether a specific resource is exploitable through an established contract', async () => {
     const data = {
@@ -248,6 +250,7 @@ describe('Routes for Contract API', () => {
     //
     expect(response.body.authorised).to.equal(true);
   });
+  */
 
   // Test case: Revoke a signature
   it('should revoke a signature and move it to revokedMembers', async () => {

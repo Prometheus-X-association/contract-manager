@@ -248,7 +248,7 @@ export class BilateralContractService {
         return false;
       }
       const { permission, prohibition } = data.policy;
-      return pdp.isAuthorised(
+      return await pdp.isAuthorised(
         {
           permission: [
             ...contract.policy.map((p) => p.permission),
@@ -260,6 +260,7 @@ export class BilateralContractService {
           ],
         },
         sessionId,
+        data.policy,
       );
     } catch (error) {
       throw error;

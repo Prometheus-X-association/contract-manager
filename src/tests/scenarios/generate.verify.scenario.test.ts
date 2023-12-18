@@ -31,13 +31,13 @@ describe('Scenario creating an ecosystem contract and verify a policy', () => {
     await Contract.deleteMany({});
   });
 
-  it('should log the user', async () => {
-    _logYellow('\n-Login the user');
-    const authResponse = await supertest(app.router).get('/user/login');
+  it('Should ping the server', async () => {
+    _logYellow('\n-Ping the server');
+    const authResponse = await supertest(app.router).get('/ping');
     cookie = authResponse.headers['set-cookie'];
-    authToken = authResponse.body.token;
-    _logGreen('Authentication token:');
-    _logObject(authResponse.body);
+    // authToken = authResponse.body.token;
+    // _logGreen('Authentication token:');
+    // _logObject(authResponse.body);
     _logGreen('Cookies:');
     _logObject(cookie);
     expect(authResponse.status).to.equal(200);

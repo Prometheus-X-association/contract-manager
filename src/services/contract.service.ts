@@ -1,13 +1,13 @@
 import { IContract, IContractDB } from 'interfaces/contract.interface';
 import Contract from 'models/contract.model';
 import DataRegistry from 'models/data.registry.model';
-import { checkFieldsMatching, replaceValues } from 'utils/utils';
-import pdp from './policy/pdp.service';
+import { checkFieldsMatching } from 'utils/utils';
 import { logger } from 'utils/logger';
 import { ContractMember } from 'interfaces/schemas.interface';
 import { IDataRegistry, IDataRegistryDB } from 'interfaces/global.interface';
-import { IContractPolicy, IPolicyInjection } from 'interfaces/policy.interface';
+import { IPolicyInjection } from 'interfaces/policy.interface';
 import { genPolicyFromRule } from './policy/utils';
+import pdp from 'services/policy/pdp.service';
 
 // Ecosystem Contract Service
 export class ContractService {
@@ -214,43 +214,6 @@ export class ContractService {
       throw error;
     }
   }
-  //
-  public async checkPermission(
-    contractId: string,
-    data: any,
-    sessionId: string,
-  ): Promise<boolean> {
-    try {
-      const contract = await Contract.findById(contractId);
-      if (!contract) {
-        return false;
-      }
-      const rao = contract.rolesAndObligations.find(
-        (entry) => entry.role === 'ecosystem',
-      );
-      if (!rao || !rao.policies) {
-        return false;
-      }
-      const mergedPolicy = rao.policies.reduce(
-        (acc, policy) => {
-          acc.permission.push(...(policy.permission || []));
-          acc.prohibition.push(...(policy.prohibition || []));
-          return acc;
-        },
-        { permission: [], prohibition: [] } as IContractPolicy,
-      );
-      const { permission, prohibition } = data.policy;
-      return pdp.isAuthorised(
-        {
-          permission: [...mergedPolicy.permission, ...(permission || [])],
-          prohibition: [...mergedPolicy.prohibition, ...(prohibition || [])],
-        },
-        sessionId,
-      );
-    } catch (error) {
-      throw error;
-    }
-  }
 
   public async checkExploitationByRole(
     contractId: string,
@@ -275,7 +238,11 @@ export class ContractService {
       const prohibition = rao.policies
         .flatMap((policy) => policy.prohibition || [])
         .concat(data.policy?.prohibition || []);
-      return pdp.isAuthorised({ permission, prohibition }, sessionId);
+      return await pdp.isAuthorised(
+        { permission, prohibition },
+        sessionId,
+        data.policy,
+      );
     } catch (error) {
       throw error;
     }

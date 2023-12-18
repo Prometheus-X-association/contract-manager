@@ -20,9 +20,10 @@ describe('Routes for policies managment Contract API', () => {
         resolve(true);
       });
     });
-    const authResponse = await supertest(app.router).get('/user/login');
+
+    const authResponse = await supertest(app.router).get('/ping');
     authTokenCookie = authResponse.headers['set-cookie'];
-    authToken = authResponse.body.token;
+    // authToken = authResponse.body.token;
   });
 
   after(async () => {
