@@ -234,7 +234,7 @@
 // #swagger.start
 /*
   #swagger.tags = ['Contract']
-  #swagger.path = '/contracts/check-exploitability/{id}'
+  #swagger.path = '/contracts/role/check-exploitability/{id}'
   #swagger.method = 'post'
   #swagger.summary = 'Check data exploitability for a contract'
   #swagger.parameters['id'] = {

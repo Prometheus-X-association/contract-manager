@@ -1,10 +1,7 @@
 import { IContract, IContractDB } from 'interfaces/contract.interface';
 import Contract from 'models/contract.model';
-import DataRegistry from 'models/data.registry.model';
-import { checkFieldsMatching } from 'utils/utils';
 import { logger } from 'utils/logger';
 import { ContractMember } from 'interfaces/schemas.interface';
-import { IDataRegistry, IDataRegistryDB } from 'interfaces/global.interface';
 import { IPolicyInjection } from 'interfaces/policy.interface';
 import { genPolicyFromRule } from './policy/utils';
 import pdp from 'services/policy/pdp.service';
@@ -12,53 +9,14 @@ import pdp from 'services/policy/pdp.service';
 // Ecosystem Contract Service
 export class ContractService {
   private static instance: ContractService;
-  private contractModelPromise: Promise<IDataRegistry[]>;
 
-  private constructor() {
-    this.contractModelPromise = this.getContractModel();
-  }
+  private constructor() {}
 
   public static getInstance(): ContractService {
     if (!ContractService.instance) {
       ContractService.instance = new ContractService();
     }
     return ContractService.instance;
-  }
-
-  private async getContractModel(): Promise<IDataRegistry[]> {
-    try {
-      const dataRegistry: IDataRegistryDB | null =
-        await DataRegistry.findOne().select('contracts.ecosystem');
-      if (dataRegistry) {
-        const contractModel = dataRegistry.contracts?.ecosystem;
-        if (contractModel) {
-          return JSON.parse(contractModel);
-        } else {
-          throw new Error('No contract model found in database');
-        }
-      } else {
-        throw new Error(
-          '[Contract/Service, getContractModel]: Something went wrong while fetching data from registry',
-        );
-      }
-    } catch (error: any) {
-      logger.error(error.message);
-      throw error;
-    }
-  }
-
-  // Validate the contract input data against the contract model
-  public async isValid(contract: IContract): Promise<boolean> {
-    const contractModel = await this.contractModelPromise;
-    if (!contractModel) {
-      throw new Error('No contract model found.');
-    }
-    // Perform validation
-    const matching = checkFieldsMatching(contract, contractModel);
-    if (!matching.success) {
-      throw new Error(`${matching.field} is an invalid field.`);
-    }
-    return matching.success;
   }
 
   // Generate a contract based on the contract data

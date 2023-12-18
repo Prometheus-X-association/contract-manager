@@ -4,66 +4,22 @@ import {
 } from 'interfaces/contract.interface';
 import { BilateralContractSignature } from 'interfaces/schemas.interface';
 import BilateralContract from 'models/bilateral.model';
-import DataRegistry from 'models/data.registry.model';
-import Rule from 'models/rule.model';
-import { checkFieldsMatching, replaceValues } from 'utils/utils';
 import pdp from './policy/pdp.service';
 import { logger } from 'utils/logger';
-import { IDataRegistry, IDataRegistryDB } from 'interfaces/global.interface';
 import { genPolicyFromRule } from './policy/utils';
 import { IPolicyInjection } from 'interfaces/policy.interface';
 
 // Bilateral Contract Service
 export class BilateralContractService {
-  // private contractModel: any;
-  private contractModelPromise: Promise<IDataRegistry[]>;
   private static instance: BilateralContractService;
 
-  private constructor() {
-    this.contractModelPromise = this.getContractModel();
-  }
+  private constructor() {}
 
   public static getInstance(): BilateralContractService {
     if (!BilateralContractService.instance) {
       BilateralContractService.instance = new BilateralContractService();
     }
     return BilateralContractService.instance;
-  }
-
-  private async getContractModel(): Promise<IDataRegistry[]> {
-    try {
-      const dataRegistry: IDataRegistryDB | null =
-        await DataRegistry.findOne().select('contracts.bilateral');
-      if (dataRegistry) {
-        const contractModel = dataRegistry.contracts?.bilateral;
-        if (contractModel) {
-          return JSON.parse(contractModel);
-        } else {
-          throw new Error('No contract model found in database');
-        }
-      } else {
-        throw new Error(
-          '[Bilateral/Service, getContractModel]: Something went wrong while fetching data from registry',
-        );
-      }
-    } catch (error: any) {
-      logger.error(error.message);
-      throw error;
-    }
-  }
-
-  // Validate the contract input data against the contract model
-  public async isValid(contract: IBilateralContract): Promise<boolean> {
-    const contractModel = await this.contractModelPromise;
-    if (!contractModel) {
-      throw new Error('No contract model found.');
-    }
-    // Perform validation
-    const matching = checkFieldsMatching(contract, contractModel);
-    if (!matching.success) {
-      throw new Error(`${matching.field} is an invalid field.`);
-    }
-    return matching.success;
   }
 
   // Generate a contract based on the contract data

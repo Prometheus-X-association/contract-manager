@@ -4,7 +4,6 @@ import mongoose from 'mongoose';
 import contractRoutes from 'routes/contract.routes';
 import bilateralContractRoutes from 'routes/bilateral.routes';
 import userRoutes from 'routes/user.routes';
-import papRoutes from 'routes/pap.routes';
 import { logger } from 'utils/logger';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJson from './swagger/swagger.json';
@@ -77,13 +76,7 @@ const startServer = async (url: string) => {
     }
     next();
   });
-  router.use(
-    '/',
-    userRoutes,
-    contractRoutes,
-    bilateralContractRoutes,
-    papRoutes,
-  );
+  router.use('/', userRoutes, contractRoutes, bilateralContractRoutes);
   router.use((req, res, next) => {
     const message = 'Route not found or incorrect method request!';
     const { method, url } = req;
