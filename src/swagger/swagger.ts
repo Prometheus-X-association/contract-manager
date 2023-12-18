@@ -129,7 +129,6 @@ const doc = {
 const outputFile: string = './swagger.json';
 const endpointsFiles: string[] = [
   '../routes/**/*.ts',
-  './pap.swagger.ts',
   './user.swagger.ts',
   './contract.swagger.ts',
   './bilateral.swagger.ts',

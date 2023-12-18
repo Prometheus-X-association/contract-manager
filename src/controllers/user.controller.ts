@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import repository from 'services/data.repository.service';
+import repository from 'services/store.service';
 
 export const storeUserData = async (req: Request, res: Response) => {
   try {

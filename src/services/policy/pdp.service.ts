@@ -1,11 +1,11 @@
-import { IAuthorisationPolicy, IPolicySet } from 'interfaces/policy.interface';
+import { IPolicySet } from 'interfaces/policy.interface';
 import {
   instanciator,
   evaluator,
   ContextFetcher,
   Custom,
 } from 'json-odrl-manager';
-import repository from 'services/data.repository.service';
+import repository from 'services/store.service';
 import { logger } from 'utils/logger';
 class PDPFetcher extends ContextFetcher {
   constructor() {
@@ -31,18 +31,6 @@ class PDPService {
       PDPService.instance = new PDPService();
     }
     return PDPService.instance;
-  }
-
-  public pushReferencePolicies(
-    policies: IAuthorisationPolicy[],
-    options: any = { build: true, deny: false },
-  ): void {}
-
-  public evalPolicy(
-    policy: IAuthorisationPolicy,
-    cannot: boolean = false,
-  ): boolean {
-    return false;
   }
 
   public async isAuthorised(
