@@ -5,7 +5,6 @@ import Contract from 'models/contract.model';
 import { config } from 'config/config';
 
 let cookie: any;
-let policy: any;
 let contractId: any;
 const SERVER_PORT = 9999;
 
@@ -66,7 +65,7 @@ describe('Scenario creating an ecosystem contract and verify a policy', () => {
           target: 'http://contract-target',
           constraint: [
             {
-              leftOperand: 'user:age',
+              leftOperand: 'age',
               operator: 'gt',
               rightOperand: 17,
             },
@@ -80,7 +79,7 @@ describe('Scenario creating an ecosystem contract and verify a policy', () => {
       .post('/contracts/')
       .set('Cookie', cookie)
       .set('Authorization', `Bearer ${authToken}`)
-      .send(contract);
+      .send({ contract, role: 'ecosystem' });
     _logGreen('The contract in database:');
     _logObject(response.body);
     expect(response.status).to.equal(201);
@@ -89,10 +88,21 @@ describe('Scenario creating an ecosystem contract and verify a policy', () => {
 
   it('should check if the resource requested from the user policy \n\tis exploitable through the etablished contract', async () => {
     _logYellow('\n-Check if resource is exploitable');
+    const role = 'ecosystem';
+    const policy = {
+      '@context': 'http://www.w3.org/ns/odrl/2/',
+      '@type': 'Set',
+      permission: [
+        {
+          action: 'read',
+          target: 'http://contract-target',
+        },
+      ],
+    };
     _logGreen('The odrl user policy:');
     _logObject(policy);
     const response = await supertest(app.router)
-      .post(`/contracts/check-exploitability/role/${contractId}`)
+      .post(`/contracts/role/exploitability/${contractId}/${role}`)
       .set('Cookie', cookie)
       .set('Authorization', `Bearer ${authToken}`)
       .send(policy);

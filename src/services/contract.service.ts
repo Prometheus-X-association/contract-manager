@@ -20,23 +20,28 @@ export class ContractService {
   }
 
   // Generate a contract based on the contract data
-  public async genContract(contractData: IContract): Promise<IContract> {
+  public async genContract(
+    contractData: IContract,
+    role?: string,
+  ): Promise<IContract> {
     try {
-      // await this.isValid(contractData);
       const { permission, prohibition, ...rest } = contractData;
+      const rolesAndObligations = role
+        ? [
+            {
+              role,
+              policies: [
+                {
+                  permission: permission || [],
+                  prohibition: prohibition || [],
+                },
+              ],
+            },
+          ]
+        : [];
       const newContract = new Contract({
         ...rest,
-        rolesAndObligations: [
-          {
-            role: 'ecosystem',
-            policies: [
-              {
-                permission: permission || [],
-                prohibition: prohibition || [],
-              },
-            ],
-          },
-        ],
+        rolesAndObligations,
       });
       return newContract.save();
     } catch (error: any) {
@@ -180,7 +185,7 @@ export class ContractService {
     role: string,
   ): Promise<boolean> {
     try {
-      const contract = await Contract.findById(contractId);
+      const contract = await Contract.findById(contractId).lean();
       if (!contract || !contract.rolesAndObligations) {
         return false;
       }
