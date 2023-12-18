@@ -1,4 +1,4 @@
-import repository, { StoreElement } from 'services/data.repository.service';
+import repository, { StoreElement } from 'services/store.service';
 // odrl default action
 const odrlLeftOperands: StoreElement = {
   absolutePosition: (target: string): number => {

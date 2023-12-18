@@ -8,6 +8,7 @@ let cookie: any;
 let policy: any;
 let contractId: any;
 const SERVER_PORT = 9999;
+
 const _logYellow = (value: string) => {
   console.log(`\x1b[93m${value}\x1b[37m`);
 };
@@ -17,6 +18,7 @@ const _logGreen = (value: string) => {
 const _logObject = (data: any) => {
   console.log(`\x1b[90m${JSON.stringify(data, null, 2)}\x1b[37m`);
 };
+
 describe('Scenario creating an ecosystem contract and verify a policy', () => {
   let server: any;
   let authToken: string;
@@ -35,9 +37,6 @@ describe('Scenario creating an ecosystem contract and verify a policy', () => {
     _logYellow('\n-Ping the server');
     const authResponse = await supertest(app.router).get('/ping');
     cookie = authResponse.headers['set-cookie'];
-    // authToken = authResponse.body.token;
-    // _logGreen('Authentication token:');
-    // _logObject(authResponse.body);
     _logGreen('Cookies:');
     _logObject(cookie);
     expect(authResponse.status).to.equal(200);
@@ -87,45 +86,13 @@ describe('Scenario creating an ecosystem contract and verify a policy', () => {
     expect(response.status).to.equal(201);
     contractId = response.body._id;
   });
-  //
-  /*
-  it('should verify the user policy', async () => {
-    _logYellow('\n-Verify the odrl format of the user policy');
-    policy = {
-      '@context': 'http://www.w3.org/ns/odrl/2/',
-      '@type': 'Set',
-      permission: [
-        {
-          action: 'read',
-          target: 'http://contract-target',
-          constraint: [
-            {
-              leftOperand: 'user:age',
-              operator: 'eq',
-              rightOperand: 21,
-            },
-          ],
-        },
-      ],
-    };
-    _logGreen('The odrl user policy:');
-    _logObject(policy);
-    const response = await supertest(app.router)
-      .post('/pap/policies/verify')
-      .set('Cookie', cookie)
-      .set('Authorization', `Bearer ${authToken}`)
-      .send(policy);
-    _logGreen('Policy has been verified:');
-    _logObject(response.body);
-    expect(response.status).to.equal(200);
-  });
-  */
+
   it('should check if the resource requested from the user policy \n\tis exploitable through the etablished contract', async () => {
     _logYellow('\n-Check if resource is exploitable');
     _logGreen('The odrl user policy:');
     _logObject(policy);
     const response = await supertest(app.router)
-      .post(`/contracts/check-exploitability/${contractId}`)
+      .post(`/contracts/check-exploitability/role/${contractId}`)
       .set('Cookie', cookie)
       .set('Authorization', `Bearer ${authToken}`)
       .send(policy);
@@ -133,6 +100,7 @@ describe('Scenario creating an ecosystem contract and verify a policy', () => {
     _logObject(response.body);
     expect(response.body.authorised).to.equal(true);
   });
+
   after(async () => {
     await Contract.deleteMany({});
     server.close();
