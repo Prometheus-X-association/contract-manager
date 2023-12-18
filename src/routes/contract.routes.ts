@@ -26,7 +26,10 @@ router.get('/contracts/odrl/:id', getODRLContract);
 router.put('/contracts/:id', updateContract);
 router.put('/contracts/sign/:id', signContract);
 router.delete('/contracts/sign/revoke/:id/:did', revokeContractSignature);
-router.post('/contracts/role/exploitability/:id', checkExploitationByRole);
+router.post(
+  '/contracts/role/exploitability/:id/:role',
+  checkExploitationByRole,
+);
 router.post('/contracts/policy/:id', injectPolicy);
 router.post('/contracts/policies/:id', injectPolicies);
 router.post('/contracts/policies/role/:id', injectPoliciesForRole);

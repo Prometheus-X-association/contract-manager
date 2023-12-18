@@ -7,9 +7,17 @@ import { ContractMember } from 'interfaces/schemas.interface';
 
 export const createContract = async (req: Request, res: Response) => {
   try {
-    const contract: IContract = await contractService.genContract(req.body);
-    logger.info('[Contract/Controller: createContract] Successfully called.');
-    return res.status(201).json(contract);
+    const { contract, role } = req.body;
+    if (contract) {
+      const generated: IContract = await contractService.genContract(
+        contract,
+        role,
+      );
+      logger.info('[Contract/Controller: createContract] Successfully called.');
+      return res.status(201).json(generated);
+    } else {
+      throw new Error('Input contract undefined');
+    }
   } catch (error: any) {
     res.status(500).json({
       message: `An error occurred while creating the contract.`,
