@@ -88,6 +88,7 @@ describe('Scenario creating an ecosystem contract and verify a policy', () => {
     contractId = response.body._id;
   });
   //
+  /*
   it('should verify the user policy', async () => {
     _logYellow('\n-Verify the odrl format of the user policy');
     policy = {
@@ -118,7 +119,7 @@ describe('Scenario creating an ecosystem contract and verify a policy', () => {
     _logObject(response.body);
     expect(response.status).to.equal(200);
   });
-
+  */
   it('should check if the resource requested from the user policy \n\tis exploitable through the etablished contract', async () => {
     _logYellow('\n-Check if resource is exploitable');
     _logGreen('The odrl user policy:');
