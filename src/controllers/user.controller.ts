@@ -1,14 +1,6 @@
 import { Request, Response } from 'express';
-import { genToken } from 'middlewares/auth.middleware';
 import pipService from 'services/policy/pip.service';
 import repository from 'services/data.repository.service';
-
-export const logUser = (req: Request, res: Response) => {
-  const user = req.body;
-  const token = genToken(user);
-  res.cookie('authToken', token, { httpOnly: true });
-  res.json({ token });
-};
 
 export const addPolicies = async (req: Request, res: Response) => {
   const newPolicies = req.body.policies;

@@ -30,7 +30,9 @@ class PAPService {
   }
   // Remove a policy by ID
   public async remove(id: string): Promise<IRule> {
-    const deletedPolicy = await Policy.findByIdAndDelete(id);
+    const deletedPolicy = await Policy.findByIdAndDelete(id, {
+      new: true,
+    });
     if (!deletedPolicy) {
       throw new Error('An error occurred while deleting policy');
     }

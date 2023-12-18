@@ -31,7 +31,7 @@ export class PolicyProviderService {
     try {
       instanciator.genPolicyFrom(policy);
       if (instanciator.policy) {
-        const isValid = await instanciator.policy?.launchValidation();
+        const isValid = await instanciator.policy.validate();
         return isValid;
       }
       return false;

@@ -3,10 +3,8 @@ import http from 'http';
 import mongoose from 'mongoose';
 import contractRoutes from 'routes/contract.routes';
 import bilateralContractRoutes from 'routes/bilateral.routes';
-import userRoutes, { login } from 'routes/user.routes';
+import userRoutes from 'routes/user.routes';
 import papRoutes from 'routes/pap.routes';
-// import auth, { checkSessionCookie } from 'middlewares/auth.middleware';
-// import pep from 'middlewares/pep.middlewares';
 import { logger } from 'utils/logger';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJson from './swagger/swagger.json';
@@ -16,7 +14,6 @@ import { config } from 'config/config';
 import path from 'path';
 
 const router = express();
-
 const startServer = async (url: string) => {
   try {
     await mongoose.connect(url, { retryWrites: true });
@@ -25,8 +22,6 @@ const startServer = async (url: string) => {
     logger.error('Error connecting to MongoDB:', error);
     process.exit(1);
   }
-  //
-  // Usefull log
   router.use((req, res, next) => {
     logger.info(
       `${req.method} : ${req.url}, from: ${req.socket.remoteAddress}`,
@@ -35,7 +30,6 @@ const startServer = async (url: string) => {
   });
   router.use(express.urlencoded({ extended: true }));
   router.use(express.json());
-
   router.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     res.setHeader(
@@ -52,17 +46,12 @@ const startServer = async (url: string) => {
     '/rules',
     express.static(path.join(__dirname, '..', 'public/rules')),
   );
-  // swagger
   router.use('/api-docs', swaggerUi.serve, (req: any, res: any, next: any) => {
     const baseUrl = `${req.get('host')}`;
     swaggerJson.host = baseUrl;
     swaggerUi.setup(swaggerJson, {
       customCss: '.swagger-ui .models { display: none }',
     })(req, res, next);
-  });
-
-  router.get('/is-it-alive', (req, res, next) => {
-    res.json({ message: 'yes it is!' });
   });
   const MemoryStore = createMemoryStore(session);
   router.use(
@@ -77,11 +66,9 @@ const startServer = async (url: string) => {
       }),
     }),
   );
-  router.use('/', login);
-  // router.use(checkSessionCookie);
-
-  // Policy enforcement point
-  // router.use(pep);
+  router.get('/ping', (req, res, next) => {
+    res.json({ message: 'pong!' });
+  });
   router.use((req, res, next) => {
     if (req.method === 'POST') {
       if (req.headers['content-type'] !== 'application/json') {
@@ -90,10 +77,8 @@ const startServer = async (url: string) => {
     }
     next();
   });
-  // Routes
   router.use(
     '/',
-    /*auth,*/
     userRoutes,
     contractRoutes,
     bilateralContractRoutes,
@@ -105,10 +90,8 @@ const startServer = async (url: string) => {
     logger.info(`404 ${message}`);
     return res.status(404).json({ message, method, url });
   });
-
   return http.createServer(router);
 };
-
 export default { router, startServer } as {
   router: Router;
   startServer: (url: string) => Promise<http.Server>;

@@ -34,10 +34,10 @@ describe('Routes for Contract API', () => {
     });
 
     await BilateralContract.deleteMany({});
-    // Get authentication token
-    const authResponse = await supertest(app.router).get('/user/login');
+
+    const authResponse = await supertest(app.router).get('/ping');
     authTokenCookie = authResponse.headers['set-cookie'];
-    authToken = authResponse.body.token;
+    // authToken = authResponse.body.token;
 
     // Create a signed contract
     const signedContractData = {

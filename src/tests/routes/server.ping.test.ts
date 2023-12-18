@@ -21,8 +21,8 @@ describe('Test route to Ping the API', () => {
     console.log('Test server stopped.');
   });
 
-  it('should get a response on is-it-alive', async () => {
-    const response = await supertest(app.router).get(`/is-it-alive/`);
+  it('should get a response on "ping"', async () => {
+    const response = await supertest(app.router).get(`/ping`);
     expect(response.status).to.equal(200);
   });
 });

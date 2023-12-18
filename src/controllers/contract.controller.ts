@@ -104,27 +104,6 @@ export const revokeContractSignature = async (req: Request, res: Response) => {
   }
 };
 
-export const checkDataExploitation = async (req: Request, res: Response) => {
-  const contractId = req.params.id;
-  const data = { policy: req.body };
-  const sessionId = req.session.id;
-  try {
-    const isAuthorised = await contractService.checkPermission(
-      contractId,
-      data,
-      sessionId,
-    );
-    if (isAuthorised) {
-      return res.status(200).json({ authorised: true });
-    } else {
-      return res.status(403).json({ authorised: false });
-    }
-  } catch (error) {
-    logger.error(error);
-    return res.status(500).json({ message: 'Internal server error' });
-  }
-};
-
 export const checkExploitationByRole = async (req: Request, res: Response) => {
   const contractId = req.params.id;
   const role = req.params.role;
