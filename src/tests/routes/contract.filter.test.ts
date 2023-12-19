@@ -34,15 +34,13 @@ describe('Routes for Contract API', () => {
 
     const authResponse = await supertest(app.router).get('/ping');
     authTokenCookie = authResponse.headers['set-cookie'];
-    // authToken = authResponse.body.token;
 
     // Create a signed contract
     const signedContractData = {};
     const responseSigned = await supertest(app.router)
       .post(`${API_ROUTE_BASE}`)
       .set('Cookie', authTokenCookie)
-      .set('Authorization', `Bearer ${authToken}`)
-      .send(signedContractData);
+      .send({ contract: signedContractData });
     signedContractId = responseSigned.body._id;
     // Define the signature data for party A
     const signatureDataPartyA1: ContractMember = {
@@ -63,7 +61,7 @@ describe('Routes for Contract API', () => {
       .post(`${API_ROUTE_BASE}`)
       .set('Cookie', authTokenCookie)
       .set('Authorization', `Bearer ${authToken}`)
-      .send(unsignedContractData);
+      .send({ contract: unsignedContractData });
     unsignedContractId = responseUnsigned.body._id;
   });
 

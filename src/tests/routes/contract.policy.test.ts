@@ -68,7 +68,7 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
       .post('/contracts/')
       .set('Cookie', cookie)
       .set('Authorization', `Bearer ${authToken}`)
-      .send(contract);
+      .send({ contract, role: 'ecosystem' });
     _logGreen('The contract in database:');
     _logObject(response.body);
     expect(response.status).to.equal(201);

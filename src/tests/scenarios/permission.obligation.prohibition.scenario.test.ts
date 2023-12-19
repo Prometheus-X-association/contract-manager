@@ -116,13 +116,12 @@ describe('Scenario creating an ecosystem contract\n\tthen process an input polic
               leftOperand: 'age',
               operator: 'lt',
               rightOperand: 22,
-            } /*
+            },
             {
               leftOperand: 'role',
               operator: 'eq',
               rightOperand: 'admin',
             },
-            */,
           ],
         },
       ],

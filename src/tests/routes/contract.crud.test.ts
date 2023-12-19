@@ -45,7 +45,7 @@ describe('Routes for Contract API', () => {
   let createdContractId: string;
   // Test case: Create a new contract
   it('should create a new contract', async () => {
-    const contractData = {
+    const contract = {
       '@context': 'http://www.w3.org/ns/odrl/2/',
       '@type': 'Offer',
       permission: [
@@ -64,7 +64,7 @@ describe('Routes for Contract API', () => {
       .post(`${API_ROUTE_BASE}`)
       .set('Cookie', authTokenCookie)
       .set('Authorization', `Bearer ${authToken}`)
-      .send(contractData);
+      .send({ contract, role: 'ecosystem' });
     // log
     _logObject(response.body);
     // Check if the response status is 201 (Created)
@@ -226,31 +226,6 @@ describe('Routes for Contract API', () => {
     // Check if the 'status' field is set to 'signed'
     expect(responseOrchestrator.body.status).to.equal('signed');
   });
-
-  /*
-  // Test case: Check if data is exploitable
-  it('should check whether a specific resource is exploitable through an established contract', async () => {
-    const data = {
-      '@context': 'http://www.w3.org/ns/odrl/2/',
-      '@type': 'authorisation',
-      permission: [
-        {
-          action: 'read',
-          target: 'http://contract-target',
-        },
-      ],
-    };
-    const response = await supertest(app.router)
-      .post(`${API_ROUTE_BASE}check-exploitability/${createdContractId}`)
-      .set('Cookie', authTokenCookie)
-      .set('Authorization', `Bearer ${authToken}`)
-      .send(data);
-    //
-    _logObject(response.body);
-    //
-    expect(response.body.authorised).to.equal(true);
-  });
-  */
 
   // Test case: Revoke a signature
   it('should revoke a signature and move it to revokedMembers', async () => {
