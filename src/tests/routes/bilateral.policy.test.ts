@@ -45,9 +45,6 @@ describe('Create a bilateral contract, then inject policies in it.', () => {
     _logYellow('\n-Ping the server');
     const authResponse = await supertest(app.router).get('/ping');
     cookie = authResponse.headers['set-cookie'];
-    // authToken = authResponse.body.token;
-    // _logGreen('Authentication token:');
-    // _logObject(authResponse.body);
     _logGreen('Cookies:');
     _logObject(cookie);
     expect(authResponse.status).to.equal(200);
