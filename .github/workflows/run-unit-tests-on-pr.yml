@@ -24,7 +24,5 @@ jobs:
 
     - name: Install dependencies
       run: pnpm install
-    - name: Seed the database
-      run: pnpm seed
     - name: Run tests
       run: pnpm test

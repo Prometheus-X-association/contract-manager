@@ -2,7 +2,6 @@ import express, { Router } from 'express';
 import {
   createContract,
   getContract,
-  getODRLContract,
   updateContract,
   signContract,
   getContracts,
@@ -22,7 +21,6 @@ router.get('/contracts/all/', getContracts);
 router.get('/contracts/for/:did', getContractsFor);
 router.post('/contracts/', createContract);
 router.get('/contracts/:id', getContract);
-router.get('/contracts/odrl/:id', getODRLContract);
 router.put('/contracts/:id', updateContract);
 router.put('/contracts/sign/:id', signContract);
 router.delete('/contracts/sign/revoke/:id/:did', revokeContractSignature);

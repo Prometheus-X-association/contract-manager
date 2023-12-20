@@ -55,7 +55,7 @@ class PDPService {
     };
     const policy = instanciator.genPolicyFrom(base);
     if (policy) {
-      policy.debug();
+      // policy.debug();
       evaluator.setPolicy(policy);
       PDPService.fetcher.sessionId = sessionId;
       return await evaluator.evalResourcePerformabilities(json);
