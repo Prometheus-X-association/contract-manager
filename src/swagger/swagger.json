@@ -556,44 +556,6 @@
         }
       }
     },
-    "/contracts/odrl/{id}": {
-      "get": {
-        "tags": [
-          "Contract"
-        ],
-        "summary": "Get ODRL contract by ID",
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "description": "ID of the ODRL contract"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "ODRL contract details",
-            "schema": {
-              "$ref": "#/definitions/ODRLContract"
-            }
-          },
-          "404": {
-            "description": "ODRL contract not found.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "500": {
-            "description": "Internal server error.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      }
-    },
     "/contracts/sign/{id}": {
       "put": {
         "tags": [
@@ -686,26 +648,50 @@
         }
       }
     },
-    "/contracts/role/exploitability/{id}": {
+    "/contracts/role/exploitability/{id}/{role}": {
       "post": {
+        "tags": [
+          "Contract"
+        ],
+        "summary": "Check data exploitability for a contract",
         "description": "",
         "parameters": [
           {
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "description": "ID of the contract"
+          },
+          {
+            "name": "role",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID of the related role"
           }
         ],
         "responses": {
           "200": {
-            "description": "OK"
+            "description": "Exploitability check result",
+            "schema": {
+              "$ref": "#/definitions/ExploitabilityResult"
+            }
           },
           "403": {
             "description": "Forbidden"
           },
+          "404": {
+            "description": "Contract not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           }
         }
       }
@@ -1191,44 +1177,6 @@
             "description": "The following policies are not valid.",
             "schema": {
               "$ref": "#/definitions/InvalidPolicies"
-            }
-          },
-          "500": {
-            "description": "Internal server error.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      }
-    },
-    "/contracts/role/check-exploitability/{id}": {
-      "post": {
-        "tags": [
-          "Contract"
-        ],
-        "summary": "Check data exploitability for a contract",
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "description": "ID of the contract"
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Exploitability check result",
-            "schema": {
-              "$ref": "#/definitions/ExploitabilityResult"
-            }
-          },
-          "404": {
-            "description": "Contract not found.",
-            "schema": {
-              "$ref": "#/definitions/Error"
             }
           },
           "500": {

@@ -287,36 +287,6 @@ export class BilateralContractService {
     }
   }
 
-  // Get ORDL contract version by id
-  public async getODRLContract(
-    contractId: string,
-    generate: boolean,
-  ): Promise<any> {
-    try {
-      if (!generate) {
-        const data = await BilateralContract.findById(contractId)
-          .select('jsonLD')
-          .lean();
-        if (!data?.jsonLD) {
-          throw new Error('ODRL contract not found.');
-        }
-        const contract = JSON.parse(data.jsonLD);
-        return contract;
-      } else {
-        const contract = await BilateralContract.findById(contractId)
-          .select('-jsonLD')
-          .lean();
-        if (contract) {
-          this.convertContract(contract);
-        }
-      }
-    } catch (error: any) {
-      throw new Error(
-        `Error while retrieving the ODRL contract: ${error.message}`,
-      );
-    }
-  }
-  //
   public async addPolicies(
     contractId: string,
     injections: IPolicyInjection[],

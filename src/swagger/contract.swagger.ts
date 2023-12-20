@@ -104,33 +104,6 @@
 // #swagger.start
 /*
   #swagger.tags = ['Contract']
-  #swagger.path = '/contracts/odrl/{id}'
-  #swagger.method = 'get'
-  #swagger.summary = 'Get ODRL contract by ID'
-  #swagger.parameters['id'] = {
-    in: 'path',
-    description: 'ID of the ODRL contract',
-    required: true,
-    type: 'string'
-  }
-  #swagger.responses[200] = {
-    description: 'ODRL contract details',
-    schema: { $ref: '#/definitions/ODRLContract' }
-  }
-  #swagger.responses[404] = {
-    description: 'ODRL contract not found.',
-    schema: { $ref: '#/definitions/Error' }
-  }
-  #swagger.responses[500] = {
-    description: 'Internal server error.',
-    schema: { $ref: '#/definitions/Error' }
-  }
-*/
-// #swagger.end
-
-// #swagger.start
-/*
-  #swagger.tags = ['Contract']
   #swagger.path = '/contracts/{id}'
   #swagger.method = 'put'
   #swagger.summary = 'Update an existing contract by ID'
@@ -234,12 +207,18 @@
 // #swagger.start
 /*
   #swagger.tags = ['Contract']
-  #swagger.path = '/contracts/role/check-exploitability/{id}'
+  #swagger.path = '/contracts/role/exploitability/{id}/{role}'
   #swagger.method = 'post'
   #swagger.summary = 'Check data exploitability for a contract'
   #swagger.parameters['id'] = {
     in: 'path',
     description: 'ID of the contract',
+    required: true,
+    type: 'string'
+  }
+  #swagger.parameters['role'] = {
+    in: 'path',
+    description: 'ID of the related role',
     required: true,
     type: 'string'
   }

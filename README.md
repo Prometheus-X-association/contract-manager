@@ -36,11 +36,6 @@ Before you begin, ensure you have met the following requirements:
 
   This will install all the necessary dependencies for your project.
 
-4. Make sure to seed the database
-
-  ```bash
-  pnpm seed
-  ```
 
 ### Usage for development
 
@@ -108,13 +103,7 @@ Before you begin, ensure you have met the following requirements:
   ```
 
   This command will run your tests using Mocha. Make sure your tests are
-  located in `./src/tests/**/*.test.ts`.
-
-2. Run Scenarios:
-
-  ```bash
-  pnpm test-scenarios
-  ```
+  located in `./src/tests/*.test.ts`.
 
 ## License
 

@@ -7,7 +7,7 @@ import {
 import bilateralContractService from 'services/bilateral.service';
 import { logger } from 'utils/logger';
 import { BilateralContractSignature } from 'interfaces/schemas.interface';
-// Create
+
 export const createContract = async (req: Request, res: Response) => {
   // #swagger.tags = ['Bilateral'];
   try {
@@ -22,7 +22,7 @@ export const createContract = async (req: Request, res: Response) => {
     });
   }
 };
-// Read
+
 export const getContract = async (req: Request, res: Response) => {
   // #swagger.tags = ['Bilateral'];
   try {
@@ -40,7 +40,7 @@ export const getContract = async (req: Request, res: Response) => {
       .json({ error: 'An error occurred while retrieving the contract.' });
   }
 };
-// Update
+
 export const updateContract = async (req: Request, res: Response) => {
   // #swagger.tags = ['Bilateral'];
   try {
@@ -62,7 +62,7 @@ export const updateContract = async (req: Request, res: Response) => {
       .json({ error: 'An error occurred while updating the contract.' });
   }
 };
-// Delete
+
 export const deleteContract = async (req: Request, res: Response) => {
   // #swagger.tags = ['Bilateral'];
   try {
@@ -125,6 +125,7 @@ export const signContract = async (req: Request, res: Response) => {
     });
   }
 };
+
 // Revoke a signature on a contract for a given contract id and party did
 export const revokeContractSignature = async (req: Request, res: Response) => {
   const { id, did } = req.params;
@@ -141,6 +142,7 @@ export const revokeContractSignature = async (req: Request, res: Response) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 // Check if data is authorized for exploitation
 export const checkDataExploitation = async (req: Request, res: Response) => {
   // #swagger.tags = ['Bilateral'];
@@ -163,6 +165,7 @@ export const checkDataExploitation = async (req: Request, res: Response) => {
     return res.status(500).json({ message: 'Internal server error' });
   }
 };
+
 // Get contrats for a specific DID and optional filter
 export const getContractsFor = async (
   req: Request,
@@ -198,7 +201,7 @@ export const getContractsFor = async (
     res.status(500).json({ error: error.message });
   }
 };
-// Get all contrats
+
 export const getContracts = async (
   req: Request,
   res: Response,
@@ -213,27 +216,6 @@ export const getContracts = async (
   } catch (error: any) {
     logger.error('Error while fetching all contracts:', { error });
     res.status(500).json({ error: error.message });
-  }
-};
-// get ODRL contract
-export const getODRLContract = async (req: Request, res: Response) => {
-  // #swagger.tags = ['Bilateral'];
-  try {
-    const contractId: string = req.params.id;
-    const contract = await bilateralContractService.getODRLContract(
-      contractId,
-      false,
-    );
-    if (!contract) {
-      return res.status(404).json({ error: 'Contract not found.' });
-    }
-    logger.info('[Bilateral/Controller: getODRLContract] Successfully called.');
-    return res.json(contract);
-  } catch (error) {
-    logger.error('Error retrieving the ODRL contract:', error);
-    res
-      .status(500)
-      .json({ error: 'An error occurred while retrieving the ODRL contract.' });
   }
 };
 
