@@ -61,6 +61,34 @@ export class ContractService {
       throw error;
     }
   }
+
+  // get policies for a given participant and service offering
+  public async getPolicyForServiceOffering(
+    contractId: string,
+    participantId: string,
+    serviceOfferingId: string,
+  ): Promise<any | null> {
+    try {
+      const contract = await Contract.findById(contractId);
+      if (!contract) {
+        return null;
+      }
+      const serviceOffering = contract.serviceOfferings.find((offering) => {
+        return (
+          offering.participant === participantId &&
+          offering.serviceOffering === serviceOfferingId
+        );
+      });
+      if (!serviceOffering) {
+        return null;
+      }
+      const policies = serviceOffering.policies;
+      return policies;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   // update contract
   public async updateContract(
     contractId: string,

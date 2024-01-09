@@ -42,6 +42,42 @@ export const getContract = async (req: Request, res: Response) => {
   }
 };
 
+export const getPolicyForServiceOffering = async (
+  req: Request,
+  res: Response,
+) => {
+  try {
+    const contractId: string = req.params.id;
+    const participantId: string = req.query.participant as string;
+    const serviceOfferingId: string = req.query.serviceOffering as string;
+
+    const policy = await contractService.getPolicyForServiceOffering(
+      contractId,
+      participantId,
+      serviceOfferingId,
+    );
+
+    if (!policy) {
+      return res.status(404).json({
+        error: 'Policy not found for the specified service offering.',
+      });
+    }
+
+    logger.info(
+      '[Contract/Controller: getPolicyForServiceOffering] Successfully called.',
+    );
+    return res.json(policy);
+  } catch (error) {
+    logger.error(
+      'Error retrieving the policy for the service offering:',
+      error,
+    );
+    res
+      .status(500)
+      .json({ error: 'An error occurred while retrieving the policy.' });
+  }
+};
+
 export const updateContract = async (req: Request, res: Response) => {
   try {
     const contractId: string = req.params.id;

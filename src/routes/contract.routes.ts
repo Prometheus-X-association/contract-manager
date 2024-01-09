@@ -13,6 +13,7 @@ import {
   injectPoliciesForRoles,
   injectOfferingPolicies,
   checkExploitationByRole,
+  getPolicyForServiceOffering,
 } from '../controllers/contract.controller';
 
 // Ecosystem Contract Routes
@@ -21,6 +22,7 @@ router.get('/contracts/all/', getContracts);
 router.get('/contracts/for/:did', getContractsFor);
 router.post('/contracts/', createContract);
 router.get('/contracts/:id', getContract);
+router.get('/contracts/serviceoffering/:id', getPolicyForServiceOffering);
 router.put('/contracts/:id', updateContract);
 router.put('/contracts/sign/:id', signContract);
 router.delete('/contracts/sign/revoke/:id/:did', revokeContractSignature);

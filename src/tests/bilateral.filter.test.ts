@@ -16,7 +16,6 @@ const _logObject = (data: any) => {
 // Test suite for the route to get all contracts with filters
 describe('Routes for Contract API', () => {
   let server: any;
-  let authToken: string;
   let signedContractId: string;
   let unsignedContractId: string;
   let thirdContractId: string;
@@ -47,7 +46,6 @@ describe('Routes for Contract API', () => {
     const responseSigned = await supertest(app.router)
       .post(`${API_ROUTE_BASE}`)
       .set('Cookie', authTokenCookie)
-      .set('Authorization', `Bearer ${authToken}`)
       .send(signedContractData);
     signedContractId = responseSigned.body._id;
 
@@ -58,7 +56,6 @@ describe('Routes for Contract API', () => {
     await supertest(app.router)
       .put(`${API_ROUTE_BASE}negociator/${signedContractId}`)
       .set('Cookie', authTokenCookie)
-      .set('Authorization', `Bearer ${authToken}`)
       .send(negotiatorDataA);
     // Add the party B as negotiator for the signed contract
     const negotiatorDataB: { did: string } = {
@@ -67,7 +64,6 @@ describe('Routes for Contract API', () => {
     await supertest(app.router)
       .put(`${API_ROUTE_BASE}negociator/${signedContractId}`)
       .set('Cookie', authTokenCookie)
-      .set('Authorization', `Bearer ${authToken}`)
       .send(negotiatorDataB);
 
     // Define the signature data for party A
@@ -80,7 +76,6 @@ describe('Routes for Contract API', () => {
     await supertest(app.router)
       .put(`${API_ROUTE_BASE}sign/${signedContractId}`)
       .set('Cookie', authTokenCookie)
-      .set('Authorization', `Bearer ${authToken}`)
       .send(signatureDataPartyA);
 
     // Define the signature data for party B
@@ -93,7 +88,6 @@ describe('Routes for Contract API', () => {
     await supertest(app.router)
       .put(`${API_ROUTE_BASE}sign/${signedContractId}`)
       .set('Cookie', authTokenCookie)
-      .set('Authorization', `Bearer ${authToken}`)
       .send(signatureDataPartyB);
 
     // Create a third contract
@@ -105,7 +99,6 @@ describe('Routes for Contract API', () => {
     const responseThird = await supertest(app.router)
       .post(`${API_ROUTE_BASE}`)
       .set('Cookie', authTokenCookie)
-      .set('Authorization', `Bearer ${authToken}`)
       .send(thirdContractData);
     thirdContractId = responseThird.body._id;
 
@@ -113,7 +106,6 @@ describe('Routes for Contract API', () => {
     await supertest(app.router)
       .put(`${API_ROUTE_BASE}negociator/${thirdContractId}`)
       .set('Cookie', authTokenCookie)
-      .set('Authorization', `Bearer ${authToken}`)
       .send(negotiatorDataA);
 
     // Create an unsigned contract
@@ -125,7 +117,6 @@ describe('Routes for Contract API', () => {
     const responseUnsigned = await supertest(app.router)
       .post(`${API_ROUTE_BASE}`)
       .set('Cookie', authTokenCookie)
-      .set('Authorization', `Bearer ${authToken}`)
       .send(unsignedContractData);
     unsignedContractId = responseUnsigned.body._id;
   });
@@ -151,8 +142,7 @@ describe('Routes for Contract API', () => {
     it('should return all contracts', async () => {
       const response = await supertest(app.router)
         .get(`${API_ROUTE_BASE}all/`)
-        .set('Cookie', authTokenCookie)
-        .set('Authorization', `Bearer ${authToken}`);
+        .set('Cookie', authTokenCookie);
       _logObject(response.body);
       expect(response.status).to.equal(200);
       const contracts: IBilateralContractDB[] = response.body.contracts;
@@ -173,8 +163,7 @@ describe('Routes for Contract API', () => {
       const isParticipant = true;
       const response = await supertest(app.router)
         .get(`${API_ROUTE_BASE}for/${did}?isParticipant=${isParticipant}`)
-        .set('Cookie', authTokenCookie)
-        .set('Authorization', `Bearer ${authToken}`);
+        .set('Cookie', authTokenCookie);
       _logObject(response.body);
       expect(response.status).to.equal(200);
       const contracts: IBilateralContractDB[] = response.body.contracts;
@@ -193,8 +182,7 @@ describe('Routes for Contract API', () => {
       const hasSigned = true;
       const response = await supertest(app.router)
         .get(`${API_ROUTE_BASE}for/${did}?hasSigned=${hasSigned}`)
-        .set('Cookie', authTokenCookie)
-        .set('Authorization', `Bearer ${authToken}`);
+        .set('Cookie', authTokenCookie);
       _logObject(response.body);
       expect(response.status).to.equal(200);
       const contracts: IBilateralContractDB[] = response.body.contracts;
@@ -214,8 +202,7 @@ describe('Routes for Contract API', () => {
         .get(
           `${API_ROUTE_BASE}for/${did}?isParticipant=${isParticipant}&hasSigned=${hasSigned}`,
         )
-        .set('Cookie', authTokenCookie)
-        .set('Authorization', `Bearer ${authToken}`);
+        .set('Cookie', authTokenCookie);
       _logObject(response.body);
       expect(response.status).to.equal(200);
       const contracts: IBilateralContractDB[] = response.body.contracts;
@@ -234,8 +221,7 @@ describe('Routes for Contract API', () => {
         .get(
           `${API_ROUTE_BASE}for/${did}?isParticipant=${isParticipant}&hasSigned=${hasSigned}`,
         )
-        .set('Cookie', authTokenCookie)
-        .set('Authorization', `Bearer ${authToken}`);
+        .set('Cookie', authTokenCookie);
       _logObject(response.body);
       expect(response.status).to.equal(200);
       const contracts: IBilateralContractDB[] = response.body.contracts;
@@ -251,8 +237,7 @@ describe('Routes for Contract API', () => {
       const hasSigned = false;
       const response = await supertest(app.router)
         .get(`${API_ROUTE_BASE}for/${did}?hasSigned=${hasSigned}`)
-        .set('Cookie', authTokenCookie)
-        .set('Authorization', `Bearer ${authToken}`);
+        .set('Cookie', authTokenCookie);
       _logObject(response.body);
       expect(response.status).to.equal(200);
       const contracts: IBilateralContractDB[] = response.body.contracts;
@@ -275,8 +260,7 @@ describe('Routes for Contract API', () => {
         .get(
           `${API_ROUTE_BASE}for/${did}?isParticipant=${isParticipant}&hasSigned=${hasSigned}`,
         )
-        .set('Cookie', authTokenCookie)
-        .set('Authorization', `Bearer ${authToken}`);
+        .set('Cookie', authTokenCookie);
       _logObject(response.body);
       expect(response.status).to.equal(200);
       const contracts: IBilateralContractDB[] = response.body.contracts;
@@ -291,8 +275,7 @@ describe('Routes for Contract API', () => {
       const status = 'signed';
       const response = await supertest(app.router)
         .get(`${API_ROUTE_BASE}all?status=${status}`)
-        .set('Cookie', authTokenCookie)
-        .set('Authorization', `Bearer ${authToken}`);
+        .set('Cookie', authTokenCookie);
       _logObject(response.body);
       expect(response.status).to.equal(200);
       const contracts: Array<any> = response.body.contracts;

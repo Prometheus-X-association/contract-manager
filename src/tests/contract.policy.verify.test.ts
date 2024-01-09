@@ -20,7 +20,6 @@ const _logObject = (data: any) => {
 
 describe('Scenario creating an ecosystem contract and verify a policy', () => {
   let server: any;
-  let authToken: string;
   before(async () => {
     server = await app.startServer(config.mongo.testUrl);
     await new Promise((resolve) => {
@@ -49,7 +48,6 @@ describe('Scenario creating an ecosystem contract and verify a policy', () => {
     const response = await supertest(app.router)
       .put('/user/store')
       .set('Cookie', cookie)
-      .set('Authorization', `Bearer ${authToken}`)
       .send(userStore);
     expect(response.status).to.equal(200);
   });
@@ -78,7 +76,6 @@ describe('Scenario creating an ecosystem contract and verify a policy', () => {
     const response = await supertest(app.router)
       .post('/contracts/')
       .set('Cookie', cookie)
-      .set('Authorization', `Bearer ${authToken}`)
       .send({ contract, role: 'ecosystem' });
     _logGreen('The contract in database:');
     _logObject(response.body);
@@ -104,7 +101,6 @@ describe('Scenario creating an ecosystem contract and verify a policy', () => {
     const response = await supertest(app.router)
       .post(`/contracts/role/exploitability/${contractId}/${role}`)
       .set('Cookie', cookie)
-      .set('Authorization', `Bearer ${authToken}`)
       .send(policy);
     _logGreen('Resource is exploitable:');
     _logObject(response.body);

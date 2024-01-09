@@ -27,7 +27,6 @@ describe('Routes for Bilateral Contract API', () => {
 
     const authResponse = await supertest(app.router).get('/ping');
     authTokenCookie = authResponse.headers['set-cookie'];
-    // authToken = authResponse.body.token;
   });
 
   after(async () => {

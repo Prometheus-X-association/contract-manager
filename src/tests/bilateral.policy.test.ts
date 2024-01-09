@@ -29,7 +29,6 @@ const _logObject = (data: any) => {
 };
 describe('Create a bilateral contract, then inject policies in it.', () => {
   let server: http.Server;
-  let authToken: string;
   before(async () => {
     server = await app.startServer(config.mongo.testUrl);
     await new Promise((resolve) => {
@@ -66,7 +65,6 @@ describe('Create a bilateral contract, then inject policies in it.', () => {
     const response = await supertest(app.router)
       .post('/bilaterals/')
       .set('Cookie', cookie)
-      .set('Authorization', `Bearer ${authToken}`)
       .send(contract);
     _logGreen('The contract in database:');
     _logObject(response.body);
@@ -101,7 +99,6 @@ describe('Create a bilateral contract, then inject policies in it.', () => {
     const response = await supertest(app.router)
       .post(`/bilaterals/policies/${contractId}`)
       .set('Cookie', cookie)
-      .set('Authorization', `Bearer ${authToken}`)
       .send(policiesArray);
     _logGreen('The new contract in database:');
     _logObject(response.body);
