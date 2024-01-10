@@ -104,6 +104,48 @@
 // #swagger.start
 /*
   #swagger.tags = ['Contract']
+  #swagger.path = '/contracts/serviceoffering/{id}'
+  #swagger.method = 'get'
+  #swagger.summary = 'Get the policies for a given service offering'
+  #swagger.parameters['id'] = {
+    in: 'path',
+    description: 'ID of the contract',
+    required: true,
+    type: 'string'
+  }
+  #swagger.parameters['participant'] = {
+    in: 'query',
+    description: 'ID of the participant',
+    required: true,
+    type: 'string'
+  }
+  #swagger.parameters['serviceOffering'] = {
+    in: 'query',
+    description: 'ID of the service offering',
+    required: true,
+    type: 'string'
+  }
+  #swagger.responses[200] = {
+    description: 'An array of policies related to the service offering',
+    schema: {
+      type: 'array',
+      items: { $ref: '#/definitions/ContractPolicy' }
+    }
+  }
+  #swagger.responses[404] = {
+    description: 'Contract not found.',
+    schema: { $ref: '#/definitions/Error' }
+  }
+  #swagger.responses[500] = {
+    description: 'Internal server error.',
+    schema: { $ref: '#/definitions/Error' }
+  }
+*/
+// #swagger.end
+
+// #swagger.start
+/*
+  #swagger.tags = ['Contract']
   #swagger.path = '/contracts/{id}'
   #swagger.method = 'put'
   #swagger.summary = 'Update an existing contract by ID'

@@ -556,6 +556,70 @@
         }
       }
     },
+    "/contracts/serviceoffering/{id}": {
+      "get": {
+        "tags": [
+          "Contract"
+        ],
+        "summary": "Get the policies for a given service offering",
+        "description": "",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID of the contract"
+          },
+          {
+            "name": "participant",
+            "in": "query",
+            "description": "ID of the participant",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "serviceOffering",
+            "in": "query",
+            "description": "ID of the service offering",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "An array of policies related to the service offering",
+            "schema": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "array"
+                },
+                "items": {
+                  "$ref": "#/definitions/ContractPolicy"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
+            }
+          },
+          "404": {
+            "description": "Contract not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
     "/contracts/sign/{id}": {
       "put": {
         "tags": [
@@ -1240,6 +1304,34 @@
         }
       }
     },
+    "ContractPolicy": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "example": "string"
+            }
+          }
+        },
+        "permission": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {}
+          }
+        },
+        "prohibition": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {}
+          }
+        }
+      }
+    },
     "ODRLPolicy": {
       "type": "object",
       "properties": {}
@@ -1388,43 +1480,84 @@
     "InputContract": {
       "type": "object",
       "properties": {
-        "ecosystem": {
-          "type": "object",
-          "properties": {
-            "type": {
-              "type": "string",
-              "example": "string"
-            }
-          }
+        "type": {
+          "type": "string",
+          "example": "object"
         },
-        "permission": {
+        "properties": {
           "type": "object",
           "properties": {
-            "type": {
-              "type": "string",
-              "example": "array"
-            },
-            "items": {
-              "$ref": "#/definitions/Asset"
-            }
-          }
-        },
-        "prohibition": {
-          "type": "object",
-          "properties": {
-            "type": {
-              "type": "string",
-              "example": "array"
-            },
-            "items": {
-              "$ref": "#/definitions/Asset"
+            "contract": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "object"
+                },
+                "properties": {
+                  "type": "object",
+                  "properties": {
+                    "role": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "string"
+                        }
+                      }
+                    },
+                    "ecosystem": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "string"
+                        }
+                      }
+                    },
+                    "permission": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "array"
+                        },
+                        "items": {
+                          "$ref": "#/definitions/Asset"
+                        }
+                      }
+                    },
+                    "prohibition": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "array"
+                        },
+                        "items": {
+                          "$ref": "#/definitions/Asset"
+                        }
+                      }
+                    }
+                  }
+                },
+                "required": {
+                  "type": "array",
+                  "example": [
+                    "ecosystem"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
             }
           }
         },
         "required": {
           "type": "array",
           "example": [
-            "ecosystem"
+            "contract"
           ],
           "items": {
             "type": "string"
