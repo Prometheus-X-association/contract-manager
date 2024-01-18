@@ -29,7 +29,6 @@ const _logObject = (data: any) => {
 };
 describe('Create an ecosystem contract, then inject policies in it.', () => {
   let server: http.Server;
-  let authToken: string;
   before(async () => {
     server = await app.startServer(config.mongo.testUrl);
     await new Promise((resolve) => {
@@ -41,13 +40,10 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
     await Contract.deleteMany({});
   });
 
-  it('should log the user', async () => {
+  it('Retrieve the cookie after pinging the server', async () => {
     _logYellow('\n-Login the user');
-    const authResponse = await supertest(app.router).get('/user/login');
+    const authResponse = await supertest(app.router).get('/ping');
     cookie = authResponse.headers['set-cookie'];
-    authToken = authResponse.body.token;
-    _logGreen('Authentication token:');
-    _logObject(authResponse.body);
     _logGreen('Cookies:');
     _logObject(cookie);
     expect(authResponse.status).to.equal(200);
@@ -67,8 +63,7 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
     const response = await supertest(app.router)
       .post('/contracts/')
       .set('Cookie', cookie)
-      .set('Authorization', `Bearer ${authToken}`)
-      .send(contract);
+      .send({ contract, role: 'ecosystem' });
     _logGreen('The contract in database:');
     _logObject(response.body);
     expect(response.status).to.equal(201);
@@ -90,7 +85,6 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
     const response = await supertest(app.router)
       .post(`/contracts/policy/${contractId}`)
       .set('Cookie', cookie)
-      .set('Authorization', `Bearer ${authToken}`)
       .send(policyData);
     expect(response.status).to.equal(200);
     expect(response.body).to.have.property('contract');
@@ -115,7 +109,6 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
     const response = await supertest(app.router)
       .post(`/contracts/policy/${contractId}`)
       .set('Cookie', cookie)
-      .set('Authorization', `Bearer ${authToken}`)
       .send(policyData);
     _logGreen('The new contract in database:');
     _logObject(response.body);
@@ -140,7 +133,6 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
     const response = await supertest(app.router)
       .post(`/contracts/policy/${contractId}`)
       .set('Cookie', cookie)
-      .set('Authorization', `Bearer ${authToken}`)
       .send(policyData);
     _logGreen('The new contract in database:');
     _logObject(response.body);
@@ -198,7 +190,6 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
     const response = await supertest(app.router)
       .post(`/contracts/policies/${contractId}`)
       .set('Cookie', cookie)
-      .set('Authorization', `Bearer ${authToken}`)
       .send(policiesArray);
     _logGreen('The new contract in database:');
     _logObject(response.body);
@@ -256,7 +247,6 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
     const response = await supertest(app.router)
       .post(`/contracts/policies/role/${contractId}`)
       .set('Cookie', cookie)
-      .set('Authorization', `Bearer ${authToken}`)
       .send(data);
     _logGreen('The new contract in database:');
     _logObject(response.body);
@@ -316,7 +306,6 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
     const response = await supertest(app.router)
       .post(`/contracts/policies/offering/${contractId}`)
       .set('Cookie', cookie)
-      .set('Authorization', `Bearer ${authToken}`)
       .send(data);
     _logGreen('The new contract in database:');
     _logObject(response.body);
@@ -339,6 +328,53 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
       );
       expect(targetPermission).to.exist;
     });
+  });
+
+  it('Should retrieve a valid policies for a given service offering', async () => {
+    _logYellow('\n-Retrieve policies for a given service offering.');
+    const response = await supertest(app.router)
+      .get(
+        `/contracts/serviceoffering/${contractId}?participant=participant&serviceOffering=offering`,
+      )
+      .set('Cookie', cookie);
+    _logGreen('Policies:');
+    _logObject(response.body);
+    expect(response.body).to.be.an('array');
+    expect(response.body).to.deep.include.members([
+      {
+        description: 'CAN use data without any restrictions',
+        permission: [
+          {
+            action: 'use',
+            target: 'target-offering-a',
+            constraint: [],
+          },
+        ],
+        prohibition: [],
+      },
+      {
+        description: 'CAN use data without any restrictions',
+        permission: [
+          {
+            action: 'use',
+            target: 'target-offering-b',
+            constraint: [],
+          },
+        ],
+        prohibition: [],
+      },
+      {
+        description: 'CAN use data without any restrictions',
+        permission: [
+          {
+            action: 'use',
+            target: 'target-offering-c',
+            constraint: [],
+          },
+        ],
+        prohibition: [],
+      },
+    ]);
   });
 
   it('Should iterate over an array, injecting policies for a specified list of roles.', async () => {
@@ -384,7 +420,6 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
     const response = await supertest(app.router)
       .post(`/contracts/policies/roles/${contractId}`)
       .set('Cookie', cookie)
-      .set('Authorization', `Bearer ${authToken}`)
       .send(data);
     _logGreen('The new contract in the database:');
     _logObject(response.body);

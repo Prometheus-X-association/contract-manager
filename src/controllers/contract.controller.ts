@@ -7,9 +7,17 @@ import { ContractMember } from 'interfaces/schemas.interface';
 
 export const createContract = async (req: Request, res: Response) => {
   try {
-    const contract: IContract = await contractService.genContract(req.body);
-    logger.info('[Contract/Controller: createContract] Successfully called.');
-    return res.status(201).json(contract);
+    const { contract, role } = req.body;
+    if (contract) {
+      const generated: IContract = await contractService.genContract(
+        contract,
+        role,
+      );
+      logger.info('[Contract/Controller: createContract] Successfully called.');
+      return res.status(201).json(generated);
+    } else {
+      throw new Error('Input contract undefined');
+    }
   } catch (error: any) {
     res.status(500).json({
       message: `An error occurred while creating the contract.`,
@@ -31,6 +39,42 @@ export const getContract = async (req: Request, res: Response) => {
     res
       .status(500)
       .json({ error: 'An error occurred while retrieving the contract.' });
+  }
+};
+
+export const getPolicyForServiceOffering = async (
+  req: Request,
+  res: Response,
+) => {
+  try {
+    const contractId: string = req.params.id;
+    const participantId: string = req.query.participant as string;
+    const serviceOfferingId: string = req.query.serviceOffering as string;
+
+    const policy = await contractService.getPolicyForServiceOffering(
+      contractId,
+      participantId,
+      serviceOfferingId,
+    );
+
+    if (!policy) {
+      return res.status(404).json({
+        error: 'Policy not found for the specified service offering.',
+      });
+    }
+
+    logger.info(
+      '[Contract/Controller: getPolicyForServiceOffering] Successfully called.',
+    );
+    return res.json(policy);
+  } catch (error) {
+    logger.error(
+      'Error retrieving the policy for the service offering:',
+      error,
+    );
+    res
+      .status(500)
+      .json({ error: 'An error occurred while retrieving the policy.' });
   }
 };
 
@@ -104,27 +148,6 @@ export const revokeContractSignature = async (req: Request, res: Response) => {
   }
 };
 
-export const checkDataExploitation = async (req: Request, res: Response) => {
-  const contractId = req.params.id;
-  const data = { policy: req.body };
-  const sessionId = req.session.id;
-  try {
-    const isAuthorised = await contractService.checkPermission(
-      contractId,
-      data,
-      sessionId,
-    );
-    if (isAuthorised) {
-      return res.status(200).json({ authorised: true });
-    } else {
-      return res.status(403).json({ authorised: false });
-    }
-  } catch (error) {
-    logger.error(error);
-    return res.status(500).json({ message: 'Internal server error' });
-  }
-};
-
 export const checkExploitationByRole = async (req: Request, res: Response) => {
   const contractId = req.params.id;
   const role = req.params.role;
@@ -181,23 +204,6 @@ export const getContracts = async (
   } catch (error: any) {
     logger.error('Error while fetching all contract:', { error });
     res.status(500).json({ error: error.message });
-  }
-};
-
-export const getODRLContract = async (req: Request, res: Response) => {
-  try {
-    const contractId: string = req.params.id;
-    const contract = await contractService.getODRLContract(contractId, false);
-    if (!contract) {
-      return res.status(404).json({ error: 'Contract not found.' });
-    }
-    logger.info('[Contract/Controller: getODRLContract] Successfully called.');
-    return res.json(contract);
-  } catch (error) {
-    logger.error('Error retrieving the ODRL contract:', error);
-    res
-      .status(500)
-      .json({ error: 'An error occurred while retrieving the ODRL contract.' });
   }
 };
 

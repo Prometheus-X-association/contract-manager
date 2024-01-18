@@ -78,6 +78,11 @@ const doc = {
       requestedFields: { type: 'array', items: { type: 'string' } },
       policy: { type: 'object' },
     },
+    ContractPolicy: {
+      description: { type: 'string' },
+      permission: [{}],
+      prohibition: [{}],
+    },
     ODRLPolicy: {},
     User: {},
     PolicyList: [{}],
@@ -98,10 +103,26 @@ const doc = {
       },
     },
     InputContract: {
-      ecosystem: { type: 'string' },
-      permission: { type: 'array', items: { $ref: '#/definitions/Asset' } },
-      prohibition: { type: 'array', items: { $ref: '#/definitions/Asset' } },
-      required: ['ecosystem'],
+      type: 'object',
+      properties: {
+        contract: {
+          type: 'object',
+          properties: {
+            role: { type: 'string' },
+            ecosystem: { type: 'string' },
+            permission: {
+              type: 'array',
+              items: { $ref: '#/definitions/Asset' },
+            },
+            prohibition: {
+              type: 'array',
+              items: { $ref: '#/definitions/Asset' },
+            },
+          },
+          required: ['ecosystem'],
+        },
+      },
+      required: ['contract'],
     },
     Bilateral: bilateralContractModel,
     Contract: contractModel,
@@ -129,7 +150,6 @@ const doc = {
 const outputFile: string = './swagger.json';
 const endpointsFiles: string[] = [
   '../routes/**/*.ts',
-  './pap.swagger.ts',
   './user.swagger.ts',
   './contract.swagger.ts',
   './bilateral.swagger.ts',

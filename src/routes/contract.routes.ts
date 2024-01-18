@@ -2,10 +2,8 @@ import express, { Router } from 'express';
 import {
   createContract,
   getContract,
-  getODRLContract,
   updateContract,
   signContract,
-  checkDataExploitation,
   getContracts,
   getContractsFor,
   revokeContractSignature,
@@ -14,6 +12,8 @@ import {
   injectPoliciesForRole,
   injectPoliciesForRoles,
   injectOfferingPolicies,
+  checkExploitationByRole,
+  getPolicyForServiceOffering,
 } from '../controllers/contract.controller';
 
 // Ecosystem Contract Routes
@@ -22,11 +22,14 @@ router.get('/contracts/all/', getContracts);
 router.get('/contracts/for/:did', getContractsFor);
 router.post('/contracts/', createContract);
 router.get('/contracts/:id', getContract);
-router.get('/contracts/odrl/:id', getODRLContract);
+router.get('/contracts/serviceoffering/:id', getPolicyForServiceOffering);
 router.put('/contracts/:id', updateContract);
 router.put('/contracts/sign/:id', signContract);
 router.delete('/contracts/sign/revoke/:id/:did', revokeContractSignature);
-router.post('/contracts/check-exploitability/:id', checkDataExploitation);
+router.post(
+  '/contracts/role/exploitability/:id/:role',
+  checkExploitationByRole,
+);
 router.post('/contracts/policy/:id', injectPolicy);
 router.post('/contracts/policies/:id', injectPolicies);
 router.post('/contracts/policies/role/:id', injectPoliciesForRole);

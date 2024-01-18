@@ -15,7 +15,6 @@ const _logObject = (data: any) => {
 };
 describe('Routes for Bilateral Contract API', () => {
   let server: any;
-  let authToken: string;
   before(async () => {
     server = await app.startServer(config.mongo.testUrl);
     await new Promise((resolve) => {
@@ -25,9 +24,9 @@ describe('Routes for Bilateral Contract API', () => {
       });
     });
     await BilateralContract.deleteMany({});
-    const authResponse = await supertest(app.router).get('/user/login');
+
+    const authResponse = await supertest(app.router).get('/ping');
     authTokenCookie = authResponse.headers['set-cookie'];
-    authToken = authResponse.body.token;
   });
 
   after(async () => {
@@ -65,7 +64,6 @@ describe('Routes for Bilateral Contract API', () => {
     const response = await supertest(app.router)
       .post(`${API_ROUTE_BASE}`)
       .set('Cookie', authTokenCookie)
-      .set('Authorization', `Bearer ${authToken}`)
       .send(contractData);
     //
     _logObject(response.body);
@@ -82,8 +80,7 @@ describe('Routes for Bilateral Contract API', () => {
     // Send a GET request to retrieve the contract by its ID
     const response = await supertest(app.router)
       .get(`${API_ROUTE_BASE}${createdContractId}`)
-      .set('Cookie', authTokenCookie)
-      .set('Authorization', `Bearer ${authToken}`);
+      .set('Cookie', authTokenCookie);
     //
     _logObject(response.body);
     // Check if the response status is 200 (OK)
@@ -101,7 +98,6 @@ describe('Routes for Bilateral Contract API', () => {
     const response = await supertest(app.router)
       .put(`${API_ROUTE_BASE}${createdContractId}`)
       .set('Cookie', authTokenCookie)
-      .set('Authorization', `Bearer ${authToken}`)
       .send(updatedContractData);
     //
     _logObject(response.body);
@@ -128,7 +124,6 @@ describe('Routes for Bilateral Contract API', () => {
     const responsePartyA1 = await supertest(app.router)
       .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
       .set('Cookie', authTokenCookie)
-      .set('Authorization', `Bearer ${authToken}`)
       .send(signatureDataPartyA1);
     //
     _logObject(responsePartyA1.body);
@@ -146,7 +141,6 @@ describe('Routes for Bilateral Contract API', () => {
     const responsePartyA2 = await supertest(app.router)
       .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
       .set('Cookie', authTokenCookie)
-      .set('Authorization', `Bearer ${authToken}`)
       .send(signatureDataPartyA2);
     //
     _logObject(responsePartyA2.body);
@@ -161,7 +155,6 @@ describe('Routes for Bilateral Contract API', () => {
     const response = await supertest(app.router)
       .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
       .set('Cookie', authTokenCookie)
-      .set('Authorization', `Bearer ${authToken}`)
       .send(signatureDataPartyB);
     //
     _logObject(response.body);
@@ -214,7 +207,6 @@ describe('Routes for Bilateral Contract API', () => {
     const responsePartyC = await supertest(app.router)
       .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
       .set('Cookie', authTokenCookie)
-      .set('Authorization', `Bearer ${authToken}`)
       .send(signatureDataPartyC);
     //
     _logObject(responsePartyC.body);
@@ -232,7 +224,7 @@ describe('Routes for Bilateral Contract API', () => {
   it('should check whether a specific resource is exploitable through an established contract', async () => {
     const data = {
       '@context': 'http://www.w3.org/ns/odrl/2/',
-      '@type': 'authorisation',
+      '@type': 'Set',
       permission: [
         {
           action: 'read',
@@ -243,7 +235,6 @@ describe('Routes for Bilateral Contract API', () => {
     const response = await supertest(app.router)
       .post(`${API_ROUTE_BASE}check-exploitability/${createdContractId}`)
       .set('Cookie', authTokenCookie)
-      .set('Authorization', `Bearer ${authToken}`)
       .send(data);
     //
     _logObject(response.body);
@@ -258,8 +249,7 @@ describe('Routes for Bilateral Contract API', () => {
     // Revoke the signature for party B
     const response = await supertest(app.router)
       .delete(`${API_ROUTE_BASE}sign/revoke/${createdContractId}/${didPartyB}`)
-      .set('Cookie', authTokenCookie)
-      .set('Authorization', `Bearer ${authToken}`);
+      .set('Cookie', authTokenCookie);
     //
     _logObject(response.body);
     // Check if the response status is OK (200)

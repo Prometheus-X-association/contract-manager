@@ -1,22 +1,16 @@
 import { IContract, IContractDB } from 'interfaces/contract.interface';
 import Contract from 'models/contract.model';
-import DataRegistry from 'models/data.registry.model';
-import { checkFieldsMatching, replaceValues } from 'utils/utils';
-import pdp from './policy/pdp.service';
 import { logger } from 'utils/logger';
 import { ContractMember } from 'interfaces/schemas.interface';
-import { IDataRegistry, IDataRegistryDB } from 'interfaces/global.interface';
-import { IContractPolicy, IPolicyInjection } from 'interfaces/policy.interface';
+import { IPolicyInjection } from 'interfaces/policy.interface';
 import { genPolicyFromRule } from './policy/utils';
+import pdp from 'services/policy/pdp.service';
 
 // Ecosystem Contract Service
 export class ContractService {
   private static instance: ContractService;
-  private contractModelPromise: Promise<IDataRegistry[]>;
 
-  private constructor() {
-    this.contractModelPromise = this.getContractModel();
-  }
+  private constructor() {}
 
   public static getInstance(): ContractService {
     if (!ContractService.instance) {
@@ -25,60 +19,29 @@ export class ContractService {
     return ContractService.instance;
   }
 
-  private async getContractModel(): Promise<IDataRegistry[]> {
-    try {
-      const dataRegistry: IDataRegistryDB | null =
-        await DataRegistry.findOne().select('contracts.ecosystem');
-      if (dataRegistry) {
-        const contractModel = dataRegistry.contracts?.ecosystem;
-        if (contractModel) {
-          return JSON.parse(contractModel);
-        } else {
-          throw new Error('No contract model found in database');
-        }
-      } else {
-        throw new Error(
-          '[Contract/Service, getContractModel]: Something went wrong while fetching data from registry',
-        );
-      }
-    } catch (error: any) {
-      logger.error(error.message);
-      throw error;
-    }
-  }
-
-  // Validate the contract input data against the contract model
-  public async isValid(contract: IContract): Promise<boolean> {
-    const contractModel = await this.contractModelPromise;
-    if (!contractModel) {
-      throw new Error('No contract model found.');
-    }
-    // Perform validation
-    const matching = checkFieldsMatching(contract, contractModel);
-    if (!matching.success) {
-      throw new Error(`${matching.field} is an invalid field.`);
-    }
-    return matching.success;
-  }
-
   // Generate a contract based on the contract data
-  public async genContract(contractData: IContract): Promise<IContract> {
+  public async genContract(
+    contractData: IContract,
+    role?: string,
+  ): Promise<IContract> {
     try {
-      // await this.isValid(contractData);
       const { permission, prohibition, ...rest } = contractData;
+      const rolesAndObligations = role
+        ? [
+            {
+              role,
+              policies: [
+                {
+                  permission: permission || [],
+                  prohibition: prohibition || [],
+                },
+              ],
+            },
+          ]
+        : [];
       const newContract = new Contract({
         ...rest,
-        rolesAndObligations: [
-          {
-            role: 'ecosystem',
-            policies: [
-              {
-                permission: permission || [],
-                prohibition: prohibition || [],
-              },
-            ],
-          },
-        ],
+        rolesAndObligations,
       });
       return newContract.save();
     } catch (error: any) {
@@ -98,6 +61,34 @@ export class ContractService {
       throw error;
     }
   }
+
+  // get policies for a given participant and service offering
+  public async getPolicyForServiceOffering(
+    contractId: string,
+    participantId: string,
+    serviceOfferingId: string,
+  ): Promise<any | null> {
+    try {
+      const contract = await Contract.findById(contractId);
+      if (!contract) {
+        return null;
+      }
+      const serviceOffering = contract.serviceOfferings.find((offering) => {
+        return (
+          offering.participant === participantId &&
+          offering.serviceOffering === serviceOfferingId
+        );
+      });
+      if (!serviceOffering) {
+        return null;
+      }
+      const policies = serviceOffering.policies;
+      return policies;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   // update contract
   public async updateContract(
     contractId: string,
@@ -214,43 +205,6 @@ export class ContractService {
       throw error;
     }
   }
-  //
-  public async checkPermission(
-    contractId: string,
-    data: any,
-    sessionId: string,
-  ): Promise<boolean> {
-    try {
-      const contract = await Contract.findById(contractId);
-      if (!contract) {
-        return false;
-      }
-      const rao = contract.rolesAndObligations.find(
-        (entry) => entry.role === 'ecosystem',
-      );
-      if (!rao || !rao.policies) {
-        return false;
-      }
-      const mergedPolicy = rao.policies.reduce(
-        (acc, policy) => {
-          acc.permission.push(...(policy.permission || []));
-          acc.prohibition.push(...(policy.prohibition || []));
-          return acc;
-        },
-        { permission: [], prohibition: [] } as IContractPolicy,
-      );
-      const { permission, prohibition } = data.policy;
-      return pdp.isAuthorised(
-        {
-          permission: [...mergedPolicy.permission, ...(permission || [])],
-          prohibition: [...mergedPolicy.prohibition, ...(prohibition || [])],
-        },
-        sessionId,
-      );
-    } catch (error) {
-      throw error;
-    }
-  }
 
   public async checkExploitationByRole(
     contractId: string,
@@ -259,7 +213,7 @@ export class ContractService {
     role: string,
   ): Promise<boolean> {
     try {
-      const contract = await Contract.findById(contractId);
+      const contract = await Contract.findById(contractId).lean();
       if (!contract || !contract.rolesAndObligations) {
         return false;
       }
@@ -275,7 +229,11 @@ export class ContractService {
       const prohibition = rao.policies
         .flatMap((policy) => policy.prohibition || [])
         .concat(data.policy?.prohibition || []);
-      return pdp.isAuthorised({ permission, prohibition }, sessionId);
+      return await pdp.isAuthorised(
+        { permission, prohibition },
+        sessionId,
+        data.policy,
+      );
     } catch (error) {
       throw error;
     }
@@ -325,36 +283,6 @@ export class ContractService {
     }
   }
 
-  // Get ORDL contract version by id
-  public async getODRLContract(
-    contractId: string,
-    generate: boolean,
-  ): Promise<any> {
-    try {
-      if (!generate) {
-        const data = await Contract.findById(contractId)
-          .select('jsonLD')
-          .lean();
-        if (!data?.jsonLD) {
-          throw new Error('ODRL contract not found.');
-        }
-        const contract = JSON.parse(data.jsonLD);
-        return contract;
-      } else {
-        const contract = await Contract.findById(contractId)
-          .select('-jsonLD')
-          .lean();
-        if (contract) {
-          this.convertContract(contract);
-        }
-      }
-    } catch (error: any) {
-      throw new Error(
-        `Error while retrieving the ODRL contract: ${error.message}`,
-      );
-    }
-  }
-  //
   public async addPoliciesForRoles(
     contractId: string,
     data: { roles: string[]; policies: IPolicyInjection[] }[],

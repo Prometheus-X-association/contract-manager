@@ -556,12 +556,12 @@
         }
       }
     },
-    "/contracts/odrl/{id}": {
+    "/contracts/serviceoffering/{id}": {
       "get": {
         "tags": [
           "Contract"
         ],
-        "summary": "Get ODRL contract by ID",
+        "summary": "Get the policies for a given service offering",
         "description": "",
         "parameters": [
           {
@@ -569,18 +569,44 @@
             "in": "path",
             "required": true,
             "type": "string",
-            "description": "ID of the ODRL contract"
+            "description": "ID of the contract"
+          },
+          {
+            "name": "participant",
+            "in": "query",
+            "description": "ID of the participant",
+            "required": true,
+            "type": "string"
+          },
+          {
+            "name": "serviceOffering",
+            "in": "query",
+            "description": "ID of the service offering",
+            "required": true,
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
-            "description": "ODRL contract details",
+            "description": "An array of policies related to the service offering",
             "schema": {
-              "$ref": "#/definitions/ODRLContract"
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "array"
+                },
+                "items": {
+                  "$ref": "#/definitions/ContractPolicy"
+                }
+              },
+              "xml": {
+                "name": "main"
+              }
             }
           },
           "404": {
-            "description": "ODRL contract not found.",
+            "description": "Contract not found.",
             "schema": {
               "$ref": "#/definitions/Error"
             }
@@ -686,7 +712,7 @@
         }
       }
     },
-    "/contracts/check-exploitability/{id}": {
+    "/contracts/role/exploitability/{id}/{role}": {
       "post": {
         "tags": [
           "Contract"
@@ -700,6 +726,13 @@
             "required": true,
             "type": "string",
             "description": "ID of the contract"
+          },
+          {
+            "name": "role",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID of the related role"
           }
         ],
         "responses": {
@@ -1109,204 +1142,21 @@
         }
       }
     },
-    "/pap/policies/": {
-      "post": {
-        "tags": [
-          "Pap"
-        ],
-        "summary": "Endpoint to create a new policy.",
-        "description": "Endpoint to create a new policy.",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "policy",
-            "in": "body",
-            "description": "Policy object to be created.",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/Policy"
-            }
-          }
-        ],
-        "responses": {
-          "201": {
-            "description": "Policy created successfully.",
-            "schema": {
-              "$ref": "#/definitions/Policy"
-            }
-          },
-          "400": {
-            "description": "Bad request. Error creating the policy.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "default": {
-            "description": ""
-          }
-        }
-      },
-      "get": {
-        "tags": [
-          "Pap"
-        ],
-        "summary": "Endpoint to get a list of policies.",
-        "description": "Endpoint to get a list of policies.",
-        "produces": [
-          "application/json"
-        ],
-        "responses": {
-          "200": {
-            "description": "List of policies retrieved successfully.",
-            "schema": {
-              "$ref": "#/definitions/PolicyList"
-            }
-          },
-          "500": {
-            "description": "Internal server error.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/pap/policies/{name}": {
-      "get": {
-        "tags": [
-          "Pap"
-        ],
-        "summary": "Endpoint to get policies by name.",
-        "description": "Endpoint to get policies by name.",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "name",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "description": "Name of the policy."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Policy retrieved successfully.",
-            "schema": {
-              "$ref": "#/definitions/Policy"
-            }
-          },
-          "404": {
-            "description": "No policies found with the given name.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "500": {
-            "description": "Internal server error.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/pap/policies/{id}": {
-      "get": {
-        "tags": [
-          "Pap"
-        ],
-        "summary": "Endpoint to get a policy by ID.",
-        "description": "Endpoint to get a policy by ID.",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "description": "ID of the policy."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Policy retrieved successfully.",
-            "schema": {
-              "$ref": "#/definitions/Policy"
-            }
-          },
-          "404": {
-            "description": "Policy not found.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "500": {
-            "description": "Internal server error.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "default": {
-            "description": ""
-          }
-        }
-      },
+    "/user/store": {
       "put": {
         "tags": [
-          "Pap"
+          "User"
         ],
-        "summary": "Endpoint to update a policy by ID.",
-        "description": "Endpoint to update a policy by ID.",
+        "summary": "Endpoint to store user data.",
+        "description": "Endpoint to store user data.",
         "produces": [
           "application/json"
         ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "description": "ID of the policy."
-          },
-          {
-            "name": "policy",
-            "in": "body",
-            "description": "Updated policy object.",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/Policy"
-            }
-          }
-        ],
         "responses": {
           "200": {
-            "description": "Policy updated successfully.",
+            "description": "Data has been added to the store.",
             "schema": {
-              "$ref": "#/definitions/Policy"
-            }
-          },
-          "400": {
-            "description": "Bad request. Error updating the policy.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "404": {
-            "description": "Policy not found.",
-            "schema": {
-              "$ref": "#/definitions/Error"
+              "$ref": "#/definitions/SuccessMessage"
             }
           },
           "500": {
@@ -1314,97 +1164,6 @@
             "schema": {
               "$ref": "#/definitions/Error"
             }
-          },
-          "default": {
-            "description": ""
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Pap"
-        ],
-        "summary": "Endpoint to delete a policy by ID.",
-        "description": "Endpoint to delete a policy by ID.",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string",
-            "description": "ID of the policy."
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Policy deleted successfully.",
-            "schema": {
-              "$ref": "#/definitions/Policy"
-            }
-          },
-          "404": {
-            "description": "Policy not found.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "500": {
-            "description": "Internal server error.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "default": {
-            "description": ""
-          }
-        }
-      }
-    },
-    "/pap/policies/verify": {
-      "post": {
-        "tags": [
-          "Pap"
-        ],
-        "summary": "Endpoint to verify an ODRL policy.",
-        "description": "Endpoint to verify an ODRL policy.",
-        "produces": [
-          "application/json"
-        ],
-        "parameters": [
-          {
-            "name": "policy",
-            "in": "body",
-            "description": "ODRL policy to be verified.",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/ODRLPolicy"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Policy verification result.",
-            "schema": {
-              "$ref": "#/definitions/VerificationResult"
-            }
-          },
-          "400": {
-            "description": "Bad request. The ODRL policy is not valid.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "500": {
-            "description": "Internal server error.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          },
-          "default": {
-            "description": ""
           }
         }
       }
@@ -1492,32 +1251,6 @@
           }
         }
       }
-    },
-    "/user/store": {
-      "put": {
-        "tags": [
-          "User"
-        ],
-        "summary": "Endpoint to store user data.",
-        "description": "Endpoint to store user data.",
-        "produces": [
-          "application/json"
-        ],
-        "responses": {
-          "200": {
-            "description": "Data has been added to the store.",
-            "schema": {
-              "$ref": "#/definitions/SuccessMessage"
-            }
-          },
-          "500": {
-            "description": "Internal server error.",
-            "schema": {
-              "$ref": "#/definitions/Error"
-            }
-          }
-        }
-      }
     }
   },
   "definitions": {
@@ -1567,6 +1300,34 @@
               "type": "string",
               "example": "object"
             }
+          }
+        }
+      }
+    },
+    "ContractPolicy": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "example": "string"
+            }
+          }
+        },
+        "permission": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {}
+          }
+        },
+        "prohibition": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {}
           }
         }
       }
@@ -1719,43 +1480,84 @@
     "InputContract": {
       "type": "object",
       "properties": {
-        "ecosystem": {
-          "type": "object",
-          "properties": {
-            "type": {
-              "type": "string",
-              "example": "string"
-            }
-          }
+        "type": {
+          "type": "string",
+          "example": "object"
         },
-        "permission": {
+        "properties": {
           "type": "object",
           "properties": {
-            "type": {
-              "type": "string",
-              "example": "array"
-            },
-            "items": {
-              "$ref": "#/definitions/Asset"
-            }
-          }
-        },
-        "prohibition": {
-          "type": "object",
-          "properties": {
-            "type": {
-              "type": "string",
-              "example": "array"
-            },
-            "items": {
-              "$ref": "#/definitions/Asset"
+            "contract": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "object"
+                },
+                "properties": {
+                  "type": "object",
+                  "properties": {
+                    "role": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "string"
+                        }
+                      }
+                    },
+                    "ecosystem": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "string"
+                        }
+                      }
+                    },
+                    "permission": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "array"
+                        },
+                        "items": {
+                          "$ref": "#/definitions/Asset"
+                        }
+                      }
+                    },
+                    "prohibition": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "array"
+                        },
+                        "items": {
+                          "$ref": "#/definitions/Asset"
+                        }
+                      }
+                    }
+                  }
+                },
+                "required": {
+                  "type": "array",
+                  "example": [
+                    "ecosystem"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
             }
           }
         },
         "required": {
           "type": "array",
           "example": [
-            "ecosystem"
+            "contract"
           ],
           "items": {
             "type": "string"

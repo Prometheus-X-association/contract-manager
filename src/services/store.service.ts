@@ -1,7 +1,7 @@
 import { logger } from 'utils/logger';
 
 // Definition of the interface for the Store
-export type StoreElement = Record<string, (target: string) => unknown>;
+export type StoreElement = Record<string, (target?: string) => unknown>;
 type StoreUserElement = Record<string, StoreElement>;
 interface Store {
   default: StoreElement;
@@ -76,11 +76,11 @@ export class StoreRepository {
   public getUserValue(
     sessionId: string,
     name: string,
-    subject: string,
+    subject?: string,
   ): unknown {
     if (sessionId) {
       const store = this.store.user?.[sessionId];
-      const f: (t: string) => unknown = store?.[name];
+      const f: (t?: string) => unknown = store?.[name];
       return f ? f(subject) : null;
     }
     // Handle undefined sessionId
