@@ -102,6 +102,21 @@ const doc = {
         required: ['target', 'action'],
       },
     },
+    InputBilateralContract: {
+      type: 'object',
+      properties: {
+        contract: {
+          type: 'object',
+          properties: {
+            serviceOffering: { type: 'string' },
+            dataProvider: { type: 'string' },
+            dataConsumer: { type: 'string' },
+          },
+          required: ['serviceOffering', 'dataProvider', 'dataConsumer'],
+        },
+      },
+      required: ['contract'],
+    },
     InputContract: {
       type: 'object',
       properties: {

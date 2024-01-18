@@ -64,7 +64,7 @@ describe('Routes for Bilateral Contract API', () => {
     const response = await supertest(app.router)
       .post(`${API_ROUTE_BASE}`)
       .set('Cookie', authTokenCookie)
-      .send(contractData);
+      .send({ contract: contractData });
     //
     _logObject(response.body);
     // Check if the response status is 201 (Created)

@@ -241,10 +241,17 @@ export class ContractService {
 
   // Get ecosystem contracts for a specific DID with optional filter
   public async getContractsFor(
-    did: string,
+    _did: string,
     hasSigned?: boolean,
   ): Promise<IContractDB[]> {
     try {
+      let did;
+      try {
+        const buff = Buffer.from(_did, 'base64');
+        did = buff.toString();
+      } catch (error: any) {
+        throw new Error(error.message);
+      }
       const filter: Record<string, any> = {};
       if (hasSigned) {
         // Participant must appear in signatures

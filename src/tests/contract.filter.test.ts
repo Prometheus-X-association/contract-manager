@@ -95,7 +95,7 @@ describe('Routes for Contract API', () => {
 
     // Test case for getting contracts with a specific DID in signatures
     it('should return contracts for a specific DID in signatures', async () => {
-      const did = didPartyA;
+      const did = Buffer.from(didPartyA, 'utf8').toString('base64');
       const response = await supertest(app.router)
         .get(`${API_ROUTE_BASE}for/${did}`)
         .set('Cookie', authTokenCookie);
@@ -111,7 +111,7 @@ describe('Routes for Contract API', () => {
 
     // Test case for getting contracts where DID is not in signatures when hasSigned is false
     it('should return contracts where DID is not in signatures when hasSigned is false', async () => {
-      const did = didPartyA;
+      const did = Buffer.from(didPartyA, 'utf8').toString('base64');
       const hasSigned = false;
       const response = await supertest(app.router)
         .get(`${API_ROUTE_BASE}for/${did}?hasSigned=${hasSigned}`)

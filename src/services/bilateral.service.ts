@@ -225,13 +225,20 @@ export class BilateralContractService {
 
   // Get contracts for a specific DID and an optionnal filter
   public async getContractsFor(
-    did: string,
+    _did: string,
     // An optional parameter that indicates whether a DID is a participant.
     isParticipant?: boolean,
     // Optional parameter indicating whether the contract is signed
     hasSigned?: boolean,
   ): Promise<IBilateralContractDB[]> {
     try {
+      let did;
+      try {
+        const buff = Buffer.from(_did, 'base64');
+        did = buff.toString();
+      } catch (error: any) {
+        throw new Error(error.message);
+      }
       let filter: Record<string, any> = {};
       let negotiator = {};
       let signed = {};
