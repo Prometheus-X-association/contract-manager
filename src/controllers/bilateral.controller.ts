@@ -11,10 +11,17 @@ import { BilateralContractSignature } from 'interfaces/schemas.interface';
 export const createContract = async (req: Request, res: Response) => {
   // #swagger.tags = ['Bilateral'];
   try {
-    const contract: IBilateralContract =
-      await bilateralContractService.genContract(req.body);
+    const { contract, _no_negociators } = req.body;
+    if (!_no_negociators) {
+      contract.negotiators = [
+        { did: contract.dataConsumer },
+        { did: contract.dataProvider },
+      ];
+    }
+    const bilateral: IBilateralContract =
+      await bilateralContractService.genContract(contract);
     logger.info('[Bilateral/Controller: createContract] Successfully called.');
-    return res.status(201).json(contract);
+    return res.status(201).json(bilateral);
   } catch (error: any) {
     res.status(500).json({
       message: `An error occurred while creating the contract.`,

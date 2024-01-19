@@ -1,6 +1,29 @@
 // #swagger.start
 /*
   #swagger.tags = ['Bilateral']
+  #swagger.path = '/bilaterals/'
+  #swagger.method = 'post'
+  #swagger.summary = 'Create a new bilateral contract'
+  #swagger.parameters['contract'] = {
+    in: 'body',
+    description: 'Contract data for creation.',
+    required: true,
+    schema: { $ref: '#/definitions/InputBilateralContract' }
+  }
+  #swagger.responses[201] = {
+    description: 'Newly created contract',
+    schema: { $ref: '#/definitions/Bilateral' }
+  }
+  #swagger.responses[500] = {
+    description: 'Internal server error.',
+    schema: { $ref: '#/definitions/Error' }
+  }
+*/
+// #swagger.end
+
+// #swagger.start
+/*
+  #swagger.tags = ['Bilateral']
   #swagger.path = '/bilaterals/policies/{id}'
   #swagger.method = 'post'
   #swagger.summary = 'Inject multiple policies into a contract'

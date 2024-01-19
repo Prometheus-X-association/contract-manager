@@ -65,7 +65,7 @@ describe('Create a bilateral contract, then inject policies in it.', () => {
     const response = await supertest(app.router)
       .post('/bilaterals/')
       .set('Cookie', cookie)
-      .send(contract);
+      .send({ contract });
     _logGreen('The contract in database:');
     _logObject(response.body);
     expect(response.status).to.equal(201);

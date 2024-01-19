@@ -73,13 +73,31 @@
         "tags": [
           "Bilateral"
         ],
+        "summary": "Create a new bilateral contract",
         "description": "",
+        "parameters": [
+          {
+            "name": "contract",
+            "in": "body",
+            "description": "Contract data for creation.",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/InputBilateralContract"
+            }
+          }
+        ],
         "responses": {
           "201": {
-            "description": "Created"
+            "description": "Newly created contract",
+            "schema": {
+              "$ref": "#/definitions/Bilateral"
+            }
           },
           "500": {
-            "description": "Internal Server Error"
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
           }
         }
       }
@@ -1473,6 +1491,81 @@
                 "type": "string"
               }
             }
+          }
+        }
+      }
+    },
+    "InputBilateralContract": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "example": "object"
+        },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "contract": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "example": "object"
+                },
+                "properties": {
+                  "type": "object",
+                  "properties": {
+                    "serviceOffering": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "string"
+                        }
+                      }
+                    },
+                    "dataProvider": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "string"
+                        }
+                      }
+                    },
+                    "dataConsumer": {
+                      "type": "object",
+                      "properties": {
+                        "type": {
+                          "type": "string",
+                          "example": "string"
+                        }
+                      }
+                    }
+                  }
+                },
+                "required": {
+                  "type": "array",
+                  "example": [
+                    "serviceOffering",
+                    "dataProvider",
+                    "dataConsumer"
+                  ],
+                  "items": {
+                    "type": "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "required": {
+          "type": "array",
+          "example": [
+            "contract"
+          ],
+          "items": {
+            "type": "string"
           }
         }
       }

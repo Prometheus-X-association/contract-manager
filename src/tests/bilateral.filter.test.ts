@@ -46,7 +46,7 @@ describe('Routes for Contract API', () => {
     const responseSigned = await supertest(app.router)
       .post(`${API_ROUTE_BASE}`)
       .set('Cookie', authTokenCookie)
-      .send(signedContractData);
+      .send({ contract: signedContractData, _no_negociators: true });
     signedContractId = responseSigned.body._id;
 
     // Add the party A as negotiator for the signed contract
@@ -99,7 +99,7 @@ describe('Routes for Contract API', () => {
     const responseThird = await supertest(app.router)
       .post(`${API_ROUTE_BASE}`)
       .set('Cookie', authTokenCookie)
-      .send(thirdContractData);
+      .send({ contract: thirdContractData, _no_negociators: true });
     thirdContractId = responseThird.body._id;
 
     // Add the party A as negotiator for the third contract
@@ -117,7 +117,7 @@ describe('Routes for Contract API', () => {
     const responseUnsigned = await supertest(app.router)
       .post(`${API_ROUTE_BASE}`)
       .set('Cookie', authTokenCookie)
-      .send(unsignedContractData);
+      .send({ contract: unsignedContractData, _no_negociators: true });
     unsignedContractId = responseUnsigned.body._id;
   });
 
@@ -159,7 +159,7 @@ describe('Routes for Contract API', () => {
     //    /bilaterals/for/participantFakeTokenDID or
     //    /bilaterals/for/participantFakeTokenDID?isParticipant=true
     it('should return contracts where DID is in participants', async () => {
-      const did = didPartyA;
+      const did = Buffer.from(didPartyA, 'utf8').toString('base64');
       const isParticipant = true;
       const response = await supertest(app.router)
         .get(`${API_ROUTE_BASE}for/${did}?isParticipant=${isParticipant}`)
@@ -178,7 +178,7 @@ describe('Routes for Contract API', () => {
     // Test case for getting contracts where DID in the same time in signatures and participants
     //    /bilateral/for/participantFakeTokenDID?hasSigned=true
     it('should return contracts where DID in the same time in signatures and participants', async () => {
-      const did = didPartyA;
+      const did = Buffer.from(didPartyA, 'utf8').toString('base64');
       const hasSigned = true;
       const response = await supertest(app.router)
         .get(`${API_ROUTE_BASE}for/${did}?hasSigned=${hasSigned}`)
@@ -195,7 +195,7 @@ describe('Routes for Contract API', () => {
     //    /bilaterals/for/participantFakeTokenDID?isParticipant=false ou
     //    /bilaterals/for/participantFakeTokenDID?isParticipant=false&hasSigned=false
     it('should return contracts where DID is not a participant nor in signatures', async () => {
-      const did = didPartyA;
+      const did = Buffer.from(didPartyA, 'utf8').toString('base64');
       const isParticipant = false;
       const hasSigned = false;
       const response = await supertest(app.router)
@@ -214,7 +214,7 @@ describe('Routes for Contract API', () => {
     // Test case for getting contracts where DID is in participants but not in signatures
     //    /bilaterals/for/participantFakeTokenDID?isParticipant=true&hasSigned=false
     it('should return contracts where DID is in participants but not in signatures', async () => {
-      const did = didPartyA;
+      const did = Buffer.from(didPartyA, 'utf8').toString('base64');
       const isParticipant = true;
       const hasSigned = false;
       const response = await supertest(app.router)
@@ -233,7 +233,7 @@ describe('Routes for Contract API', () => {
     // Test case for getting contracts where DID is not in signatures with hasSigned equal false
     //    /bilaterals/for/participantFakeTokenDID?hasSigned=false
     it('should return contracts where DID is not in signatures with hasSigned equal false', async () => {
-      const did = didPartyA;
+      const did = Buffer.from(didPartyA, 'utf8').toString('base64');
       const hasSigned = false;
       const response = await supertest(app.router)
         .get(`${API_ROUTE_BASE}for/${did}?hasSigned=${hasSigned}`)
@@ -253,7 +253,7 @@ describe('Routes for Contract API', () => {
     //    /bilaterals/for/participantFakeTokenDID?hasSigned=true ou
     //    /bilaterals/for/participantFakeTokenDID?isParticipant=true&hasSigned=true
     it('should return contracts where DID is in participants and in signatures', async () => {
-      const did = didPartyA;
+      const did = Buffer.from(didPartyA, 'utf8').toString('base64');
       const isParticipant = true;
       const hasSigned = true;
       const response = await supertest(app.router)
