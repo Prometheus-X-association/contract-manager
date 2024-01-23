@@ -608,6 +608,7 @@ export type ContractMember = {
   role: string;
   signature: string;
   date?: Date;
+  serviceOfferings: [ContractServiceOffering]
 };
 
 /**
