@@ -140,7 +140,7 @@ export class ContractService {
       // Check if the party is the orchestrator
       const isOrchestrator = inputSignature.role === 'orchestrator';
       const currentMember = contract.members.find(
-        (member) => member.role === inputSignature.role,
+          (member) => member.participant === inputSignature.participant,
       );
       if (currentMember) {
         // Update the value of an existing signature
@@ -148,6 +148,10 @@ export class ContractService {
       } else {
         // Add a new signature if it doesn't exist
         contract.members.push(inputSignature);
+        //And add his serviceOfferings
+        if(inputSignature.serviceOfferings){
+          contract.serviceOfferings.push(...inputSignature.serviceOfferings)
+        }
       }
       // Check if both parties have signed, including the orchestrator
       const totalMembers = contract.members.length;
