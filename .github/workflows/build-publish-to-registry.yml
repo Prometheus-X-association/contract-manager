@@ -5,6 +5,7 @@ on:
       - main
       - ci
 permissions:
+  contents: read
   packages: write
 jobs:
   publish:
