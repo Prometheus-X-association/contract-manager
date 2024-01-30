@@ -149,9 +149,6 @@ export class ContractService {
         // Add a new signature if it doesn't exist
         contract.members.push(inputSignature);
         //And add his serviceOfferings
-        if(inputSignature.serviceOfferings){
-          contract.serviceOfferings.push(...inputSignature.serviceOfferings)
-        }
       }
       // Check if both parties have signed, including the orchestrator
       const totalMembers = contract.members.length;
