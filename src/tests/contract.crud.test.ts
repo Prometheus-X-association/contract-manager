@@ -116,7 +116,6 @@ describe('Routes for Contract API', () => {
       participant: didPartyA,
       role: 'partyA',
       signature: 'partyASignature1',
-      serviceOfferings: [],
     };
 
     // Send a PUT request to sign the contract for party A the first time
@@ -137,7 +136,6 @@ describe('Routes for Contract API', () => {
       participant: didPartyA,
       role: 'partyA',
       signature: 'partyASignature2',
-      serviceOfferings: [],
     };
 
     // Send a PUT request to sign the contract for party A the second time
@@ -152,7 +150,6 @@ describe('Routes for Contract API', () => {
       participant: didPartyB,
       role: 'partyB',
       signature: 'partyBSignature',
-      serviceOfferings: [],
     };
 
     // Send a PUT request to sign the contract for party B
@@ -173,7 +170,6 @@ describe('Routes for Contract API', () => {
       participant: didOrchestrator,
       role: 'orchestrator',
       signature: 'orchestratorSignature',
-      serviceOfferings: [],
     };
 
     // Send a PUT request to sign the contract for the orchestrator
