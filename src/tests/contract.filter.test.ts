@@ -46,7 +46,6 @@ describe('Routes for Contract API', () => {
       participant: didPartyA,
       role: 'partyA',
       signature: 'partyASignature1',
-      serviceOfferings: [],
     };
     // Send a PUT request to sign the contract for party A
     await supertest(app.router)
