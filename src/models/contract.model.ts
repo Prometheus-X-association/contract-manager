@@ -72,7 +72,6 @@ const MemberSchema = new Schema(
             type: Date,
             default: Date.now,
         },
-        serviceOfferings: [OfferingSchema]
     },
     { _id: false },
 );

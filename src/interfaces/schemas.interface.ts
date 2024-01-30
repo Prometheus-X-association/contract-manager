@@ -596,94 +596,6 @@ export type ContractPurpose = {
 };
 
 /**
- * Lean version of ContractMemberServiceOfferingPoliciePermissionConstraintDocument
- *
- * This has all Mongoose getters & functions removed. This type will be returned from `ContractMemberServiceOfferingPoliciePermissionDocument.toObject()`.
- * ```
- * const contractmemberserviceofferingpoliciepermissionObject = contractmemberserviceofferingpoliciepermission.toObject();
- * ```
- */
-export type ContractMemberServiceOfferingPoliciePermissionConstraint = {
-  '@type'?: string;
-  leftOperand?: string;
-  operator?: string;
-  rightOperand?: any;
-};
-
-/**
- * Lean version of ContractMemberServiceOfferingPoliciePermissionDocument
- *
- * This has all Mongoose getters & functions removed. This type will be returned from `ContractMemberServiceOfferingPolicieDocument.toObject()`.
- * ```
- * const contractmemberserviceofferingpolicieObject = contractmemberserviceofferingpolicie.toObject();
- * ```
- */
-export type ContractMemberServiceOfferingPoliciePermission = {
-  action?: string;
-  target?: string;
-  constraint: ContractMemberServiceOfferingPoliciePermissionConstraint[];
-};
-
-/**
- * Lean version of ContractMemberServiceOfferingPolicieProhibitionConstraintDocument
- *
- * This has all Mongoose getters & functions removed. This type will be returned from `ContractMemberServiceOfferingPolicieProhibitionDocument.toObject()`.
- * ```
- * const contractmemberserviceofferingpolicieprohibitionObject = contractmemberserviceofferingpolicieprohibition.toObject();
- * ```
- */
-export type ContractMemberServiceOfferingPolicieProhibitionConstraint = {
-  '@type'?: string;
-  leftOperand?: string;
-  operator?: string;
-  rightOperand?: any;
-};
-
-/**
- * Lean version of ContractMemberServiceOfferingPolicieProhibitionDocument
- *
- * This has all Mongoose getters & functions removed. This type will be returned from `ContractMemberServiceOfferingPolicieDocument.toObject()`.
- * ```
- * const contractmemberserviceofferingpolicieObject = contractmemberserviceofferingpolicie.toObject();
- * ```
- */
-export type ContractMemberServiceOfferingPolicieProhibition = {
-  action?: string;
-  target?: string;
-  constraint: ContractMemberServiceOfferingPolicieProhibitionConstraint[];
-};
-
-/**
- * Lean version of ContractMemberServiceOfferingPolicieDocument
- *
- * This has all Mongoose getters & functions removed. This type will be returned from `ContractMemberServiceOfferingDocument.toObject()`.
- * ```
- * const contractmemberserviceofferingObject = contractmemberserviceoffering.toObject();
- * ```
- */
-export type ContractMemberServiceOfferingPolicie = {
-  uid?: string;
-  description?: string;
-  permission: ContractMemberServiceOfferingPoliciePermission[];
-  prohibition: ContractMemberServiceOfferingPolicieProhibition[];
-};
-
-/**
- * Lean version of ContractMemberServiceOfferingDocument
- *
- * This has all Mongoose getters & functions removed. This type will be returned from `ContractMemberDocument.toObject()`.
- * ```
- * const contractmemberObject = contractmember.toObject();
- * ```
- */
-export type ContractMemberServiceOffering = {
-  participant: string;
-  serviceOffering: string;
-  policies: ContractMemberServiceOfferingPolicie[];
-  _id: mongoose.Types.ObjectId;
-};
-
-/**
  * Lean version of ContractMemberDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `ContractDocument.toObject()`.
@@ -696,95 +608,6 @@ export type ContractMember = {
   role: string;
   signature: string;
   date?: Date;
-  serviceOfferings: ContractMemberServiceOffering[];
-};
-
-/**
- * Lean version of ContractRevokedMemberServiceOfferingPoliciePermissionConstraintDocument
- *
- * This has all Mongoose getters & functions removed. This type will be returned from `ContractRevokedMemberServiceOfferingPoliciePermissionDocument.toObject()`.
- * ```
- * const contractrevokedmemberserviceofferingpoliciepermissionObject = contractrevokedmemberserviceofferingpoliciepermission.toObject();
- * ```
- */
-export type ContractRevokedMemberServiceOfferingPoliciePermissionConstraint = {
-  '@type'?: string;
-  leftOperand?: string;
-  operator?: string;
-  rightOperand?: any;
-};
-
-/**
- * Lean version of ContractRevokedMemberServiceOfferingPoliciePermissionDocument
- *
- * This has all Mongoose getters & functions removed. This type will be returned from `ContractRevokedMemberServiceOfferingPolicieDocument.toObject()`.
- * ```
- * const contractrevokedmemberserviceofferingpolicieObject = contractrevokedmemberserviceofferingpolicie.toObject();
- * ```
- */
-export type ContractRevokedMemberServiceOfferingPoliciePermission = {
-  action?: string;
-  target?: string;
-  constraint: ContractRevokedMemberServiceOfferingPoliciePermissionConstraint[];
-};
-
-/**
- * Lean version of ContractRevokedMemberServiceOfferingPolicieProhibitionConstraintDocument
- *
- * This has all Mongoose getters & functions removed. This type will be returned from `ContractRevokedMemberServiceOfferingPolicieProhibitionDocument.toObject()`.
- * ```
- * const contractrevokedmemberserviceofferingpolicieprohibitionObject = contractrevokedmemberserviceofferingpolicieprohibition.toObject();
- * ```
- */
-export type ContractRevokedMemberServiceOfferingPolicieProhibitionConstraint = {
-  '@type'?: string;
-  leftOperand?: string;
-  operator?: string;
-  rightOperand?: any;
-};
-
-/**
- * Lean version of ContractRevokedMemberServiceOfferingPolicieProhibitionDocument
- *
- * This has all Mongoose getters & functions removed. This type will be returned from `ContractRevokedMemberServiceOfferingPolicieDocument.toObject()`.
- * ```
- * const contractrevokedmemberserviceofferingpolicieObject = contractrevokedmemberserviceofferingpolicie.toObject();
- * ```
- */
-export type ContractRevokedMemberServiceOfferingPolicieProhibition = {
-  action?: string;
-  target?: string;
-  constraint: ContractRevokedMemberServiceOfferingPolicieProhibitionConstraint[];
-};
-
-/**
- * Lean version of ContractRevokedMemberServiceOfferingPolicieDocument
- *
- * This has all Mongoose getters & functions removed. This type will be returned from `ContractRevokedMemberServiceOfferingDocument.toObject()`.
- * ```
- * const contractrevokedmemberserviceofferingObject = contractrevokedmemberserviceoffering.toObject();
- * ```
- */
-export type ContractRevokedMemberServiceOfferingPolicie = {
-  uid?: string;
-  description?: string;
-  permission: ContractRevokedMemberServiceOfferingPoliciePermission[];
-  prohibition: ContractRevokedMemberServiceOfferingPolicieProhibition[];
-};
-
-/**
- * Lean version of ContractRevokedMemberServiceOfferingDocument
- *
- * This has all Mongoose getters & functions removed. This type will be returned from `ContractRevokedMemberDocument.toObject()`.
- * ```
- * const contractrevokedmemberObject = contractrevokedmember.toObject();
- * ```
- */
-export type ContractRevokedMemberServiceOffering = {
-  participant: string;
-  serviceOffering: string;
-  policies: ContractRevokedMemberServiceOfferingPolicie[];
-  _id: mongoose.Types.ObjectId;
 };
 
 /**
@@ -800,7 +623,6 @@ export type ContractRevokedMember = {
   role: string;
   signature: string;
   date?: Date;
-  serviceOfferings: ContractRevokedMemberServiceOffering[];
 };
 
 /**
@@ -1063,82 +885,6 @@ export type ContractPurposeDocument = mongoose.Types.Subdocument & {
 /**
  * Mongoose Subdocument type
  *
- * Type of `ContractMemberServiceOfferingPoliciePermissionDocument["constraint"]` element.
- */
-export type ContractMemberServiceOfferingPoliciePermissionConstraintDocument =
-  mongoose.Types.Subdocument & {
-    '@type'?: string;
-    leftOperand?: string;
-    operator?: string;
-    rightOperand?: any;
-  };
-
-/**
- * Mongoose Subdocument type
- *
- * Type of `ContractMemberServiceOfferingPolicieDocument["permission"]` element.
- */
-export type ContractMemberServiceOfferingPoliciePermissionDocument =
-  mongoose.Types.Subdocument & {
-    action?: string;
-    target?: string;
-    constraint: mongoose.Types.DocumentArray<ContractMemberServiceOfferingPoliciePermissionConstraintDocument>;
-  };
-
-/**
- * Mongoose Subdocument type
- *
- * Type of `ContractMemberServiceOfferingPolicieProhibitionDocument["constraint"]` element.
- */
-export type ContractMemberServiceOfferingPolicieProhibitionConstraintDocument =
-  mongoose.Types.Subdocument & {
-    '@type'?: string;
-    leftOperand?: string;
-    operator?: string;
-    rightOperand?: any;
-  };
-
-/**
- * Mongoose Subdocument type
- *
- * Type of `ContractMemberServiceOfferingPolicieDocument["prohibition"]` element.
- */
-export type ContractMemberServiceOfferingPolicieProhibitionDocument =
-  mongoose.Types.Subdocument & {
-    action?: string;
-    target?: string;
-    constraint: mongoose.Types.DocumentArray<ContractMemberServiceOfferingPolicieProhibitionConstraintDocument>;
-  };
-
-/**
- * Mongoose Subdocument type
- *
- * Type of `ContractMemberServiceOfferingDocument["policies"]` element.
- */
-export type ContractMemberServiceOfferingPolicieDocument =
-  mongoose.Types.Subdocument & {
-    uid?: string;
-    description?: string;
-    permission: mongoose.Types.DocumentArray<ContractMemberServiceOfferingPoliciePermissionDocument>;
-    prohibition: mongoose.Types.DocumentArray<ContractMemberServiceOfferingPolicieProhibitionDocument>;
-  };
-
-/**
- * Mongoose Subdocument type
- *
- * Type of `ContractMemberDocument["serviceOfferings"]` element.
- */
-export type ContractMemberServiceOfferingDocument =
-  mongoose.Types.Subdocument & {
-    participant: string;
-    serviceOffering: string;
-    policies: mongoose.Types.DocumentArray<ContractMemberServiceOfferingPolicieDocument>;
-    _id: mongoose.Types.ObjectId;
-  };
-
-/**
- * Mongoose Subdocument type
- *
  * Type of `ContractDocument["members"]` element.
  */
 export type ContractMemberDocument = mongoose.Types.Subdocument & {
@@ -1146,84 +892,7 @@ export type ContractMemberDocument = mongoose.Types.Subdocument & {
   role: string;
   signature: string;
   date?: Date;
-  serviceOfferings: mongoose.Types.DocumentArray<ContractMemberServiceOfferingDocument>;
 };
-
-/**
- * Mongoose Subdocument type
- *
- * Type of `ContractRevokedMemberServiceOfferingPoliciePermissionDocument["constraint"]` element.
- */
-export type ContractRevokedMemberServiceOfferingPoliciePermissionConstraintDocument =
-  mongoose.Types.Subdocument & {
-    '@type'?: string;
-    leftOperand?: string;
-    operator?: string;
-    rightOperand?: any;
-  };
-
-/**
- * Mongoose Subdocument type
- *
- * Type of `ContractRevokedMemberServiceOfferingPolicieDocument["permission"]` element.
- */
-export type ContractRevokedMemberServiceOfferingPoliciePermissionDocument =
-  mongoose.Types.Subdocument & {
-    action?: string;
-    target?: string;
-    constraint: mongoose.Types.DocumentArray<ContractRevokedMemberServiceOfferingPoliciePermissionConstraintDocument>;
-  };
-
-/**
- * Mongoose Subdocument type
- *
- * Type of `ContractRevokedMemberServiceOfferingPolicieProhibitionDocument["constraint"]` element.
- */
-export type ContractRevokedMemberServiceOfferingPolicieProhibitionConstraintDocument =
-  mongoose.Types.Subdocument & {
-    '@type'?: string;
-    leftOperand?: string;
-    operator?: string;
-    rightOperand?: any;
-  };
-
-/**
- * Mongoose Subdocument type
- *
- * Type of `ContractRevokedMemberServiceOfferingPolicieDocument["prohibition"]` element.
- */
-export type ContractRevokedMemberServiceOfferingPolicieProhibitionDocument =
-  mongoose.Types.Subdocument & {
-    action?: string;
-    target?: string;
-    constraint: mongoose.Types.DocumentArray<ContractRevokedMemberServiceOfferingPolicieProhibitionConstraintDocument>;
-  };
-
-/**
- * Mongoose Subdocument type
- *
- * Type of `ContractRevokedMemberServiceOfferingDocument["policies"]` element.
- */
-export type ContractRevokedMemberServiceOfferingPolicieDocument =
-  mongoose.Types.Subdocument & {
-    uid?: string;
-    description?: string;
-    permission: mongoose.Types.DocumentArray<ContractRevokedMemberServiceOfferingPoliciePermissionDocument>;
-    prohibition: mongoose.Types.DocumentArray<ContractRevokedMemberServiceOfferingPolicieProhibitionDocument>;
-  };
-
-/**
- * Mongoose Subdocument type
- *
- * Type of `ContractRevokedMemberDocument["serviceOfferings"]` element.
- */
-export type ContractRevokedMemberServiceOfferingDocument =
-  mongoose.Types.Subdocument & {
-    participant: string;
-    serviceOffering: string;
-    policies: mongoose.Types.DocumentArray<ContractRevokedMemberServiceOfferingPolicieDocument>;
-    _id: mongoose.Types.ObjectId;
-  };
 
 /**
  * Mongoose Subdocument type
@@ -1235,7 +904,6 @@ export type ContractRevokedMemberDocument = mongoose.Types.Subdocument & {
   role: string;
   signature: string;
   date?: Date;
-  serviceOfferings: mongoose.Types.DocumentArray<ContractRevokedMemberServiceOfferingDocument>;
 };
 
 /**
