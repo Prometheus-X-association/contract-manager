@@ -27,7 +27,12 @@ export const genPolicyFromRule = async (
     const ruleId = injection.ruleId;
     const replacement = injection.values;
     const catalogUrl = config.catalog.registry.url.replace(/\/$/, '');
-    const ruleUrl = `${catalogUrl}/${ruleId}.json`;
+    let ruleUrl: string;
+    if(catalogUrl.includes("static")){
+      ruleUrl = `${catalogUrl}/${ruleId}.json`;
+    } else {
+      ruleUrl = `${catalogUrl}/${ruleId}`;
+    }
     const response = await axios.get(ruleUrl);
     const rule = response.data;
     replaceValues(rule.policy, replacement);
