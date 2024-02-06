@@ -450,6 +450,10 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
     });
   });
 
+  it('Should remove a set of policies from a given offering and participant.', async () => {
+    _logYellow('\n-Remove a set of policies.');
+  });
+
   after(async () => {
     await Contract.deleteMany({});
     server.close();

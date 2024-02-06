@@ -16,6 +16,7 @@ import {
   getPolicyForServiceOffering,
   removeOfferingPolicies,
 } from '../controllers/contract.controller';
+import { check } from 'express-validator';
 
 // Ecosystem Contract Routes
 const router: Router = express.Router();
@@ -37,7 +38,12 @@ router.put('/contracts/policies/role/:id', injectPoliciesForRole);
 router.put('/contracts/policies/roles/:id', injectPoliciesForRoles);
 router.put('/contracts/policies/offering/:id', injectOfferingPolicies);
 router.delete(
-  '/contracts/policies/offering/:id/:offering',
+  '/contracts/policies/offering/:contractId/:offeringId/:participantId',
+  [
+    check('contractId').isString(),
+    check('offeringId').isString(),
+    check('participantId').isString(),
+  ],
   removeOfferingPolicies,
 );
 export default router;
