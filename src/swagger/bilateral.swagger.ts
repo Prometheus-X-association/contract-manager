@@ -25,7 +25,7 @@
 /*
   #swagger.tags = ['Bilateral']
   #swagger.path = '/bilaterals/policies/{id}'
-  #swagger.method = 'post'
+  #swagger.method = 'put'
   #swagger.summary = 'Inject multiple policies into a contract'
   #swagger.parameters['id'] = {
     in: 'path',
