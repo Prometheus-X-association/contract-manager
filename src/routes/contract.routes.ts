@@ -14,6 +14,7 @@ import {
   injectOfferingPolicies,
   checkExploitationByRole,
   getPolicyForServiceOffering,
+  removeOfferingPolicies,
 } from '../controllers/contract.controller';
 
 // Ecosystem Contract Routes
@@ -30,9 +31,13 @@ router.post(
   '/contracts/role/exploitability/:id/:role',
   checkExploitationByRole,
 );
-router.post('/contracts/policy/:id', injectPolicy);
-router.post('/contracts/policies/:id', injectPolicies);
-router.post('/contracts/policies/role/:id', injectPoliciesForRole);
-router.post('/contracts/policies/roles/:id', injectPoliciesForRoles);
-router.post('/contracts/policies/offering/:id', injectOfferingPolicies);
+router.put('/contracts/policy/:id', injectPolicy);
+router.put('/contracts/policies/:id', injectPolicies);
+router.put('/contracts/policies/role/:id', injectPoliciesForRole);
+router.put('/contracts/policies/roles/:id', injectPoliciesForRoles);
+router.put('/contracts/policies/offering/:id', injectOfferingPolicies);
+router.delete(
+  '/contracts/policies/offering/:id/:offering',
+  removeOfferingPolicies,
+);
 export default router;

@@ -313,3 +313,19 @@ export const injectOfferingPolicies = async (
     res.status(500).json({ error: message });
   }
 };
+
+export const removeOfferingPolicies = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    //
+  } catch (error) {
+    logger.error(
+      '[Contract/removeOfferingPolicies]: Error while removing offering policies:',
+      error,
+    );
+    const message = (error as Error).message;
+    res.status(500).json({ error: message });
+  }
+};
