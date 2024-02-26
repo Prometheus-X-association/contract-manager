@@ -24,7 +24,7 @@ router.put('/bilaterals/negociator/:id', addContractNegociator);
 router.put('/bilaterals/sign/:id', signContract);
 router.delete('/bilaterals/sign/revoke/:id/:did', revokeContractSignature);
 router.post('/bilaterals/check-exploitability/:id', checkDataExploitation);
-router.post('/bilaterals/policy/:id', injectPolicy);
-router.post('/bilaterals/policies/:id', injectPolicies);
+router.put('/bilaterals/policy/:id', injectPolicy);
+router.put('/bilaterals/policies/:id', injectPolicies);
 
 export default router;

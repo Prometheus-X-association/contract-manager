@@ -1,7 +1,11 @@
 import { IContract, IContractDB } from 'interfaces/contract.interface';
 import Contract from 'models/contract.model';
 import { logger } from 'utils/logger';
-import { ContractMember } from 'interfaces/schemas.interface';
+import {
+  ContractDocument,
+  ContractMember,
+  ContractServiceOffering,
+} from 'interfaces/schemas.interface';
 import { IPolicyInjection } from 'interfaces/policy.interface';
 import { genPolicyFromRule } from './policy/utils';
 import pdp from 'services/policy/pdp.service';
@@ -140,7 +144,7 @@ export class ContractService {
       // Check if the party is the orchestrator
       const isOrchestrator = inputSignature.role === 'orchestrator';
       const currentMember = contract.members.find(
-          (member) => member.participant === inputSignature.participant,
+        (member) => member.participant === inputSignature.participant,
       );
       if (currentMember) {
         // Update the value of an existing signature
@@ -472,7 +476,9 @@ export class ContractService {
         throw new Error('Contract not found');
       }
       let offeringIndex = contract.serviceOfferings.findIndex(
-        (entry) => entry.serviceOffering === serviceOffering,
+        (entry: ContractServiceOffering) =>
+          entry.serviceOffering === serviceOffering &&
+          entry.participant === participant,
       );
       if (offeringIndex === -1) {
         contract.serviceOfferings.push({
@@ -494,6 +500,36 @@ export class ContractService {
         } catch (error) {
           throw error;
         }
+      }
+      const updatedContract = await contract.save();
+      return updatedContract;
+    } catch (error: any) {
+      throw error;
+    }
+  }
+
+  public async removeOfferingPolicies(
+    contractId: string,
+    offeringId: string,
+    participantId: string,
+  ): Promise<IContractDB | null> {
+    try {
+      const contract: ContractDocument | null =
+        await Contract.findById(contractId);
+      if (!contract) {
+        throw new Error('Contract not found');
+      }
+      let offeringIndex = contract.serviceOfferings.findIndex(
+        (entry: ContractServiceOffering) =>
+          entry.serviceOffering === offeringId &&
+          entry.participant === participantId,
+      );
+      if (offeringIndex !== -1) {
+        const offering: ContractServiceOffering =
+          contract.serviceOfferings[offeringIndex];
+        offering.policies = [];
+      } else {
+        return contract;
       }
       const updatedContract = await contract.save();
       return updatedContract;
