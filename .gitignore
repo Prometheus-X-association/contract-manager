@@ -6,3 +6,4 @@ build
 docs
 *.env.*
 !.env.sample
+src/logs

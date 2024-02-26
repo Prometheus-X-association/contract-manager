@@ -344,7 +344,7 @@ export class BilateralContractService {
       if (!contract) {
         throw new Error('Contract not found');
       }
-      const policy = await genPolicyFromRule(values);
+      const policy = await genPolicyFromRule({ ruleId, values });
       const index = contract.policy.findIndex((entry) => entry.uid === ruleId);
       if (index !== -1) {
         const contractPolicy = contract.policy[index];

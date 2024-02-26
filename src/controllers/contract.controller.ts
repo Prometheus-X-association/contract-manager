@@ -4,6 +4,7 @@ import { IContract, IContractDB } from 'interfaces/contract.interface';
 import contractService from 'services/contract.service';
 import { logger } from 'utils/logger';
 import { ContractMember } from 'interfaces/schemas.interface';
+import { validationResult } from 'express-validator';
 
 export const createContract = async (req: Request, res: Response) => {
   try {
@@ -306,7 +307,34 @@ export const injectOfferingPolicies = async (
     }
   } catch (error) {
     logger.error(
-      '[Contract/injectOfferingPolicies]: Error while injecting offering policies:',
+      '[Contract/Controller/injectOfferingPolicies] Error while injecting offering policies:',
+      error,
+    );
+    const message = (error as Error).message;
+    res.status(500).json({ error: message });
+  }
+};
+
+export const removeOfferingPolicies = async (
+  req: Request,
+  res: Response,
+): Promise<void> => {
+  try {
+    validationResult(req).throw();
+    const { contractId, offeringId, participantId } = req.params;
+    if (contractId && offeringId) {
+      const contract = await contractService.removeOfferingPolicies(
+        contractId,
+        offeringId,
+        participantId,
+      );
+      res.status(200).json({ contract });
+    } else {
+      throw new Error('Invalid paylaod.');
+    }
+  } catch (error) {
+    logger.error(
+      '[Contract/Controller/removeOfferingPolicies] Error while removing offering policies:',
       error,
     );
     const message = (error as Error).message;

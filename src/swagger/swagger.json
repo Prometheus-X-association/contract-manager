@@ -275,7 +275,7 @@
       }
     },
     "/bilaterals/policy/{id}": {
-      "post": {
+      "put": {
         "tags": [
           "Bilateral"
         ],
@@ -314,7 +314,7 @@
       }
     },
     "/bilaterals/policies/{id}": {
-      "post": {
+      "put": {
         "tags": [
           "Bilateral"
         ],
@@ -779,7 +779,7 @@
       }
     },
     "/contracts/policy/{id}": {
-      "post": {
+      "put": {
         "tags": [
           "Contract"
         ],
@@ -832,7 +832,7 @@
       }
     },
     "/contracts/policies/{id}": {
-      "post": {
+      "put": {
         "tags": [
           "Contract"
         ],
@@ -894,7 +894,7 @@
       }
     },
     "/contracts/policies/role/{id}": {
-      "post": {
+      "put": {
         "tags": [
           "Contract"
         ],
@@ -969,7 +969,7 @@
       }
     },
     "/contracts/policies/roles/{id}": {
-      "post": {
+      "put": {
         "tags": [
           "Contract"
         ],
@@ -1082,7 +1082,7 @@
       }
     },
     "/contracts/policies/offering/{id}": {
-      "post": {
+      "put": {
         "tags": [
           "Contract"
         ],
@@ -1130,6 +1130,64 @@
                 }
               }
             }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Policies for role successfully injected",
+            "schema": {
+              "$ref": "#/definitions/Contract"
+            }
+          },
+          "400": {
+            "description": "Bad request, invalid data.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "404": {
+            "description": "Contract not found.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          },
+          "500": {
+            "description": "Internal server error.",
+            "schema": {
+              "$ref": "#/definitions/Error"
+            }
+          }
+        }
+      }
+    },
+    "/contracts/policies/offering/{contractId}/{offeringId}/{participantId}": {
+      "delete": {
+        "tags": [
+          "Contract"
+        ],
+        "summary": "Remove policies associated with a specific offering/participant pair from a contract based on their IDs.",
+        "description": "",
+        "parameters": [
+          {
+            "name": "contractId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID of the contract"
+          },
+          {
+            "name": "offeringId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID of the service offering"
+          },
+          {
+            "name": "participantId",
+            "in": "path",
+            "required": true,
+            "type": "string",
+            "description": "ID of the participant"
           }
         ],
         "responses": {

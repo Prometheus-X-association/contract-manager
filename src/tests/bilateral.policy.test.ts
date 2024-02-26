@@ -97,7 +97,7 @@ describe('Create a bilateral contract, then inject policies in it.', () => {
     _logGreen('The input policies information to be injected:');
     _logObject(policiesArray);
     const response = await supertest(app.router)
-      .post(`/bilaterals/policies/${contractId}`)
+      .put(`/bilaterals/policies/${contractId}`)
       .set('Cookie', cookie)
       .send(policiesArray);
     _logGreen('The new contract in database:');
