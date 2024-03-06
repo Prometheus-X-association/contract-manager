@@ -283,7 +283,7 @@
 /*
   #swagger.tags = ['Contract']
   #swagger.path = '/contracts/policy/{id}'
-  #swagger.method = 'post'
+  #swagger.method = 'put'
   #swagger.summary = 'Inject a policy into a contract'
   #swagger.parameters['id'] = {
     in: 'path',
@@ -320,7 +320,7 @@
 /*
   #swagger.tags = ['Contract']
   #swagger.path = '/contracts/policies/{id}'
-  #swagger.method = 'post'
+  #swagger.method = 'put'
   #swagger.summary = 'Inject multiple policies into a contract'
   #swagger.parameters['id'] = {
     in: 'path',
@@ -360,7 +360,7 @@
 /*
   #swagger.tags = ['Contract']
   #swagger.path = '/contracts/policies/role/{id}'
-  #swagger.method = 'post'
+  #swagger.method = 'put'
   #swagger.summary = 'Inject policies for a role into a contract'
   #swagger.parameters['id'] = {
     in: 'path',
@@ -404,7 +404,7 @@
 /*
   #swagger.tags = ['Contract']
   #swagger.path = '/contracts/policies/roles/{id}'
-  #swagger.method = 'post'
+  #swagger.method = 'put'
   #swagger.summary = 'Inject policies for specified groups of role'
   #swagger.parameters['id'] = {
     in: 'path',
@@ -454,7 +454,7 @@
 /*
   #swagger.tags = ['Contract']
   #swagger.path = '/contracts/policies/offering/{id}'
-  #swagger.method = 'post'
+  #swagger.method = 'put'
   #swagger.summary = 'Inject policies for an offering into a contract'
   #swagger.parameters['id'] = {
     in: 'path',
@@ -475,6 +475,49 @@
         items: { $ref: '#/definitions/PolicyRoleInjection' }
       }
     }
+  }
+  #swagger.responses[200] = {
+    description: 'Policies for role successfully injected',
+    schema: { $ref: '#/definitions/Contract' }
+  }
+  #swagger.responses[400] = {
+    description: 'Bad request, invalid data.',
+    schema: { $ref: '#/definitions/Error' }
+  }
+  #swagger.responses[404] = {
+    description: 'Contract not found.',
+    schema: { $ref: '#/definitions/Error' }
+  }
+  #swagger.responses[500] = {
+    description: 'Internal server error.',
+    schema: { $ref: '#/definitions/Error' }
+  }
+*/
+// #swagger.end
+
+// #swagger.start
+/*
+  #swagger.tags = ['Contract']
+  #swagger.path = '/contracts/policies/offering/{contractId}/{offeringId}/{participantId}'
+  #swagger.method = 'delete'
+  #swagger.summary = 'Remove policies associated with a specific offering/participant pair from a contract based on their IDs.'
+  #swagger.parameters['contractId'] = {
+    in: 'path',
+    description: 'ID of the contract',
+    required: true,
+    type: 'string'
+  }
+  #swagger.parameters['offeringId'] = {
+    in: 'path',
+    description: 'ID of the service offering',
+    required: true,
+    type: 'string'
+  }
+  #swagger.parameters['participantId'] = {
+    in: 'path',
+    description: 'ID of the participant',
+    required: true,
+    type: 'string'
   }
   #swagger.responses[200] = {
     description: 'Policies for role successfully injected',
