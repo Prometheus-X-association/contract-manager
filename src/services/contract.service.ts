@@ -142,7 +142,6 @@ export class ContractService {
         throw new Error('The contract does not exist.');
       }
       // Check if the party is the orchestrator
-      const isOrchestrator = inputSignature.role === 'orchestrator';
       const currentMember = contract.members.find(
         (member) => member.participant === inputSignature.participant,
       );
@@ -154,9 +153,12 @@ export class ContractService {
         contract.members.push(inputSignature);
         //And add his serviceOfferings
       }
+      const orchestratorHasSigned = contract.members.find(
+        (member) => member.role === 'orchestrator',
+      );
       // Check if both parties have signed, including the orchestrator
       const totalMembers = contract.members.length;
-      if (totalMembers >= 2 && isOrchestrator) {
+      if (totalMembers >= 2 && orchestratorHasSigned) {
         // Set the contract status to 'revoked' if there are
         // at least two parties and the orchestrator who signed
         contract.status = 'signed';
