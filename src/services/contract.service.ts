@@ -521,8 +521,8 @@ export class ContractService {
       }
       let offeringIndex = contract.serviceOfferings.findIndex(
         (entry: ContractServiceOffering) =>
-          entry.serviceOffering === offeringId &&
-          entry.participant === participantId,
+          (entry.serviceOffering.includes(offeringId) || entry.serviceOffering === offeringId) &&
+          (entry.participant.includes(participantId) || entry.participant === participantId),
       );
       if (offeringIndex !== -1) {
         const offering: ContractServiceOffering =
