@@ -1,10 +1,14 @@
+import { Types } from 'mongoose';
+
 import { IContract, IContractDB } from 'interfaces/contract.interface';
 import Contract from 'models/contract.model';
 import { logger } from 'utils/logger';
 import {
+  ContractDataProcessing,
   ContractDocument,
   ContractMember,
   ContractServiceOffering,
+  ContractDataProcessingDocument,
 } from 'interfaces/schemas.interface';
 import { IPolicyInjection } from 'interfaces/policy.interface';
 import { genPolicyFromRule } from './policy/utils';
@@ -523,8 +527,10 @@ export class ContractService {
       }
       let offeringIndex = contract.serviceOfferings.findIndex(
         (entry: ContractServiceOffering) =>
-          (entry.serviceOffering.includes(offeringId) || entry.serviceOffering === offeringId) &&
-          (entry.participant.includes(participantId) || entry.participant === participantId),
+          (entry.serviceOffering.includes(offeringId) ||
+            entry.serviceOffering === offeringId) &&
+          (entry.participant.includes(participantId) ||
+            entry.participant === participantId),
       );
       if (offeringIndex !== -1) {
         const offering: ContractServiceOffering =
@@ -536,6 +542,44 @@ export class ContractService {
       const updatedContract = await contract.save();
       return updatedContract;
     } catch (error: any) {
+      throw error;
+    }
+  }
+
+  // get data processings
+  public async getDataProcessings(
+    contractId: string,
+  ): Promise<ContractDataProcessing[]> {
+    try {
+      const contract = await Contract.findById(contractId).lean();
+      if (contract) {
+        const dataProcessings: ContractDataProcessing[] =
+          contract.dataProcessings;
+        return dataProcessings;
+      } else {
+        throw new Error('Contract not found');
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // update data processings
+  public async updateDataProcessings(
+    contractId: string,
+    processings: ContractDataProcessing[],
+  ): Promise<ContractDataProcessing[]> {
+    try {
+      const contract = await Contract.findById(contractId);
+      if (contract) {
+        contract.dataProcessings =
+          processings as Types.DocumentArray<ContractDataProcessingDocument>;
+        await contract.save();
+        return contract.dataProcessings;
+      } else {
+        throw new Error('Contract not found');
+      }
+    } catch (error) {
       throw error;
     }
   }

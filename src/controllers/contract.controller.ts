@@ -341,3 +341,40 @@ export const removeOfferingPolicies = async (
     res.status(500).json({ error: message });
   }
 };
+
+export const getDataProcessings = async (req: Request, res: Response) => {
+  try {
+    const contractId: string = req.params.id;
+    const dataProcessings =
+      await contractService.getDataProcessings(contractId);
+    if (!dataProcessings) {
+      return res.json([]);
+    }
+    return res.json(dataProcessings);
+  } catch (error) {
+    logger.error('Error retrieving the data processings:', error);
+    res
+      .status(500)
+      .json({ error: 'An error occurred while retrieving data processings.' });
+  }
+};
+
+export const updateDataProcessings = async (req: Request, res: Response) => {
+  try {
+    const contractId: string = req.params.id;
+    const processings = req.body;
+    const dataProcessings = await contractService.updateDataProcessings(
+      contractId,
+      processings,
+    );
+    if (!dataProcessings) {
+      throw new Error('something went wrong while updating data processings');
+    }
+    return res.json(dataProcessings);
+  } catch (error) {
+    logger.error('Error while updating data processings:', error);
+    res.status(500).json({
+      error: 'An error occurred while while updating data processings.',
+    });
+  }
+};
