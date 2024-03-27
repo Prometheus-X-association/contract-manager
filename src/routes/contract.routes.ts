@@ -15,6 +15,11 @@ import {
   checkExploitationByRole,
   getPolicyForServiceOffering,
   removeOfferingPolicies,
+  getDataProcessings,
+  updateDataProcessings,
+  insertDataProcessing,
+  removeDataProcessing,
+  updateDataProcessing,
 } from '../controllers/contract.controller';
 import { check } from 'express-validator';
 
@@ -46,4 +51,12 @@ router.delete(
   ],
   removeOfferingPolicies,
 );
+
+router.get('/contracts/processings/:id', getDataProcessings);
+router.put('/contracts/processings/:id', updateDataProcessings);
+
+router.put('/contracts/processings/insert/:id/:index', insertDataProcessing);
+router.put('/contracts/processings/update/:id', updateDataProcessing);
+router.delete('/contracts/processings/remove/:id', removeDataProcessing);
+
 export default router;
