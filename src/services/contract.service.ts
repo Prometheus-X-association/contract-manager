@@ -1,10 +1,14 @@
+import { Types } from 'mongoose';
+
 import { IContract, IContractDB } from 'interfaces/contract.interface';
 import Contract from 'models/contract.model';
 import { logger } from 'utils/logger';
 import {
+  ContractDataProcessing,
   ContractDocument,
   ContractMember,
   ContractServiceOffering,
+  ContractDataProcessingDocument,
 } from 'interfaces/schemas.interface';
 import { IPolicyInjection } from 'interfaces/policy.interface';
 import { genPolicyFromRule } from './policy/utils';
@@ -537,6 +541,124 @@ export class ContractService {
       const updatedContract = await contract.save();
       return updatedContract;
     } catch (error: any) {
+      throw error;
+    }
+  }
+
+  // get data processings
+  public async getDataProcessings(
+    contractId: string,
+  ): Promise<ContractDataProcessing[]> {
+    try {
+      const contract = await Contract.findById(contractId).lean();
+      if (contract) {
+        const dataProcessings: ContractDataProcessing[] =
+          contract.dataProcessings;
+        return dataProcessings;
+      } else {
+        throw new Error('Contract not found');
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // update data processings
+  public async updateDataProcessings(
+    contractId: string,
+    processings: ContractDataProcessing[],
+  ): Promise<ContractDataProcessing[]> {
+    try {
+      const contract = await Contract.findById(contractId);
+      if (contract) {
+        contract.dataProcessings =
+          processings as Types.DocumentArray<ContractDataProcessingDocument>;
+        await contract.save();
+        return contract.dataProcessings;
+      } else {
+        throw new Error('Contract not found');
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async insertDataProcessing(
+    contractId: string,
+    processing: ContractDataProcessing,
+    index: number,
+  ): Promise<ContractDataProcessing> {
+    try {
+      if (index < 0) {
+        throw new Error('Index cannot be negative');
+      }
+      const contract = await Contract.findById(contractId);
+      if (contract) {
+        if (index >= contract.dataProcessings.length) {
+          contract.dataProcessings.push(processing);
+        } else {
+          contract.dataProcessings.splice(
+            index,
+            0,
+            processing as ContractDataProcessingDocument,
+          );
+        }
+        await contract.save();
+        return processing;
+      } else {
+        throw new Error('Contract not found');
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async updateDataProcessing(
+    contractId: string,
+    processing: ContractDataProcessing,
+  ): Promise<ContractDataProcessing> {
+    try {
+      const contract = await Contract.findById(contractId);
+      if (contract) {
+        const existingProcessing = contract.dataProcessings.find(
+          (item) => item.connectorURI === processing.connectorURI,
+        );
+        if (existingProcessing) {
+          Object.assign(existingProcessing, processing);
+          await contract.save();
+          return existingProcessing;
+        } else {
+          throw new Error('Processing not found in the contract');
+        }
+      } else {
+        throw new Error('Contract not found');
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async deleteDataProcessing(
+    contractId: string,
+    processing: ContractDataProcessing,
+  ): Promise<ContractDataProcessing> {
+    try {
+      const contract = await Contract.findById(contractId);
+      if (contract) {
+        const initialLength = contract.dataProcessings.length;
+        contract.dataProcessings = contract.dataProcessings.filter(
+          (item) => item.connectorURI !== processing.connectorURI,
+        ) as Types.DocumentArray<ContractDataProcessingDocument>;
+        if (contract.dataProcessings.length !== initialLength) {
+          await contract.save();
+          return processing;
+        } else {
+          throw new Error('Processing not found in the contract');
+        }
+      } else {
+        throw new Error('Contract not found');
+      }
+    } catch (error) {
       throw error;
     }
   }

@@ -572,6 +572,21 @@ export type ContractRolesAndObligation = {
 };
 
 /**
+ * Lean version of ContractDataProcessingDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ContractDocument.toObject()`.
+ * ```
+ * const contractObject = contract.toObject();
+ * ```
+ */
+export type ContractDataProcessing = {
+  connectorURI: string;
+  services: string[];
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
  * Lean version of ContractPurposeDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `ContractDocument.toObject()`.
@@ -641,6 +656,7 @@ export type Contract = {
   orchestrator?: string;
   serviceOfferings: ContractServiceOffering[];
   rolesAndObligations: ContractRolesAndObligation[];
+  dataProcessings: ContractDataProcessing[];
   purpose: ContractPurpose[];
   members: ContractRevokedMember[];
   revokedMembers: ContractRevokedMember[];
@@ -865,6 +881,18 @@ export type ContractRolesAndObligationDocument = mongoose.Types.Subdocument & {
 /**
  * Mongoose Subdocument type
  *
+ * Type of `ContractDocument["dataProcessings"]` element.
+ */
+export type ContractDataProcessingDocument = mongoose.Types.Subdocument & {
+  connectorURI: string;
+  services: mongoose.Types.Array<string>;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
+
+/**
+ * Mongoose Subdocument type
+ *
  * Type of `ContractDocument["purpose"]` element.
  */
 export type ContractPurposeDocument = mongoose.Types.Subdocument & {
@@ -926,6 +954,7 @@ export type ContractDocument = mongoose.Document<
     orchestrator?: string;
     serviceOfferings: mongoose.Types.DocumentArray<ContractServiceOfferingDocument>;
     rolesAndObligations: mongoose.Types.DocumentArray<ContractRolesAndObligationDocument>;
+    dataProcessings: mongoose.Types.DocumentArray<ContractDataProcessingDocument>;
     purpose: mongoose.Types.DocumentArray<ContractPurposeDocument>;
     members: mongoose.Types.DocumentArray<ContractRevokedMemberDocument>;
     revokedMembers: mongoose.Types.DocumentArray<ContractRevokedMemberDocument>;
