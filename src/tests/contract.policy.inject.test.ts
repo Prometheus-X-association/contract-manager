@@ -27,7 +27,7 @@ const _logGreen = (value: string) => {
 const _logObject = (data: any) => {
   console.log(`\x1b[90m${JSON.stringify(data, null, 2)}\x1b[37m`);
 };
-describe('Create an ecosystem contract, then inject policies in it.', () => {
+describe('Policies injection test cases for contract (Dataspace use cases).', () => {
   let server: http.Server;
   before(async () => {
     server = await app.startServer(config.mongo.testUrl);
