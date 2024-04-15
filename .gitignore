@@ -7,3 +7,5 @@ docs
 .env.*
 !.env.sample
 */logs
+local
+tarballs
