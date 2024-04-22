@@ -34,6 +34,9 @@ describe('Policies injection test cases for contract (Dataspace use cases).', ()
     await new Promise((resolve) => {
       server.listen(SERVER_PORT, () => {
         console.log(`Test server is running on port ${SERVER_PORT}`);
+        console.log(`Mongo Url: ${config.mongo.testUrl}`);
+        console.log(`Registry Url: ${config.catalog.registry.url}`);
+        console.log(`Registry File Ext: ${config.catalog.registry.fileExt}`);
         resolve(true);
       });
     });
