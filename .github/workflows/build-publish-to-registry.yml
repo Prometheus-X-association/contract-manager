@@ -44,3 +44,5 @@ jobs:
         env:
           ENV MONGO_URL: mongodb://mongodb:27017/contract-dev
           ENV MONGO_TEST_URL: mongodb://mongodb:27017/contract-test-cases
+          ENV CATALOG_REGISTRY_URL: https://raw.githubusercontent.com/Prometheus-X-association/reference-models/main/src/references/rules/
+          ENV CATALOG_REGISTRY_FILE_EXT: json

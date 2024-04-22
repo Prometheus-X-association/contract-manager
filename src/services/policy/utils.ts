@@ -32,8 +32,8 @@ export const genPolicyFromRule = async (
       ruleUrl = `${catalogUrl}/${ruleId}.json`;
     } else {
       ruleUrl = `${catalogUrl}/${ruleId}`;
-      if ((process.env.CATALOG_REGISTRY_FILE_EXT as string)?.length > 0) {
-        ruleUrl = `${ruleUrl}.${process.env.CATALOG_REGISTRY_FILE_EXT}`;
+      if ((config.catalog.registry.fileExt as string)?.length > 0) {
+        ruleUrl = `${ruleUrl}.${config.catalog.registry.fileExt}`;
       }
     }
     const response = await axios.get(ruleUrl);
