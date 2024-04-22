@@ -4,6 +4,9 @@ node_modules
 .vscode
 build
 docs
+.env.*
 *.env.*
 !.env.sample
-src/logs
+*/logs
+local
+tarballs
