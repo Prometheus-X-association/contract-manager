@@ -13,7 +13,7 @@ const API_ROUTE_BASE = '/bilaterals/';
 const _logObject = (data: any) => {
   console.log(`\x1b[90m${JSON.stringify(data, null, 2)}\x1b[37m`);
 };
-describe('Routes for Bilateral Contract API', () => {
+describe('CRUD test cases for Bilateral Contracts.', () => {
   let server: any;
   before(async () => {
     server = await app.startServer(config.mongo.testUrl);

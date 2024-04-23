@@ -28,10 +28,13 @@ export const genPolicyFromRule = async (
     const replacement = injection.values;
     const catalogUrl = config.catalog.registry.url.replace(/\/$/, '');
     let ruleUrl: string;
-    if(catalogUrl.includes("static")){
+    if (catalogUrl.includes('static')) {
       ruleUrl = `${catalogUrl}/${ruleId}.json`;
     } else {
       ruleUrl = `${catalogUrl}/${ruleId}`;
+      if ((config.catalog.registry.fileExt as string)?.length > 0) {
+        ruleUrl = `${ruleUrl}.${config.catalog.registry.fileExt}`;
+      }
     }
     const response = await axios.get(ruleUrl);
     const rule = response.data;
