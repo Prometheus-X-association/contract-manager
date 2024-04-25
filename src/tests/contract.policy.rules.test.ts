@@ -16,7 +16,7 @@ const _logGreen = (value: string) => {
 const _logObject = (data: any) => {
   console.log(`\x1b[90m${JSON.stringify(data, null, 2)}\x1b[37m`);
 };
-describe('Scenario creating an ecosystem contract\n\tthen process an input policy with permission obligation and prohibition', () => {
+describe('Scenario creating a contract (Dataspace use cases)\n\tthen process an input policy with permission obligation and prohibition.', () => {
   let server: any;
   before(async () => {
     server = await app.startServer(config.mongo.testUrl);

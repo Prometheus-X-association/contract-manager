@@ -5,7 +5,9 @@ node_modules
 build
 docs
 .env.*
+*.env.*
 !.env.sample
 */logs
 local
 tarballs
+mochawesome-report/**/*.*

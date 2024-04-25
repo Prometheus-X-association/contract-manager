@@ -27,13 +27,16 @@ const _logGreen = (value: string) => {
 const _logObject = (data: any) => {
   console.log(`\x1b[90m${JSON.stringify(data, null, 2)}\x1b[37m`);
 };
-describe('Create an ecosystem contract, then inject policies in it.', () => {
+describe('Policies injection test cases for contract (Dataspace use cases).', () => {
   let server: http.Server;
   before(async () => {
     server = await app.startServer(config.mongo.testUrl);
     await new Promise((resolve) => {
       server.listen(SERVER_PORT, () => {
         console.log(`Test server is running on port ${SERVER_PORT}`);
+        console.log(`Mongo Url: ${config.mongo.testUrl}`);
+        console.log(`Registry Url: ${config.catalog.registry.url}`);
+        console.log(`Registry File Ext: ${config.catalog.registry.fileExt}`);
         resolve(true);
       });
     });
@@ -83,7 +86,7 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
     _logGreen('The input policy set:');
     _logObject(policyData);
     const response = await supertest(app.router)
-      .post(`/contracts/policy/${contractId}`)
+      .put(`/contracts/policy/${contractId}`)
       .set('Cookie', cookie)
       .send(policyData);
     expect(response.status).to.equal(200);
@@ -107,7 +110,7 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
     _logGreen('The input policy set:');
     _logObject(policyData);
     const response = await supertest(app.router)
-      .post(`/contracts/policy/${contractId}`)
+      .put(`/contracts/policy/${contractId}`)
       .set('Cookie', cookie)
       .send(policyData);
     _logGreen('The new contract in database:');
@@ -131,7 +134,7 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
     _logGreen('The input policy set:');
     _logObject(policyData);
     const response = await supertest(app.router)
-      .post(`/contracts/policy/${contractId}`)
+      .put(`/contracts/policy/${contractId}`)
       .set('Cookie', cookie)
       .send(policyData);
     _logGreen('The new contract in database:');
@@ -188,7 +191,7 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
     _logGreen('The input policies information to be injected:');
     _logObject(policiesArray);
     const response = await supertest(app.router)
-      .post(`/contracts/policies/${contractId}`)
+      .put(`/contracts/policies/${contractId}`)
       .set('Cookie', cookie)
       .send(policiesArray);
     _logGreen('The new contract in database:');
@@ -245,7 +248,7 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
     _logGreen('The input policies information to be injected:');
     _logObject(data);
     const response = await supertest(app.router)
-      .post(`/contracts/policies/role/${contractId}`)
+      .put(`/contracts/policies/role/${contractId}`)
       .set('Cookie', cookie)
       .send(data);
     _logGreen('The new contract in database:');
@@ -304,7 +307,7 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
     _logGreen('The input policies information to be injected:');
     _logObject(data);
     const response = await supertest(app.router)
-      .post(`/contracts/policies/offering/${contractId}`)
+      .put(`/contracts/policies/offering/${contractId}`)
       .set('Cookie', cookie)
       .send(data);
     _logGreen('The new contract in database:');
@@ -313,7 +316,9 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
     expect(response.body.contract).to.be.an('object');
     const contract = response.body.contract;
     const entry = contract.serviceOfferings.find(
-      (entry: any) => entry.serviceOffering === serviceOffering,
+      (entry: any) =>
+        entry.serviceOffering === serviceOffering &&
+        entry.participant === participant,
     );
     expect(entry).to.be.an('object');
     expect(entry.policies).to.be.an('array');
@@ -418,7 +423,7 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
     _logGreen('The input policies information to be injected:');
     _logObject(data);
     const response = await supertest(app.router)
-      .post(`/contracts/policies/roles/${contractId}`)
+      .put(`/contracts/policies/roles/${contractId}`)
       .set('Cookie', cookie)
       .send(data);
     _logGreen('The new contract in the database:');
@@ -448,6 +453,30 @@ describe('Create an ecosystem contract, then inject policies in it.', () => {
         });
       });
     });
+  });
+
+  it('Should remove a set of policies from a given offering and participant.', async () => {
+    _logYellow('\n-Remove a set of policies.');
+    const participantId = 'participant';
+    const offeringId = 'offering';
+    const response = await supertest(app.router)
+      .delete(
+        `/contracts/policies/offering/${contractId}/${offeringId}/${participantId}`,
+      )
+      .set('Cookie', cookie);
+    _logGreen('The new contract in database:');
+    _logObject(response.body);
+    expect(response.status).to.equal(200);
+    expect(response.body.contract).to.be.an('object');
+    const contract = response.body.contract;
+    const entry = contract.serviceOfferings.find(
+      (entry: any) =>
+        entry.serviceOffering === offeringId &&
+        entry.participant === participantId,
+    );
+    expect(entry).to.be.an('object');
+    expect(entry.policies).to.be.an('array');
+    expect(entry.policies.length).to.be.equal(0);
   });
 
   after(async () => {

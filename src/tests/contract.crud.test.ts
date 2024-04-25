@@ -13,7 +13,7 @@ const API_ROUTE_BASE = '/contracts/';
 const _logObject = (data: any) => {
   console.log(`\x1b[90m${JSON.stringify(data, null, 2)}\x1b[37m`);
 };
-describe('Routes for Contract API', () => {
+describe('CRUD test cases for Contracts (Dataspace use cases).', () => {
   let server: any;
   before(async () => {
     server = await app.startServer(config.mongo.testUrl);
@@ -111,12 +111,31 @@ describe('Routes for Contract API', () => {
     const didPartyB: string = 'did:partyB';
     const didOrchestrator: string = 'did:orchestrator';
 
+    // Define the signature data for the orchestrator
+    const signatureDataOrchestrator: ContractMember = {
+      participant: didOrchestrator,
+      role: 'orchestrator',
+      signature: 'orchestratorSignature',
+    };
+
+    // Send a PUT request to sign the contract for the orchestrator
+    const responseOrchestrator = await supertest(app.router)
+      .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
+      .set('Cookie', authTokenCookie)
+      .send(signatureDataOrchestrator);
+    // log
+    _logObject(responseOrchestrator.body);
+    // Check if the response status for the orchestrator's signature is OK (200)
+    console.log(
+      "Check if the response status for the orchestrator's signature is OK (200)",
+    );
+    expect(responseOrchestrator.status).to.equal(200);
+
     // Define the signature data for party A for the first time
     const signatureDataPartyA1: ContractMember = {
       participant: didPartyA,
       role: 'partyA',
       signature: 'partyASignature1',
-      serviceOfferings: [],
     };
 
     // Send a PUT request to sign the contract for party A the first time
@@ -137,7 +156,6 @@ describe('Routes for Contract API', () => {
       participant: didPartyA,
       role: 'partyA',
       signature: 'partyASignature2',
-      serviceOfferings: [],
     };
 
     // Send a PUT request to sign the contract for party A the second time
@@ -152,7 +170,6 @@ describe('Routes for Contract API', () => {
       participant: didPartyB,
       role: 'partyB',
       signature: 'partyBSignature',
-      serviceOfferings: [],
     };
 
     // Send a PUT request to sign the contract for party B
@@ -168,30 +185,9 @@ describe('Routes for Contract API', () => {
     );
     expect(responsePartyB.status).to.equal(200);
 
-    // Define the signature data for the orchestrator
-    const signatureDataOrchestrator: ContractMember = {
-      participant: didOrchestrator,
-      role: 'orchestrator',
-      signature: 'orchestratorSignature',
-      serviceOfferings: [],
-    };
-
-    // Send a PUT request to sign the contract for the orchestrator
-    const responseOrchestrator = await supertest(app.router)
-      .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
-      .set('Cookie', authTokenCookie)
-      .send(signatureDataOrchestrator);
-    // log
-    _logObject(responseOrchestrator.body);
-    // Check if the response status for the orchestrator's signature is OK (200)
-    console.log(
-      "Check if the response status for the orchestrator's signature is OK (200)",
-    );
-    expect(responseOrchestrator.status).to.equal(200);
-
     // Check if the response contains the updated contract with the signatures
-    expect(responseOrchestrator.body).to.have.property('members');
-    const members = responseOrchestrator.body.members;
+    expect(responsePartyB.body).to.have.property('members');
+    const members = responsePartyB.body.members;
 
     // Check if party A's second signature exists in the updated contract
     const partyASignature2 = members.find(
@@ -219,7 +215,7 @@ describe('Routes for Contract API', () => {
     expect(orchestratorSignature).to.exist;
 
     // Check if the 'status' field is set to 'signed'
-    expect(responseOrchestrator.body.status).to.equal('signed');
+    expect(responsePartyB.body.status).to.equal('signed');
   });
 
   // Test case: Revoke a signature

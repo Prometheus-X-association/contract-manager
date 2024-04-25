@@ -27,13 +27,16 @@ const _logGreen = (value: string) => {
 const _logObject = (data: any) => {
   console.log(`\x1b[90m${JSON.stringify(data, null, 2)}\x1b[37m`);
 };
-describe('Create a bilateral contract, then inject policies in it.', () => {
+describe('Policies Injection test cases for Bilateral Contract.', () => {
   let server: http.Server;
   before(async () => {
     server = await app.startServer(config.mongo.testUrl);
     await new Promise((resolve) => {
       server.listen(SERVER_PORT, () => {
         console.log(`Test server is running on port ${SERVER_PORT}`);
+        console.log(`Mongo Url: ${config.mongo.testUrl}`);
+        console.log(`Registry Url: ${config.catalog.registry.url}`);
+        console.log(`Registry File Ext: ${config.catalog.registry.fileExt}`);
         resolve(true);
       });
     });
@@ -97,7 +100,7 @@ describe('Create a bilateral contract, then inject policies in it.', () => {
     _logGreen('The input policies information to be injected:');
     _logObject(policiesArray);
     const response = await supertest(app.router)
-      .post(`/bilaterals/policies/${contractId}`)
+      .put(`/bilaterals/policies/${contractId}`)
       .set('Cookie', cookie)
       .send(policiesArray);
     _logGreen('The new contract in database:');

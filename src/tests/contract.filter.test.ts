@@ -13,7 +13,7 @@ const _logObject = (data: any) => {
   console.log(`\x1b[90m${JSON.stringify(data, null, 2)}\x1b[37m`);
 };
 // Test suite for the route to get all contracts with filters
-describe('Routes for Contract API', () => {
+describe('Filtering test cases for Contracts (Dataspace use cases).', () => {
   let server: any;
   let signedContractId: string;
   let unsignedContractId: string;
@@ -46,7 +46,6 @@ describe('Routes for Contract API', () => {
       participant: didPartyA,
       role: 'partyA',
       signature: 'partyASignature1',
-      serviceOfferings: [],
     };
     // Send a PUT request to sign the contract for party A
     await supertest(app.router)
@@ -76,74 +75,74 @@ describe('Routes for Contract API', () => {
   });
 
   // Test case for getting all contracts
-  describe(`GET ${API_ROUTE_BASE}all/`, () => {
-    it('should return all contracts', async () => {
-      const response = await supertest(app.router)
-        .get(`${API_ROUTE_BASE}all/`)
-        .set('Cookie', authTokenCookie);
-      //
-      _logObject(response.body);
-      //
-      expect(response.status).to.equal(200);
-      const contracts: IContractDB[] = response.body.contracts;
-      // Compare with the IDs created at the beginning
-      const contractIds = contracts.map((contract) => contract._id);
-      expect(contractIds).to.include.members([
-        signedContractId,
-        unsignedContractId,
-      ]);
-    });
-
-    // Test case for getting contracts with a specific DID in signatures
-    it('should return contracts for a specific DID in signatures', async () => {
-      const did = Buffer.from(didPartyA, 'utf8').toString('base64');
-      const response = await supertest(app.router)
-        .get(`${API_ROUTE_BASE}for/${did}`)
-        .set('Cookie', authTokenCookie);
-      //
-      _logObject(response.body);
-      //
-      expect(response.status).to.equal(200);
-      const contracts: IContractDB[] = response.body.contracts;
-      // Only the signed contract should be returned
-      expect(contracts.length).to.equal(1);
-      expect(contracts[0]._id).to.equal(signedContractId);
-    });
-
-    // Test case for getting contracts where DID is not in signatures when hasSigned is false
-    it('should return contracts where DID is not in signatures when hasSigned is false', async () => {
-      const did = Buffer.from(didPartyA, 'utf8').toString('base64');
-      const hasSigned = false;
-      const response = await supertest(app.router)
-        .get(`${API_ROUTE_BASE}for/${did}?hasSigned=${hasSigned}`)
-        .set('Cookie', authTokenCookie);
-      //
-      _logObject(response.body);
-      //
-      expect(response.status).to.equal(200);
-      const contracts: IContractDB[] = response.body.contracts;
-      // Only the unsigned contract should be returned
-      expect(contracts.length).to.equal(1);
-      expect(contracts[0]._id).to.equal(unsignedContractId);
-    });
-
-    // Test case to retrieve the list of contracts with status 'pending'
-    it('should return contracts with status "pending"', async () => {
-      // Define the status to filter by
-      const status = 'pending';
-      const response = await supertest(app.router)
-        .get(`${API_ROUTE_BASE}all?status=${status}`)
-        .set('Cookie', authTokenCookie);
-      _logObject(response.body);
-      expect(response.status).to.equal(200);
-      const contracts: Array<any> = response.body.contracts;
-      expect(contracts.length).to.equal(2);
-      // Ensure that the pending contracts are present in the list
-      const contractIds = contracts.map((contract) => contract._id);
-      expect(contractIds).to.include.members([
-        signedContractId,
-        unsignedContractId,
-      ]);
-    });
+  // describe(`GET ${API_ROUTE_BASE}all/`, () => {
+  it('should return all contracts', async () => {
+    const response = await supertest(app.router)
+      .get(`${API_ROUTE_BASE}all/`)
+      .set('Cookie', authTokenCookie);
+    //
+    _logObject(response.body);
+    //
+    expect(response.status).to.equal(200);
+    const contracts: IContractDB[] = response.body.contracts;
+    // Compare with the IDs created at the beginning
+    const contractIds = contracts.map((contract) => contract._id);
+    expect(contractIds).to.include.members([
+      signedContractId,
+      unsignedContractId,
+    ]);
   });
+
+  // Test case for getting contracts with a specific DID in signatures
+  it('should return contracts for a specific DID in signatures', async () => {
+    const did = Buffer.from(didPartyA, 'utf8').toString('base64');
+    const response = await supertest(app.router)
+      .get(`${API_ROUTE_BASE}for/${did}`)
+      .set('Cookie', authTokenCookie);
+    //
+    _logObject(response.body);
+    //
+    expect(response.status).to.equal(200);
+    const contracts: IContractDB[] = response.body.contracts;
+    // Only the signed contract should be returned
+    expect(contracts.length).to.equal(1);
+    expect(contracts[0]._id).to.equal(signedContractId);
+  });
+
+  // Test case for getting contracts where DID is not in signatures when hasSigned is false
+  it('should return contracts where DID is not in signatures when hasSigned is false', async () => {
+    const did = Buffer.from(didPartyA, 'utf8').toString('base64');
+    const hasSigned = false;
+    const response = await supertest(app.router)
+      .get(`${API_ROUTE_BASE}for/${did}?hasSigned=${hasSigned}`)
+      .set('Cookie', authTokenCookie);
+    //
+    _logObject(response.body);
+    //
+    expect(response.status).to.equal(200);
+    const contracts: IContractDB[] = response.body.contracts;
+    // Only the unsigned contract should be returned
+    expect(contracts.length).to.equal(1);
+    expect(contracts[0]._id).to.equal(unsignedContractId);
+  });
+
+  // Test case to retrieve the list of contracts with status 'pending'
+  it('should return contracts with status "pending"', async () => {
+    // Define the status to filter by
+    const status = 'pending';
+    const response = await supertest(app.router)
+      .get(`${API_ROUTE_BASE}all?status=${status}`)
+      .set('Cookie', authTokenCookie);
+    _logObject(response.body);
+    expect(response.status).to.equal(200);
+    const contracts: Array<any> = response.body.contracts;
+    expect(contracts.length).to.equal(2);
+    // Ensure that the pending contracts are present in the list
+    const contractIds = contracts.map((contract) => contract._id);
+    expect(contractIds).to.include.members([
+      signedContractId,
+      unsignedContractId,
+    ]);
+  });
+  // });
 });
