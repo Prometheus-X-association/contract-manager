@@ -15,8 +15,6 @@ const SECRET_SESSION_KEY =
   process.env.SECRET_SESSION_KEY || 'an-unsafe-session-default-secret-key';
 const REGISTRY_URL = process.env.CATALOG_REGISTRY_URL || '/rules/';
 const REGISTRY_FILE_EXT = process.env.CATALOG_REGISTRY_FILE_EXT;
-process.env.CATALOG_REGISTRY_FILE_EXT;
-
 const REGISTRY_DEFINED = !!process.env.CATALOG_REGISTRY_URL;
 const SERVER_URL = process.env.SERVER_URL || 'http://localhost';
 export const config = {
