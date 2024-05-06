@@ -124,7 +124,7 @@ export class ContractService {
       throw error;
     }
   }
-  // sign contract
+  // Sign contract
   public async signContract(
     contractId: string,
     inputSignature: ContractMember,
@@ -132,26 +132,24 @@ export class ContractService {
     try {
       // Find the contract by its ID
       const contract = await Contract.findById(contractId, {
-        // Exclude useless meta data
+        // Exclude unnecessary metadata
         _id: 0,
         __v: 0,
         jsonLD: 0,
       }).lean();
-
       if (!contract) {
-        throw new Error('The contract does not exist.');
+        throw new Error('Contract does not exist.');
       }
-      // Check if the party is the orchestrator
+      // Check if the current participant exists
       const currentMember = contract.members.find(
         (member) => member.participant === inputSignature.participant,
       );
       if (currentMember) {
-        // Update the value of an existing signature
+        // Update the signature of an existing member
         currentMember.signature = inputSignature.signature;
       } else {
         // Add a new signature if it doesn't exist
         contract.members.push(inputSignature);
-        //And add his serviceOfferings
       }
       const orchestratorHasSigned = contract.members.find(
         (member) => member.role === 'orchestrator',
@@ -159,8 +157,8 @@ export class ContractService {
       // Check if both parties have signed, including the orchestrator
       const totalMembers = contract.members.length;
       if (totalMembers >= 2 && orchestratorHasSigned) {
-        // Set the contract status to 'revoked' if there are
-        // at least two parties and the orchestrator who signed
+        // Set the contract status to 'signed' if there are
+        // at least two parties and the orchestrator has signed
         contract.status = 'signed';
       }
       // Update the contract in the database
@@ -170,13 +168,14 @@ export class ContractService {
         { new: true, _id: 0, __v: 0, jsonLD: 0 },
       );
       if (!updatedContract) {
-        throw new Error('Error occured while updating contract signature.');
+        throw new Error('Error occurred while updating contract signature.');
       }
       return updatedContract.toObject();
     } catch (error) {
       throw error;
     }
   }
+
   // Revoke a signature
   public async revokeSignatureService(
     contractId: string,
@@ -523,8 +522,10 @@ export class ContractService {
       }
       let offeringIndex = contract.serviceOfferings.findIndex(
         (entry: ContractServiceOffering) =>
-          (entry.serviceOffering.includes(offeringId) || entry.serviceOffering === offeringId) &&
-          (entry.participant.includes(participantId) || entry.participant === participantId),
+          (entry.serviceOffering.includes(offeringId) ||
+            entry.serviceOffering === offeringId) &&
+          (entry.participant.includes(participantId) ||
+            entry.participant === participantId),
       );
       if (offeringIndex !== -1) {
         const offering: ContractServiceOffering =
