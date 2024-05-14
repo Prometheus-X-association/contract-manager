@@ -564,7 +564,7 @@ export class ContractService {
   }
 
   // update data processings
-  public async updateDataProcessings(
+  public async writeDataProcessings(
     contractId: string,
     processings: ContractDataProcessing[],
   ): Promise<ContractDataProcessing[]> {
@@ -629,6 +629,28 @@ export class ContractService {
           return existingProcessing;
         } else {
           throw new Error('Processing not found in the contract');
+        }
+      } else {
+        throw new Error('Contract not found');
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async removeDataProcessing(
+    contractId: string,
+    index: number,
+  ): Promise<ContractDataProcessing[]> {
+    try {
+      const contract = await Contract.findById(contractId);
+      if (contract) {
+        if (index >= 0 && index < contract.dataProcessings.length) {
+          contract.dataProcessings.splice(index, 1);
+          await contract.save();
+          return contract.dataProcessings;
+        } else {
+          throw new Error('Index out of bounds');
         }
       } else {
         throw new Error('Contract not found');

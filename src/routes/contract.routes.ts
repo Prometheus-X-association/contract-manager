@@ -16,10 +16,11 @@ import {
   getPolicyForServiceOffering,
   removeOfferingPolicies,
   getDataProcessings,
-  updateDataProcessings,
+  writeDataProcessings,
   insertDataProcessing,
   removeDataProcessing,
   updateDataProcessing,
+  deleteDataProcessing,
 } from '../controllers/contract.controller';
 import { check } from 'express-validator';
 
@@ -52,11 +53,17 @@ router.delete(
   removeOfferingPolicies,
 );
 
+// List the data processings within the chain available on the contrat
 router.get('/contracts/processings/:id', getDataProcessings);
-router.put('/contracts/processings/:id', updateDataProcessings);
-
+// Add the data processing chain to the contract
+router.post('/contracts/processings/:id', writeDataProcessings);
+// Insert a new data processing inside the chain at a specific given index
 router.put('/contracts/processings/insert/:id/:index', insertDataProcessing);
+// Update a specific data processing from the chain
 router.put('/contracts/processings/update/:id', updateDataProcessing);
-router.delete('/contracts/processings/remove/:id', removeDataProcessing);
+// Remove a specific data processing from the chain
+router.delete('/contracts/processings/:id', deleteDataProcessing);
+// Remove a specific data processing from the chain by index
+router.delete('/contracts/processings/:id/:index', removeDataProcessing);
 
 export default router;
