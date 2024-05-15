@@ -75,7 +75,7 @@ const MemberSchema = new Schema(
   },
   { _id: false },
 );
-
+/*
 const DataProcessingSchema = new Schema(
   {
     connectorURI: { type: String, required: true },
@@ -83,7 +83,7 @@ const DataProcessingSchema = new Schema(
   },
   { _id: false, timestamps: true },
 );
-
+*/
 // Contract mongoose schema
 const ContractSchema: Schema = new Schema(
   {
@@ -93,7 +93,7 @@ const ContractSchema: Schema = new Schema(
     orchestrator: String,
     serviceOfferings: [OfferingSchema],
     rolesAndObligations: [{ role: String, policies: [PolicySchema] }],
-    dataProcessings: { type: [DataProcessingSchema], default: [] },
+    dataProcessings: { type: [String], default: [] },
     purpose: [PurposeSchema],
     members: [MemberSchema],
     revokedMembers: [MemberSchema],
