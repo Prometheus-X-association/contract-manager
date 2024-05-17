@@ -59,6 +59,7 @@ export class BilateralContractService {
       const contract = await BilateralContract.findById(contractId).lean();
       return contract;
     } catch (error) {
+      logger.error('[bilateral/Service, getContract]:', error);
       throw error;
     }
   }
@@ -77,6 +78,7 @@ export class BilateralContractService {
       ).lean();
       return updatedContract;
     } catch (error) {
+      logger.error('[bilateral/Service, updateContract]:', error);
       throw error;
     }
   }
@@ -89,6 +91,7 @@ export class BilateralContractService {
         throw new Error('Contract not found.');
       }
     } catch (error) {
+      logger.error('[bilateral/Service, deleteContract]:', error);
       throw error;
     }
   }
@@ -108,6 +111,7 @@ export class BilateralContractService {
       }
       return updatedContract;
     } catch (error: any) {
+      logger.error('[bilateral/Service, addContractNegociator]:', error);
       throw error;
     }
   }
@@ -153,6 +157,7 @@ export class BilateralContractService {
       await existingContract.save();
       return existingContract.toObject();
     } catch (error) {
+      logger.error('[bilateral/Service, signContract]:', error);
       throw error;
     }
   }
@@ -188,6 +193,7 @@ export class BilateralContractService {
       // Return the updated contract
       return contract;
     } catch (error) {
+      logger.error('[bilateral/Service, revokeSignatureService]:', error);
       throw error;
     }
   }
@@ -219,6 +225,7 @@ export class BilateralContractService {
         data.policy,
       );
     } catch (error) {
+      logger.error('[bilateral/Service, checkPermission]:', error);
       throw error;
     }
   }
@@ -269,6 +276,7 @@ export class BilateralContractService {
       const contracts = await BilateralContract.find(filter);
       return contracts;
     } catch (error: any) {
+      logger.error('[bilateral/Service, getContractsFor]:', error);
       throw new Error(`Error while retrieving contracts: ${error.message}`);
     }
   }
@@ -277,7 +285,7 @@ export class BilateralContractService {
     try {
       let filter: any = {};
       if (status) {
-        if (status.slice(0, 3) !== 'not') {
+        if (!status.startsWith('not')) {
           filter.status = status;
         } else {
           filter = {
@@ -290,6 +298,7 @@ export class BilateralContractService {
       const contracts = await BilateralContract.find(filter).select('-jsonLD');
       return contracts;
     } catch (error: any) {
+      logger.error('[bilateral/Service, getContracts]:', error);
       throw new Error(`Error while retrieving contracts: ${error.message}`);
     }
   }
@@ -330,6 +339,7 @@ export class BilateralContractService {
       const updatedContract = await contract.save();
       return updatedContract;
     } catch (error: any) {
+      logger.error('[bilateral/Service, addPolicies]:', error);
       throw error;
     }
   }
@@ -362,6 +372,7 @@ export class BilateralContractService {
       const updatedContract = await contract.save();
       return updatedContract;
     } catch (error) {
+      logger.error('[bilateral/Service, addPolicyFromId]:', error);
       throw error;
     }
   }
