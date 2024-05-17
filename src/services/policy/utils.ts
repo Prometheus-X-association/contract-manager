@@ -39,14 +39,17 @@ export const genPolicyFromRule = async (
     const response = await axios.get(ruleUrl);
     const rule = response.data;
     replaceValues(rule.policy, replacement);
-    rule.policy.description =
+    let description = '';
+    if (
       rule.description &&
       Array.isArray(rule.description) &&
       rule.description.length > 0
-        ? rule.description[0]['@value']
-        : typeof rule.description === 'string'
-          ? rule.description
-          : '';
+    ) {
+      description = rule.description[0]['@value'];
+    } else if (typeof rule.description === 'string') {
+      description = rule.description;
+    }
+    rule.policy.description = description;
     return rule.policy;
   } catch (error: any) {
     const message = `[contract/genPolicyFromRule] ${error.message} url: ${error.response}`;

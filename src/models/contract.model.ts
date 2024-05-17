@@ -1,7 +1,6 @@
 // Ecosystem Contract Model
 import mongoose, { Schema } from 'mongoose';
 import { IContractDB } from '../interfaces/contract.interface';
-import { ContractServiceOffering } from "../interfaces/schemas.interface";
 
 // Purpose mongoose schema
 const PurposeSchema = new Schema({
@@ -64,16 +63,16 @@ const OfferingSchema = new Schema({
 
 // Member signature mongoose schema
 const MemberSchema = new Schema(
-    {
-        participant: { type: String, required: true },
-        role: { type: String, required: true },
-        signature: { type: String, required: true },
-        date: {
-            type: Date,
-            default: Date.now,
-        },
+  {
+    participant: { type: String, required: true },
+    role: { type: String, required: true },
+    signature: { type: String, required: true },
+    date: {
+      type: Date,
+      default: Date.now,
     },
-    { _id: false },
+  },
+  { _id: false },
 );
 
 // Contract mongoose schema
