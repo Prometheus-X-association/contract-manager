@@ -121,7 +121,6 @@ export class BilateralContractService {
     inputSignature: BilateralContractSignature,
   ): Promise<IBilateralContract> {
     try {
-      // Find the contract by its ID
       const existingContract = await BilateralContract.findById(contractId);
 
       if (!existingContract) {
@@ -129,28 +128,25 @@ export class BilateralContractService {
       }
       // Check if the contract already has two participants
       if (existingContract.signatures.length >= 2) {
-        // Check if the new party is different from the existing ones
-        const parties = existingContract.signatures.map(
-          (signature) => signature.party,
+        // Check if the new participant is different from the existing ones
+        const dids = existingContract.signatures.map(
+          (signature) => signature.did,
         );
-        if (!parties.includes(inputSignature.party)) {
+        if (!dids.includes(inputSignature.did)) {
           throw new Error('Cannot add a third participant.');
         }
       }
-      // Find the party's existing signature
+      // Add or Update the signature
       const existingSignature = existingContract.signatures.find(
-        (signature) => signature.party === inputSignature.party,
+        (signature) => signature.did === inputSignature.did,
       );
       if (existingSignature) {
-        // Update the value of an existing signature
         existingSignature.value = inputSignature.value;
       } else {
-        // Add a new signature if it doesn't exist
         existingContract.signatures.push(inputSignature);
       }
-      // Check if both parties have signed
+      // If both parties have signed set the contract status to 'revoked'
       if (existingContract.signatures.length === 2) {
-        // set the contract status to 'revoked' if both parties have signed
         existingContract.status = 'signed';
       }
       // Save the changes to the database
