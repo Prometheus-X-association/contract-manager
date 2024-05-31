@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  contract-manager:
+    container_name: "contract-manager"
+    build:
+      context: .
+      dockerfile: docker/app/Dockerfile
+    image: contract-manager:latest
+    ports:
+      - "${SERVER_PORT}:${SERVER_PORT}"
+    links:
+      - mongodb
+    env_file:
+      - .env
+    networks:
+      - contract-manager
+      - ptx
+
+  mongodb:
+    container_name: "contract-manager-mongodb"
+    build:
+      context: .
+      dockerfile: docker/mongodb/Dockerfile
+#    Uncomment to connect mongodb container to mongo compass or another service
+#    ports:
+#      - "27017:27017"
+    volumes:
+      - contract_data:/data/db
+    networks:
+      - contract-manager
+
+networks:
+  contract-manager:
+    name: contract-manager
+    driver: bridge
+  ptx:
+    name: ptx
+    external: true
+
+volumes:
+  contract_data:
