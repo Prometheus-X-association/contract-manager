@@ -32,9 +32,11 @@ services:
 
 networks:
   contract-manager:
+    name: contract-manager
     driver: bridge
   ptx:
-    driver: bridge
+    name: ptx
+    external: true
 
 volumes:
   contract_data:

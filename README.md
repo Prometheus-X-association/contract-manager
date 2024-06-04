@@ -98,9 +98,10 @@ Before you begin, ensure you have met the following requirements:
 1. Clone the repository from GitHub: `git clone https://github.com/prometheus-x/contract-manager.git`
 2. Navigate to the project directory: `cd contract-manager`
 3. Configure the application by setting up the necessary environment variables. You will need to specify database connection details and other relevant settings.
-4. Start the application: `docker-compose up -d`
-5. If you need to rebuild the image `docker-compose build` and restart with: `docker-compose up -d`
-6. If you don't want to use the mongodb container from the docker compose you can use the command `docker run -d -p your-port:your-port --name contract-manager contract-manager` after running `docker-compose build`
+4. Create a docker network using `docker network create ptx`
+5. Start the application: `docker-compose up -d`
+6. If you need to rebuild the image `docker-compose build` and restart with: `docker-compose up -d`
+7. If you don't want to use the mongodb container from the docker compose you can use the command `docker run -d -p your-port:your-port --name contract-manager contract-manager` after running `docker-compose build`
 
 ## Tests
 
