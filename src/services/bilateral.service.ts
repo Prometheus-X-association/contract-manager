@@ -59,6 +59,7 @@ export class BilateralContractService {
       const contract = await BilateralContract.findById(contractId).lean();
       return contract;
     } catch (error) {
+      logger.error('[bilateral/Service, getContract]:', error);
       throw error;
     }
   }
@@ -77,6 +78,7 @@ export class BilateralContractService {
       ).lean();
       return updatedContract;
     } catch (error) {
+      logger.error('[bilateral/Service, updateContract]:', error);
       throw error;
     }
   }
@@ -89,6 +91,7 @@ export class BilateralContractService {
         throw new Error('Contract not found.');
       }
     } catch (error) {
+      logger.error('[bilateral/Service, deleteContract]:', error);
       throw error;
     }
   }
@@ -108,6 +111,7 @@ export class BilateralContractService {
       }
       return updatedContract;
     } catch (error: any) {
+      logger.error('[bilateral/Service, addContractNegociator]:', error);
       throw error;
     }
   }
@@ -117,7 +121,6 @@ export class BilateralContractService {
     inputSignature: BilateralContractSignature,
   ): Promise<IBilateralContract> {
     try {
-      // Find the contract by its ID
       const existingContract = await BilateralContract.findById(contractId);
 
       if (!existingContract) {
@@ -125,34 +128,32 @@ export class BilateralContractService {
       }
       // Check if the contract already has two participants
       if (existingContract.signatures.length >= 2) {
-        // Check if the new party is different from the existing ones
-        const parties = existingContract.signatures.map(
-          (signature) => signature.party,
+        // Check if the new participant is different from the existing ones
+        const dids = existingContract.signatures.map(
+          (signature) => signature.did,
         );
-        if (!parties.includes(inputSignature.party)) {
+        if (!dids.includes(inputSignature.did)) {
           throw new Error('Cannot add a third participant.');
         }
       }
-      // Find the party's existing signature
+      // Add or Update the signature
       const existingSignature = existingContract.signatures.find(
-        (signature) => signature.party === inputSignature.party,
+        (signature) => signature.did === inputSignature.did,
       );
       if (existingSignature) {
-        // Update the value of an existing signature
         existingSignature.value = inputSignature.value;
       } else {
-        // Add a new signature if it doesn't exist
         existingContract.signatures.push(inputSignature);
       }
-      // Check if both parties have signed
+      // If both parties have signed set the contract status to 'revoked'
       if (existingContract.signatures.length === 2) {
-        // set the contract status to 'revoked' if both parties have signed
         existingContract.status = 'signed';
       }
       // Save the changes to the database
       await existingContract.save();
       return existingContract.toObject();
     } catch (error) {
+      logger.error('[bilateral/Service, signContract]:', error);
       throw error;
     }
   }
@@ -188,6 +189,7 @@ export class BilateralContractService {
       // Return the updated contract
       return contract;
     } catch (error) {
+      logger.error('[bilateral/Service, revokeSignatureService]:', error);
       throw error;
     }
   }
@@ -219,6 +221,7 @@ export class BilateralContractService {
         data.policy,
       );
     } catch (error) {
+      logger.error('[bilateral/Service, checkPermission]:', error);
       throw error;
     }
   }
@@ -269,6 +272,7 @@ export class BilateralContractService {
       const contracts = await BilateralContract.find(filter);
       return contracts;
     } catch (error: any) {
+      logger.error('[bilateral/Service, getContractsFor]:', error);
       throw new Error(`Error while retrieving contracts: ${error.message}`);
     }
   }
@@ -277,7 +281,7 @@ export class BilateralContractService {
     try {
       let filter: any = {};
       if (status) {
-        if (status.slice(0, 3) !== 'not') {
+        if (!status.startsWith('not')) {
           filter.status = status;
         } else {
           filter = {
@@ -290,6 +294,7 @@ export class BilateralContractService {
       const contracts = await BilateralContract.find(filter).select('-jsonLD');
       return contracts;
     } catch (error: any) {
+      logger.error('[bilateral/Service, getContracts]:', error);
       throw new Error(`Error while retrieving contracts: ${error.message}`);
     }
   }
@@ -330,6 +335,7 @@ export class BilateralContractService {
       const updatedContract = await contract.save();
       return updatedContract;
     } catch (error: any) {
+      logger.error('[bilateral/Service, addPolicies]:', error);
       throw error;
     }
   }
@@ -362,6 +368,7 @@ export class BilateralContractService {
       const updatedContract = await contract.save();
       return updatedContract;
     } catch (error) {
+      logger.error('[bilateral/Service, addPolicyFromId]:', error);
       throw error;
     }
   }

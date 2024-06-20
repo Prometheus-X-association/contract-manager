@@ -11,3 +11,5 @@ docs
 local
 tarballs
 mochawesome-report/**/*.*
+.scannerwork
+sonar-project.properties

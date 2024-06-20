@@ -6,7 +6,6 @@ import {
   Custom,
 } from 'json-odrl-manager';
 import repository from 'services/store.service';
-import { logger } from 'utils/logger';
 class PDPFetcher extends ContextFetcher {
   public sessionId: string;
   constructor() {
@@ -55,7 +54,6 @@ class PDPService {
     };
     const policy = instanciator.genPolicyFrom(base);
     if (policy) {
-      // policy.debug();
       evaluator.setPolicy(policy);
       PDPService.fetcher.sessionId = sessionId;
       return await evaluator.evalResourcePerformabilities(json);

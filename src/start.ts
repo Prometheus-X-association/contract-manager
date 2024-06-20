@@ -6,7 +6,7 @@ import { logger } from 'utils/logger';
 logger.info('Starting server...');
 app.startServer(config.mongo.url).then((server) => {
   logger.info('Server created.');
-  server.listen(process.env.PORT || config.server.port, () =>
+  server.listen(process.env.PORT ?? config.server.port, () =>
     logger.info(`Server is running on port ${config.server.port}.`),
   );
   // Create a custom shutdown function
