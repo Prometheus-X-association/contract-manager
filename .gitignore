@@ -11,3 +11,6 @@ docs
 local
 tarballs
 mochawesome-report/**/*.*
+terraform/.terraform
+terraform/.terraform.lock.hcl
+terraform/terraform.tfvars
