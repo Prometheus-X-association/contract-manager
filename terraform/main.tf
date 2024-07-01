@@ -1,5 +1,5 @@
 provider "kubernetes" {
-  config_path = "~/.kube/config"
+  config_path = var.kubeconfig_path
 }
 
 resource "kubernetes_namespace" "contract_manager" {
@@ -125,9 +125,11 @@ resource "kubernetes_persistent_volume" "mongo_data" {
     access_modes = ["ReadWriteOnce"]
 
     persistent_volume_reclaim_policy = "Retain"
-
-    host_path {
-      path = "/mnt/data"
+  
+    persistent_volume_source {
+      host_path {
+        path = var.persistent_volume_source
+      }
     }
   }
 }
