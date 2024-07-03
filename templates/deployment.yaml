@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: contract-manager
+  namespace: contract-manager
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: contract-manager
+  template:
+    metadata:
+      labels:
+        app: contract-manager
+    spec:
+      containers:
+      - name: contract-manager
+        image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+        ports:
+        - containerPort: {{ .Values.service.port }}
+        envFrom:
+        - secretRef:
+            name: env-vars
+        volumeMounts:
+        - name: contract-data
+          mountPath: /data/db
+      - name: mongodb
+        image: "{{ .Values.mongodb.image.repository }}:{{ .Values.mongodb.image.tag }}"
+        volumeMounts:
+        - name: contract-data
+          mountPath: /data/db
+      volumes:
+      - name: contract-data
+        persistentVolumeClaim:
+          claimName: mongo-data
