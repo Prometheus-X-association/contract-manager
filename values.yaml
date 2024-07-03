@@ -5,15 +5,6 @@ image:
   tag: latest
   pullPolicy: IfNotPresent
 
-mongodb:
-  image:
-    repository: mongo
-    tag: latest
-    pullPolicy: IfNotPresent
-  volume:
-    storage: 5Gi
-    path: /mnt/data
-
 service:
   type: LoadBalancer
   port: 8080

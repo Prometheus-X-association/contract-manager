@@ -151,7 +151,7 @@ terraform output contract_manager_service_ip
 
 > * Replace placeholder values in the `values.yaml` file with actual values from your `.env`.
 > * Ensure the `server_port` value matches the port used in your application.
-> * Adjust the mongodb.volume.path in the values.yaml file to an appropriate path on your Kubernetes nodes.
+> * Configure your MongoDB connection details in the values.yaml file to point to your managed MongoDB instance.
 
 
 ## Tests
