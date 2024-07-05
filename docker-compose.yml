@@ -12,7 +12,7 @@ services:
     links:
       - mongodb
     env_file:
-      - .env
+      - ${ENV_FILE:-.env}
     networks:
       - contract-manager
       - ptx

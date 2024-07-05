@@ -1,0 +1,6 @@
+projectKey=contract
+serverUrl=http://localhost:9000
+serverVersion=10.5.1.90531
+dashboardUrl=http://localhost:9000/dashboard?id=contract
+ceTaskId=e1e5b6ff-8e52-4b09-9015-67c454dcaeaf
+ceTaskUrl=http://localhost:9000/api/ce/task?id=e1e5b6ff-8e52-4b09-9015-67c454dcaeaf
