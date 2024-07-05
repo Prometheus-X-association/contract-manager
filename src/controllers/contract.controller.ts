@@ -341,3 +341,120 @@ export const removeOfferingPolicies = async (
     res.status(500).json({ error: message });
   }
 };
+
+export const getDataProcessings = async (req: Request, res: Response) => {
+  try {
+    const contractId: string = req.params.id;
+    const dataProcessings =
+      await contractService.getDataProcessings(contractId);
+    if (!dataProcessings) {
+      return res.json([]);
+    }
+    return res.json(dataProcessings);
+  } catch (error) {
+    logger.error('Error retrieving the data processings:', error);
+    res
+      .status(500)
+      .json({ error: 'An error occurred while retrieving data processings.' });
+  }
+};
+
+export const writeDataProcessings = async (req: Request, res: Response) => {
+  try {
+    const contractId: string = req.params.id;
+    const processings = req.body;
+    const dataProcessings = await contractService.writeDataProcessings(
+      contractId,
+      processings,
+    );
+    if (!dataProcessings) {
+      throw new Error('something went wrong while updating data processings');
+    }
+    return res.json(dataProcessings);
+  } catch (error) {
+    logger.error('Error while updating data processings:', error);
+    res.status(500).json({
+      error: 'An error occurred while while updating data processings.',
+    });
+  }
+};
+
+export const insertDataProcessing = async (req: Request, res: Response) => {
+  try {
+    const { id: contractId, index } = req.params;
+    const processing = req.body;
+    const dataProcessings = await contractService.insertDataProcessing(
+      contractId,
+      processing,
+      +index,
+    );
+    if (!dataProcessings) {
+      throw new Error('something went wrong while insering data processing.');
+    }
+    return res.json(dataProcessings);
+  } catch (error) {
+    logger.error('Error while inserting data processing:', error);
+    res.status(500).json({
+      error: 'An error occurred while while inserting data processing.',
+    });
+  }
+};
+
+export const updateDataProcessing = async (req: Request, res: Response) => {
+  try {
+    const contractId: string = req.params.id;
+    const processing = req.body;
+    const dataProcessings = await contractService.updateDataProcessing(
+      contractId,
+      processing,
+    );
+    if (!dataProcessings) {
+      throw new Error('something went wrong while updating data processing');
+    }
+    return res.json(dataProcessings);
+  } catch (error) {
+    logger.error('Error while inserting data processing:', error);
+    res.status(500).json({
+      error: 'An error occurred while while inserting data processing.',
+    });
+  }
+};
+
+export const removeDataProcessing = async (req: Request, res: Response) => {
+  try {
+    const { id: contractId, index } = req.params;
+    const dataProcessings = await contractService.removeDataProcessing(
+      contractId,
+      +index,
+    );
+    if (!dataProcessings) {
+      throw new Error('something went wrong while deleting data processing');
+    }
+    return res.json(dataProcessings);
+  } catch (error) {
+    logger.error('Error while deleting data processing:', error);
+    res.status(500).json({
+      error: 'An error occurred while deleting data processing.',
+    });
+  }
+};
+
+export const deleteDataProcessing = async (req: Request, res: Response) => {
+  try {
+    const contractId: string = req.params.id;
+    const processing = req.body;
+    const deletedProcessing = await contractService.deleteDataProcessing(
+      contractId,
+      processing,
+    );
+    if (!deletedProcessing) {
+      throw new Error('something went wrong while deleting data processing');
+    }
+    return res.json(deletedProcessing);
+  } catch (error) {
+    logger.error('Error while deleting data processing:', error);
+    res.status(500).json({
+      error: 'An error occurred while deleting data processing.',
+    });
+  }
+};

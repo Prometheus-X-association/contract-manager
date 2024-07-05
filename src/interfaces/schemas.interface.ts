@@ -608,7 +608,6 @@ export type ContractMember = {
   role: string;
   signature: string;
   date?: Date;
-  serviceOfferings?: any[]; // TMP
 };
 
 /**
@@ -641,6 +640,7 @@ export type Contract = {
   orchestrator?: string;
   serviceOfferings: ContractServiceOffering[];
   rolesAndObligations: ContractRolesAndObligation[];
+  dataProcessings: string[];
   purpose: ContractPurpose[];
   members: ContractRevokedMember[];
   revokedMembers: ContractRevokedMember[];
@@ -926,6 +926,7 @@ export type ContractDocument = mongoose.Document<
     orchestrator?: string;
     serviceOfferings: mongoose.Types.DocumentArray<ContractServiceOfferingDocument>;
     rolesAndObligations: mongoose.Types.DocumentArray<ContractRolesAndObligationDocument>;
+    dataProcessings: mongoose.Types.Array<string>;
     purpose: mongoose.Types.DocumentArray<ContractPurposeDocument>;
     members: mongoose.Types.DocumentArray<ContractRevokedMemberDocument>;
     revokedMembers: mongoose.Types.DocumentArray<ContractRevokedMemberDocument>;

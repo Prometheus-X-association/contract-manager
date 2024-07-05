@@ -1,10 +1,14 @@
+import { Types } from 'mongoose';
+
 import { IContract, IContractDB } from 'interfaces/contract.interface';
 import Contract from 'models/contract.model';
 import { logger } from 'utils/logger';
 import {
+  // ContractDataProcessing,
   ContractDocument,
   ContractMember,
   ContractServiceOffering,
+  // ContractDataProcessingDocument,
 } from 'interfaces/schemas.interface';
 import { IPolicyInjection } from 'interfaces/policy.interface';
 import { genPolicyFromRule } from './policy/utils';
@@ -537,6 +541,138 @@ export class ContractService {
       const updatedContract = await contract.save();
       return updatedContract;
     } catch (error: any) {
+      throw error;
+    }
+  }
+
+  // get data processings
+  public async getDataProcessings(contractId: string): Promise<string[]> {
+    try {
+      const contract = await Contract.findById(contractId).lean();
+      if (contract) {
+        const dataProcessings: string[] = contract.dataProcessings;
+        return dataProcessings;
+      } else {
+        throw new Error('Contract not found');
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // update data processings
+  public async writeDataProcessings(
+    contractId: string,
+    processings: string[],
+  ): Promise<string[]> {
+    try {
+      const contract = await Contract.findById(contractId);
+      if (contract) {
+        contract.dataProcessings = processings as Types.Array<string>;
+        await contract.save();
+        return contract.dataProcessings;
+      } else {
+        throw new Error('Contract not found');
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async insertDataProcessing(
+    contractId: string,
+    processing: string,
+    index: number,
+  ): Promise<string> {
+    try {
+      if (index < 0) {
+        throw new Error('Index cannot be negative');
+      }
+      const contract = await Contract.findById(contractId);
+      if (contract) {
+        if (index >= contract.dataProcessings.length) {
+          contract.dataProcessings.push(processing);
+        } else {
+          contract.dataProcessings.splice(index, 0, processing);
+        }
+        await contract.save();
+        return processing;
+      } else {
+        throw new Error('Contract not found');
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async updateDataProcessing(
+    contractId: string,
+    processing: string,
+  ): Promise<string> {
+    try {
+      const contract = await Contract.findById(contractId);
+      if (contract) {
+        const existingProcessing = contract.dataProcessings.find(
+          (item) => item === processing,
+        );
+        if (existingProcessing) {
+          Object.assign(existingProcessing, processing);
+          await contract.save();
+          return existingProcessing;
+        } else {
+          throw new Error('Processing not found in the contract');
+        }
+      } else {
+        throw new Error('Contract not found');
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async removeDataProcessing(
+    contractId: string,
+    index: number,
+  ): Promise<string[]> {
+    try {
+      const contract = await Contract.findById(contractId);
+      if (contract) {
+        if (index >= 0 && index < contract.dataProcessings.length) {
+          contract.dataProcessings.splice(index, 1);
+          await contract.save();
+          return contract.dataProcessings;
+        } else {
+          throw new Error('Index out of bounds');
+        }
+      } else {
+        throw new Error('Contract not found');
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async deleteDataProcessing(
+    contractId: string,
+    processing: string,
+  ): Promise<string> {
+    try {
+      const contract = await Contract.findById(contractId);
+      if (contract) {
+        const initialLength = contract.dataProcessings.length;
+        contract.dataProcessings = contract.dataProcessings.filter(
+          (item) => item !== processing,
+        ) as Types.Array<string>;
+        if (contract.dataProcessings.length !== initialLength) {
+          await contract.save();
+          return processing;
+        } else {
+          throw new Error('Processing not found in the contract');
+        }
+      } else {
+        throw new Error('Contract not found');
+      }
+    } catch (error) {
       throw error;
     }
   }
