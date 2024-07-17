@@ -11,7 +11,7 @@ export interface IPolicySet {
 }
 
 export interface IPolicyInjection {
-  role?: String;
+  role?: string;
   ruleId: string;
   values: any;
 }
