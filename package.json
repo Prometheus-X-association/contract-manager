@@ -32,7 +32,6 @@
     "start": "node build/start.js",
     "test": "mocha --require ts-node/register --exit ./src/tests/*.test.ts",
     "dev": "npx nodemon",
-    "seed": "ts-node src/seeds/start.ts",
     "gen-swagger": "ts-node src/swagger/swagger.ts",
     "gen-docs": "typedoc --out docs",
     "gen-report": "mocha --reporter mochawesome --require ts-node/register --exit ./src/tests/*.test.ts"

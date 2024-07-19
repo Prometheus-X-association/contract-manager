@@ -1,9 +1,7 @@
-// Ecosystem Contract Model
 import mongoose, { Schema } from 'mongoose';
 import { IContractDB } from '../interfaces/contract.interface';
-import { ContractServiceOffering } from '../interfaces/schemas.interface';
 
-// Purpose mongoose schema
+// Ecosystem Contract Model / Dataspace User Case
 const PurposeSchema = new Schema({
   uid: String,
   purpose: String,
@@ -18,7 +16,6 @@ const PurposeSchema = new Schema({
   thirdPartyDisclosure: String,
   thirdPartyName: String,
 });
-// Constraints mongoose schemas
 const DefaultConstraintSchema = new Schema(
   {
     '@type': String,
@@ -32,7 +29,22 @@ const UnknownConstraintSchema = new Schema(
   { '@type': String },
   { strict: false, _id: false },
 );
-//
+const ConsequenceSchema = new Schema(
+  {
+    action: String,
+    constraint: [DefaultConstraintSchema],
+    consequence: [this],
+  },
+  { _id: false },
+);
+const DutySchema = new Schema(
+  {
+    action: String,
+    constraint: [DefaultConstraintSchema],
+    consequence: [ConsequenceSchema],
+  },
+  { _id: false },
+);
 const PolicySchema = new Schema(
   {
     uid: String,
@@ -41,6 +53,7 @@ const PolicySchema = new Schema(
       {
         action: String,
         target: String,
+        duty: [DutySchema],
         constraint: [DefaultConstraintSchema, UnknownConstraintSchema],
         _id: false,
       },
@@ -61,8 +74,6 @@ const OfferingSchema = new Schema({
   serviceOffering: { type: String, required: true },
   policies: [PolicySchema],
 });
-
-// Member signature mongoose schema
 const MemberSchema = new Schema(
   {
     participant: { type: String, required: true },
@@ -75,16 +86,6 @@ const MemberSchema = new Schema(
   },
   { _id: false },
 );
-/*
-const DataProcessingSchema = new Schema(
-  {
-    connectorURI: { type: String, required: true },
-    services: { type: [String], required: true },
-  },
-  { _id: false, timestamps: true },
-);
-*/
-// Contract mongoose schema
 const ContractSchema: Schema = new Schema(
   {
     uid: String,
@@ -110,5 +111,4 @@ const ContractSchema: Schema = new Schema(
     timestamps: true,
   },
 );
-// Create a MongoDB model based on the schema
 export default mongoose.model<IContractDB>('Contract', ContractSchema);
