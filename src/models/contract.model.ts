@@ -16,23 +16,21 @@ const PurposeSchema = new Schema({
   thirdPartyDisclosure: String,
   thirdPartyName: String,
 });
-const DefaultConstraintSchema = new Schema(
+
+const ConstraintSchema = new Schema(
   {
     '@type': String,
     leftOperand: String,
     operator: String,
     rightOperand: mongoose.Schema.Types.Mixed,
   },
-  { _id: false },
-);
-const UnknownConstraintSchema = new Schema(
-  { '@type': String },
   { strict: false, _id: false },
 );
+
 const ConsequenceSchema = new Schema(
   {
     action: String,
-    constraint: [DefaultConstraintSchema],
+    constraint: [ConstraintSchema],
     consequence: [this],
   },
   { _id: false },
@@ -40,7 +38,7 @@ const ConsequenceSchema = new Schema(
 const DutySchema = new Schema(
   {
     action: String,
-    constraint: [DefaultConstraintSchema],
+    constraint: [ConstraintSchema],
     consequence: [ConsequenceSchema],
   },
   { _id: false },
@@ -54,7 +52,7 @@ const PolicySchema = new Schema(
         action: String,
         target: String,
         duty: [DutySchema],
-        constraint: [DefaultConstraintSchema, UnknownConstraintSchema],
+        constraint: [ConstraintSchema],
         _id: false,
       },
     ],
@@ -62,7 +60,7 @@ const PolicySchema = new Schema(
       {
         action: String,
         target: String,
-        constraint: [DefaultConstraintSchema, UnknownConstraintSchema],
+        constraint: [ConstraintSchema],
         _id: false,
       },
     ],
