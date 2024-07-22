@@ -15,19 +15,16 @@ const BilateralPurposeSchema = new mongoose.Schema({
   thirdPartyDisclosure: Boolean,
   thirdPartyName: String,
 });
-const BilateralDefaultConstraintSchema = new mongoose.Schema(
+const BilateralConstraintSchema = new mongoose.Schema(
   {
     '@type': String,
     leftOperand: String,
     operator: String,
     rightOperand: mongoose.Schema.Types.Mixed,
   },
-  { _id: false },
-);
-const BilateralUnknownConstraintSchema = new mongoose.Schema(
-  { '@type': String },
   { strict: false, _id: false },
 );
+
 const BilateralSignatureSchema = new mongoose.Schema(
   {
     did: { type: String, required: true },
@@ -40,6 +37,22 @@ const BilateralSignatureSchema = new mongoose.Schema(
   },
   { _id: false },
 );
+const ConsequenceSchema = new Schema(
+  {
+    action: String,
+    constraint: [BilateralConstraintSchema],
+    consequence: [this],
+  },
+  { _id: false },
+);
+const DutySchema = new Schema(
+  {
+    action: String,
+    constraint: [BilateralConstraintSchema],
+    consequence: [ConsequenceSchema],
+  },
+  { _id: false },
+);
 const PolicySchema = new Schema(
   {
     uid: String,
@@ -48,10 +61,8 @@ const PolicySchema = new Schema(
       {
         action: String,
         target: String,
-        constraint: [
-          BilateralDefaultConstraintSchema,
-          BilateralUnknownConstraintSchema,
-        ],
+        duty: [DutySchema],
+        constraint: [BilateralConstraintSchema],
         _id: false,
       },
     ],
@@ -59,10 +70,7 @@ const PolicySchema = new Schema(
       {
         action: String,
         target: String,
-        constraint: [
-          BilateralDefaultConstraintSchema,
-          BilateralUnknownConstraintSchema,
-        ],
+        constraint: [BilateralConstraintSchema],
         _id: false,
       },
     ],

@@ -8,6 +8,64 @@
 import mongoose from 'mongoose';
 
 /**
+ * Lean version of BilateralContractPolicyPermissionDutyConstraintDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BilateralContractPolicyPermissionDutyDocument.toObject()`.
+ * ```
+ * const bilateralcontractpolicypermissiondutyObject = bilateralcontractpolicypermissionduty.toObject();
+ * ```
+ */
+export type BilateralContractPolicyPermissionDutyConstraint = {
+  '@type'?: string;
+  leftOperand?: string;
+  operator?: string;
+  rightOperand?: any;
+};
+
+/**
+ * Lean version of BilateralContractPolicyPermissionDutyConsequenceConstraintDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BilateralContractPolicyPermissionDutyConsequenceDocument.toObject()`.
+ * ```
+ * const bilateralcontractpolicypermissiondutyconsequenceObject = bilateralcontractpolicypermissiondutyconsequence.toObject();
+ * ```
+ */
+export type BilateralContractPolicyPermissionDutyConsequenceConstraint = {
+  '@type'?: string;
+  leftOperand?: string;
+  operator?: string;
+  rightOperand?: any;
+};
+
+/**
+ * Lean version of BilateralContractPolicyPermissionDutyConsequenceDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BilateralContractPolicyPermissionDutyDocument.toObject()`.
+ * ```
+ * const bilateralcontractpolicypermissiondutyObject = bilateralcontractpolicypermissionduty.toObject();
+ * ```
+ */
+export type BilateralContractPolicyPermissionDutyConsequence = {
+  action?: string;
+  constraint: BilateralContractPolicyPermissionDutyConsequenceConstraint[];
+  consequence: any[];
+};
+
+/**
+ * Lean version of BilateralContractPolicyPermissionDutyDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `BilateralContractPolicyPermissionDocument.toObject()`.
+ * ```
+ * const bilateralcontractpolicypermissionObject = bilateralcontractpolicypermission.toObject();
+ * ```
+ */
+export type BilateralContractPolicyPermissionDuty = {
+  action?: string;
+  constraint: BilateralContractPolicyPermissionDutyConstraint[];
+  consequence: BilateralContractPolicyPermissionDutyConsequence[];
+};
+
+/**
  * Lean version of BilateralContractPolicyPermissionConstraintDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `BilateralContractPolicyPermissionDocument.toObject()`.
@@ -33,6 +91,7 @@ export type BilateralContractPolicyPermissionConstraint = {
 export type BilateralContractPolicyPermission = {
   action?: string;
   target?: string;
+  duty: BilateralContractPolicyPermissionDuty[];
   constraint: BilateralContractPolicyPermissionConstraint[];
 };
 
@@ -246,6 +305,56 @@ export type BilateralContractSchema = mongoose.Schema<
 /**
  * Mongoose Subdocument type
  *
+ * Type of `BilateralContractPolicyPermissionDutyDocument["constraint"]` element.
+ */
+export type BilateralContractPolicyPermissionDutyConstraintDocument =
+  mongoose.Types.Subdocument & {
+    '@type'?: string;
+    leftOperand?: string;
+    operator?: string;
+    rightOperand?: any;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `BilateralContractPolicyPermissionDutyConsequenceDocument["constraint"]` element.
+ */
+export type BilateralContractPolicyPermissionDutyConsequenceConstraintDocument =
+  mongoose.Types.Subdocument & {
+    '@type'?: string;
+    leftOperand?: string;
+    operator?: string;
+    rightOperand?: any;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `BilateralContractPolicyPermissionDutyDocument["consequence"]` element.
+ */
+export type BilateralContractPolicyPermissionDutyConsequenceDocument =
+  mongoose.Types.Subdocument & {
+    action?: string;
+    constraint: mongoose.Types.DocumentArray<BilateralContractPolicyPermissionDutyConsequenceConstraintDocument>;
+    consequence: mongoose.Types.Array<any>;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `BilateralContractPolicyPermissionDocument["duty"]` element.
+ */
+export type BilateralContractPolicyPermissionDutyDocument =
+  mongoose.Types.Subdocument & {
+    action?: string;
+    constraint: mongoose.Types.DocumentArray<BilateralContractPolicyPermissionDutyConstraintDocument>;
+    consequence: mongoose.Types.DocumentArray<BilateralContractPolicyPermissionDutyConsequenceDocument>;
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
  * Type of `BilateralContractPolicyPermissionDocument["constraint"]` element.
  */
 export type BilateralContractPolicyPermissionConstraintDocument =
@@ -265,6 +374,7 @@ export type BilateralContractPolicyPermissionDocument =
   mongoose.Types.Subdocument & {
     action?: string;
     target?: string;
+    duty: mongoose.Types.DocumentArray<BilateralContractPolicyPermissionDutyDocument>;
     constraint: mongoose.Types.DocumentArray<BilateralContractPolicyPermissionConstraintDocument>;
   };
 
