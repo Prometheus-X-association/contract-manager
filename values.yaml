@@ -1,0 +1,21 @@
+replicaCount: 1
+
+image:
+  repository: contract-manager
+  tag: latest
+  pullPolicy: IfNotPresent
+
+service:
+  type: LoadBalancer
+  port: 8080
+
+env:
+  MONGO_URL: your_mongo_url
+  MONGO_TEST_URL: your_mongo_test_url
+  MONGO_USERNAME: your_mongo_username
+  MONGO_PASSWORD: your_mongo_password
+  SERVER_PORT: "8080"
+  SECRET_AUTH_KEY: your_secret_auth_key
+  SECRET_SESSION_KEY: your_secret_session_key
+  CATALOG_REGISTRY_URL: your_catalog_registry_url
+  SERVER_BASE_URL: your_server_base_url

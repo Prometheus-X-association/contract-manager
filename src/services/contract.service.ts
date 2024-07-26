@@ -1,10 +1,14 @@
+import { Types } from 'mongoose';
+
 import { IContract, IContractDB } from 'interfaces/contract.interface';
 import Contract from 'models/contract.model';
 import { logger } from 'utils/logger';
 import {
+  // ContractDataProcessing,
   ContractDocument,
   ContractMember,
   ContractServiceOffering,
+  // ContractDataProcessingDocument,
 } from 'interfaces/schemas.interface';
 import { IPolicyInjection } from 'interfaces/policy.interface';
 import { genPolicyFromRule } from './policy/utils';
@@ -62,6 +66,7 @@ export class ContractService {
         .lean();
       return contract;
     } catch (error) {
+      logger.error('[Contract/Service, getContract]:', error);
       throw error;
     }
   }
@@ -109,6 +114,7 @@ export class ContractService {
       ).lean();
       return updatedContract;
     } catch (error) {
+      logger.error('[Contract/Service, updateContract]:', error);
       throw error;
     }
   }
@@ -121,6 +127,7 @@ export class ContractService {
         throw new Error('Contract not found.');
       }
     } catch (error) {
+      logger.error('[Contract/Service, deleteContract]:', error);
       throw error;
     }
   }
@@ -172,6 +179,7 @@ export class ContractService {
       }
       return updatedContract.toObject();
     } catch (error) {
+      logger.error('[Contract/Service, signContract]:', error);
       throw error;
     }
   }
@@ -208,6 +216,7 @@ export class ContractService {
       // Return the updated contract
       return contract;
     } catch (error) {
+      logger.error('[Contract/Service, revokeSignatureService]:', error);
       throw error;
     }
   }
@@ -226,7 +235,7 @@ export class ContractService {
       const rao = contract.rolesAndObligations.find(
         (entry) => entry.role === role,
       );
-      if (!rao || !rao.policies) {
+      if (!rao?.policies) {
         return false;
       }
       const permission = rao.policies
@@ -241,6 +250,7 @@ export class ContractService {
         data.policy,
       );
     } catch (error) {
+      logger.error('[Contract/Service, checkExploitationByRole]:', error);
       throw error;
     }
   }
@@ -269,6 +279,7 @@ export class ContractService {
       const contracts = await Contract.find(filter).select('-jsonLD');
       return contracts;
     } catch (error: any) {
+      logger.error('[Contract/Service, getContractsFor]:', error);
       throw new Error(
         `Error while retrieving ecosystem contracts: ${error.message}`,
       );
@@ -279,7 +290,7 @@ export class ContractService {
     try {
       let filter: any = {};
       if (status) {
-        if (status.slice(0, 3) !== 'not') {
+        if (!status.startsWith('not')) {
           filter.status = status;
         } else {
           filter = {
@@ -292,10 +303,66 @@ export class ContractService {
       const contracts = await Contract.find(filter).select('-jsonLD');
       return contracts;
     } catch (error: any) {
+      logger.error('[Contract/Service, getContracts]:', error);
       throw new Error(`Error while retrieving contracts: ${error.message}`);
     }
   }
 
+  // public async addPoliciesForRoles(
+  //   contractId: string,
+  //   data: { roles: string[]; policies: IPolicyInjection[] }[],
+  // ): Promise<IContractDB | null> {
+  //   try {
+  //     const contract = await Contract.findById(contractId);
+  //     if (!contract) {
+  //       throw new Error('Contract not found');
+  //     }
+  //     for (const entry of data) {
+  //       try {
+  //         const roles = entry.roles;
+  //         const policies = entry.policies;
+  //         if (!roles || !Array.isArray(roles) || roles.length === 0) {
+  //           throw new Error('Roles are not defined or empty');
+  //         }
+  //         for (const role of roles) {
+  //           let roleIndex = contract.rolesAndObligations.findIndex(
+  //             (roleEntry) => roleEntry.role === role,
+  //           );
+  //           if (roleIndex === -1) {
+  //             contract.rolesAndObligations.push({
+  //               role,
+  //               policies: [],
+  //             });
+  //             roleIndex = contract.rolesAndObligations.length - 1;
+  //           }
+  //           const roleEntry = contract.rolesAndObligations[roleIndex];
+  //           for (const injection of policies) {
+  //             try {
+  //               const policy = await genPolicyFromRule(injection);
+  //               roleEntry.policies.push({
+  //                 description: policy.description,
+  //                 permission: policy.permission || [],
+  //                 prohibition: policy.prohibition || [],
+  //               });
+  //             } catch (error) {
+  //               logger.error('[Contract/Service, addPoliciesForRoles]:', error);
+  //               throw error;
+  //             }
+  //           }
+  //         }
+  //       } catch (error) {
+  //         logger.error('[Contract/Service, addPoliciesForRoles]:', error);
+  //         throw error;
+  //       }
+  //     }
+  //     const updatedContract = await contract.save();
+  //     return updatedContract;
+  //   } catch (error: any) {
+  //     logger.error('[Contract/Service, addPoliciesForRoles]:', error);
+  //     throw error;
+  //   }
+  // }
+  //
   public async addPoliciesForRoles(
     contractId: string,
     data: { roles: string[]; policies: IPolicyInjection[] }[],
@@ -305,49 +372,69 @@ export class ContractService {
       if (!contract) {
         throw new Error('Contract not found');
       }
+
       for (const entry of data) {
-        try {
-          const roles = entry.roles;
-          const policies = entry.policies;
-          if (!roles || !Array.isArray(roles) || roles.length === 0) {
-            throw new Error('Roles are not defined or empty');
-          }
-          for (const role of roles) {
-            let roleIndex = contract.rolesAndObligations.findIndex(
-              (roleEntry) => roleEntry.role === role,
-            );
-            if (roleIndex === -1) {
-              contract.rolesAndObligations.push({
-                role,
-                policies: [],
-              });
-              roleIndex = contract.rolesAndObligations.length - 1;
-            }
-            const roleEntry = contract.rolesAndObligations[roleIndex];
-            for (const injection of policies) {
-              try {
-                const policy = await genPolicyFromRule(injection);
-                roleEntry.policies.push({
-                  description: policy.description,
-                  permission: policy.permission || [],
-                  prohibition: policy.prohibition || [],
-                });
-              } catch (error) {
-                throw error;
-              }
-            }
-          }
-        } catch (error) {
-          throw error;
-        }
+        await ContractService.processEntry(contract, entry);
       }
+
       const updatedContract = await contract.save();
       return updatedContract;
     } catch (error: any) {
+      logger.error('[Contract/Service, addPoliciesForRoles]:', error);
       throw error;
     }
   }
+
+  private static async processEntry(
+    contract: IContractDB,
+    entry: { roles: string[]; policies: IPolicyInjection[] },
+  ) {
+    const { roles, policies } = entry;
+    ContractService.validateRoles(roles);
+
+    for (const role of roles) {
+      await ContractService.processRole(contract, role, policies);
+    }
+  }
+
+  private static validateRoles(roles: string[]) {
+    if (!roles || !Array.isArray(roles) || roles.length === 0) {
+      throw new Error('Roles are not defined or empty');
+    }
+  }
+
+  private static async processRole(
+    contract: IContractDB,
+    role: string,
+    policies: IPolicyInjection[],
+  ) {
+    let roleIndex = contract.rolesAndObligations.findIndex(
+      (roleEntry) => roleEntry.role === role,
+    );
+
+    if (roleIndex === -1) {
+      contract.rolesAndObligations.push({ role, policies: [] });
+      roleIndex = contract.rolesAndObligations.length - 1;
+    }
+
+    const roleEntry = contract.rolesAndObligations[roleIndex];
+
+    for (const injection of policies) {
+      try {
+        const policy = await genPolicyFromRule(injection);
+        roleEntry.policies.push({
+          description: policy.description,
+          permission: policy.permission || [],
+          prohibition: policy.prohibition || [],
+        });
+      } catch (error) {
+        logger.error('[Contract/Service, addPoliciesForRoles]:', error);
+        throw error;
+      }
+    }
+  }
   //
+
   public async addPoliciesForRole(
     contractId: string,
     data: { role: string; policies: IPolicyInjection[] },
@@ -381,12 +468,14 @@ export class ContractService {
             prohibition: policy.prohibition || [],
           });
         } catch (error) {
+          logger.error('[Contract/Service, addPoliciesForRole]:', error);
           throw error;
         }
       }
       const updatedContract = await contract.save();
       return updatedContract;
     } catch (error: any) {
+      logger.error('[Contract/Service, addPoliciesForRole]:', error);
       throw error;
     }
   }
@@ -421,12 +510,14 @@ export class ContractService {
             prohibition: policy.prohibition || [],
           });
         } catch (error) {
+          logger.error('[Contract/Service, addPolicies]:', error);
           throw error;
         }
       }
       const updatedContract = await contract.save();
       return updatedContract;
     } catch (error: any) {
+      logger.error('[Contract/Service, addPolicies]:', error);
       throw error;
     }
   }
@@ -461,6 +552,7 @@ export class ContractService {
       const updatedContract = await contract.save();
       return updatedContract;
     } catch (error) {
+      logger.error('[Contract/Service, addPolicy]:', error);
       throw error;
     }
   }
@@ -499,12 +591,14 @@ export class ContractService {
             prohibition: policy.prohibition || [],
           });
         } catch (error) {
+          logger.error('[Contract/Service, addOfferingPolicies]:', error);
           throw error;
         }
       }
       const updatedContract = await contract.save();
       return updatedContract;
     } catch (error: any) {
+      logger.error('[Contract/Service, addOfferingPolicies]:', error);
       throw error;
     }
   }
@@ -537,6 +631,139 @@ export class ContractService {
       const updatedContract = await contract.save();
       return updatedContract;
     } catch (error: any) {
+      logger.error('[Contract/Service, removeOfferingPolicies]:', error);
+      throw error;
+    }
+  }
+
+  // get data processings
+  public async getDataProcessings(contractId: string): Promise<string[]> {
+    try {
+      const contract = await Contract.findById(contractId).lean();
+      if (contract) {
+        const dataProcessings: string[] = contract.dataProcessings;
+        return dataProcessings;
+      } else {
+        throw new Error('Contract not found');
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // update data processings
+  public async writeDataProcessings(
+    contractId: string,
+    processings: string[],
+  ): Promise<string[]> {
+    try {
+      const contract = await Contract.findById(contractId);
+      if (contract) {
+        contract.dataProcessings = processings as Types.Array<string>;
+        await contract.save();
+        return contract.dataProcessings;
+      } else {
+        throw new Error('Contract not found');
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async insertDataProcessing(
+    contractId: string,
+    processing: string,
+    index: number,
+  ): Promise<string> {
+    try {
+      if (index < 0) {
+        throw new Error('Index cannot be negative');
+      }
+      const contract = await Contract.findById(contractId);
+      if (contract) {
+        if (index >= contract.dataProcessings.length) {
+          contract.dataProcessings.push(processing);
+        } else {
+          contract.dataProcessings.splice(index, 0, processing);
+        }
+        await contract.save();
+        return processing;
+      } else {
+        throw new Error('Contract not found');
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async updateDataProcessing(
+    contractId: string,
+    processing: string,
+  ): Promise<string> {
+    try {
+      const contract = await Contract.findById(contractId);
+      if (contract) {
+        const existingProcessing = contract.dataProcessings.find(
+          (item) => item === processing,
+        );
+        if (existingProcessing) {
+          Object.assign(existingProcessing, processing);
+          await contract.save();
+          return existingProcessing;
+        } else {
+          throw new Error('Processing not found in the contract');
+        }
+      } else {
+        throw new Error('Contract not found');
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async removeDataProcessing(
+    contractId: string,
+    index: number,
+  ): Promise<string[]> {
+    try {
+      const contract = await Contract.findById(contractId);
+      if (contract) {
+        if (index >= 0 && index < contract.dataProcessings.length) {
+          contract.dataProcessings.splice(index, 1);
+          await contract.save();
+          return contract.dataProcessings;
+        } else {
+          throw new Error('Index out of bounds');
+        }
+      } else {
+        throw new Error('Contract not found');
+      }
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  public async deleteDataProcessing(
+    contractId: string,
+    processing: string,
+  ): Promise<string> {
+    try {
+      const contract = await Contract.findById(contractId);
+      if (contract) {
+        const initialLength = contract.dataProcessings.length;
+        contract.dataProcessings = contract.dataProcessings.filter(
+          (item) => item !== processing,
+        ) as Types.Array<string>;
+        if (contract.dataProcessings.length !== initialLength) {
+          await contract.save();
+          return processing;
+        } else {
+          throw new Error('Processing not found in the contract');
+        }
+      } else {
+        throw new Error('Contract not found');
+      }
+    } catch (error) {
       throw error;
     }
   }

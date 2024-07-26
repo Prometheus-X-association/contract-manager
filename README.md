@@ -125,6 +125,34 @@ terraform output contract_manager_service_ip
 > * Ensure the `server_port` value matches the port used in your application.
 > * Adjust the `host_path` in the `kubernetes_persistent_volume` resource to an appropriate path on your Kubernetes nodes.
 
+### Deployment with Helm
+
+1. **Install Helm**: Ensure Helm is installed on your machine. You can install it following the instructions [here](https://helm.sh/docs/intro/install/).
+
+2. **Package the Helm chart**:
+    ```sh
+    helm package ./path/to/contract-manager
+    ```
+
+3. **Deploy the Helm chart**:
+    ```sh
+    helm install contract-manager ./path/to/contract-manager
+    ```
+
+4. **Verify the deployment**:
+    ```sh
+    kubectl get all -n contract-manager
+    ```
+
+5. **Retrieve Service IP**:
+    ```sh
+    kubectl get svc -n contract-manager
+    ```
+
+> * Replace placeholder values in the `values.yaml` file with actual values from your `.env`.
+> * Ensure the `server_port` value matches the port used in your application.
+> * Configure your MongoDB connection details in the values.yaml file to point to your managed MongoDB instance.
+
 
 ## Tests
 
