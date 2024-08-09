@@ -222,7 +222,10 @@ export const getContracts = async (
     res.status(200).json({ contracts: contracts });
   } catch (error: any) {
     logger.error('Error while fetching all contracts:', { error });
-    res.status(500).json({ error: error.message });
+    res.status(500).json({
+      message: 'Error while fetching contracts.',
+      error: error.message,
+    });
   }
 };
 

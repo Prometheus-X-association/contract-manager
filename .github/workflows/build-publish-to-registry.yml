@@ -15,32 +15,46 @@ jobs:
         ports:
           - 27017:27017
     runs-on: ubuntu-latest
+    env:
+      SERVER_PORT: 8080
+      MONGO_URL: mongodb://mongodb:27017/contract-dev
+      MONGO_TEST_URL: mongodb://mongodb:27017/contract-test-cases
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      # Add your test steps here if needed...
+
+      - name: Install Docker Compose
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y docker-compose
+
+      - name: Create empty .env file
+        run: touch .env
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Docker meta
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ghcr.io/${{ github.repository }}
+          images: ghcr.io/${{ github.repository }}/contract-manager
           tags: |
-            type=sha
-            type=semver,pattern={{version}}
-            dev-latest
+            type=sha,format=long
+
       - name: Login to GHCR
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build container
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          push: true
-          tags: |
-            ${{ steps.meta.outputs.tags }}
-        env:
-          ENV MONGO_URL: mongodb://mongodb:27017/contract-dev
-          ENV MONGO_TEST_URL: mongodb://mongodb:27017/contract-test-cases
+      
+      - name: Build Docker Compose services
+        run: |
+          docker-compose -f docker-compose.yml build
+      
+      - name: Tag and push image to GHCR
+        run: |
+          IMAGE_NAME=$(echo "${{ steps.meta.outputs.tags }}" | head -n 1)
+          docker tag contract-manager:latest $IMAGE_NAME
+          docker push $IMAGE_NAME
