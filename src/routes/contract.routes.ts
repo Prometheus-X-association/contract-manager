@@ -38,10 +38,12 @@ router.post(
   '/contracts/role/exploitability/:id/:role',
   checkExploitationByRole,
 );
+// Roles and Obligations
 router.put('/contracts/policy/:id', injectPolicy);
 router.put('/contracts/policies/:id', injectPolicies);
 router.put('/contracts/policies/role/:id', injectPoliciesForRole);
 router.put('/contracts/policies/roles/:id', injectPoliciesForRoles);
+// Service Offerings
 router.put('/contracts/policies/offering/:id', injectOfferingPolicies);
 router.delete(
   '/contracts/policies/offering/:contractId/:offeringId/:participantId',

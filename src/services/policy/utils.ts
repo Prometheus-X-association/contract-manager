@@ -20,39 +20,30 @@ export const getValueFromXSD = (operand: any): ConditionValue => {
   }
 };
 
-export const genPolicyFromRule = async (
-  injection: IPolicyInjection,
-): Promise<any> => {
+export const genPolicyFromRule = async ({
+  ruleId,
+  values,
+}: IPolicyInjection): Promise<any> => {
   try {
-    const ruleId = injection.ruleId;
-    const replacement = injection.values;
     const catalogUrl = config.catalog.registry.url.replace(/\/$/, '');
-    let ruleUrl: string;
-    if (catalogUrl.includes('static')) {
-      ruleUrl = `${catalogUrl}/${ruleId}.json`;
-    } else {
-      ruleUrl = `${catalogUrl}/${ruleId}`;
-      if ((config.catalog.registry.fileExt as string)?.length > 0) {
-        ruleUrl = `${ruleUrl}.${config.catalog.registry.fileExt}`;
-      }
-    }
-    const response = await axios.get(ruleUrl);
-    const rule = response.data;
-    replaceValues(rule.policy, replacement);
-    let description = '';
-    if (
-      rule.description &&
-      Array.isArray(rule.description) &&
-      rule.description.length > 0
-    ) {
-      description = rule.description[0]['@value'];
-    } else if (typeof rule.description === 'string') {
-      description = rule.description;
-    }
-    rule.policy.description = description;
+    const fileExt = config.catalog.registry.fileExt as string;
+    const ruleUrl = catalogUrl.includes('static')
+      ? `${catalogUrl}/${ruleId}.json`
+      : `${catalogUrl}/${ruleId}${fileExt?.length > 0 ? `.${fileExt}` : ''}`;
+
+    const { data: rule } = await axios.get(ruleUrl);
+    replaceValues(rule.policy, values);
+
+    rule.policy.description =
+      Array.isArray(rule.description) && rule.description.length > 0
+        ? rule.description[0]['@value']
+        : typeof rule.description === 'string'
+          ? rule.description
+          : '';
     return rule.policy;
   } catch (error: any) {
-    const message = `[contract/genPolicyFromRule] ${error.message} url: ${error.response}`;
-    throw new Error(message);
+    throw new Error(
+      `[contract/genPolicyFromRule] ${error.message} url: ${error.response}`,
+    );
   }
 };

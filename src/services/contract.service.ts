@@ -8,6 +8,8 @@ import {
   ContractDocument,
   ContractMember,
   ContractServiceOffering,
+  ContractServiceOfferingDocument,
+  ContractServiceOfferingPolicieDocument,
   // ContractDataProcessingDocument,
 } from 'interfaces/schemas.interface';
 import { IPolicyInjection } from 'interfaces/policy.interface';
@@ -568,33 +570,43 @@ export class ContractService {
       if (!contract) {
         throw new Error('Contract not found');
       }
-      let offeringIndex = contract.serviceOfferings.findIndex(
+
+      let offering = contract.serviceOfferings.find(
         (entry: ContractServiceOffering) =>
           entry.serviceOffering === serviceOffering &&
           entry.participant === participant,
       );
-      if (offeringIndex === -1) {
-        contract.serviceOfferings.push({
+
+      if (!offering) {
+        offering = {
           participant: participant,
           serviceOffering: serviceOffering,
-          policies: [],
-        });
-        offeringIndex = contract.serviceOfferings.length - 1;
+          policies:
+            [] as unknown as Types.DocumentArray<ContractServiceOfferingPolicieDocument>,
+        } as ContractServiceOfferingDocument;
+        contract.serviceOfferings.push(offering);
+        offering =
+          contract.serviceOfferings[contract.serviceOfferings.length - 1];
       }
-      const offering = contract.serviceOfferings[offeringIndex];
-      for (const injection of injections) {
-        try {
-          const policy = await genPolicyFromRule(injection);
-          offering.policies.push({
-            description: policy.description,
-            permission: policy.permission || [],
-            prohibition: policy.prohibition || [],
-          });
-        } catch (error) {
-          logger.error('[Contract/Service, addOfferingPolicies]:', error);
-          throw error;
-        }
-      }
+
+      offering.policies.push(
+        ...(await Promise.all(
+          injections.map(async (injection) => {
+            try {
+              const policy = await genPolicyFromRule(injection);
+              return {
+                description: policy.description,
+                permission: policy.permission || [],
+                prohibition: policy.prohibition || [],
+              };
+            } catch (error) {
+              logger.error('[Contract/Service, addOfferingPolicies]:', error);
+              throw error;
+            }
+          }),
+        )),
+      );
+
       const updatedContract = await contract.save();
       return updatedContract;
     } catch (error: any) {

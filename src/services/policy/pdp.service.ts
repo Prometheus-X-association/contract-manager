@@ -2,11 +2,11 @@ import { IPolicySet } from 'interfaces/policy.interface';
 import {
   instanciator,
   evaluator,
-  ContextFetcher,
   Custom,
+  PolicyDataFetcher,
 } from 'json-odrl-manager';
 import repository from 'services/store.service';
-class PDPFetcher extends ContextFetcher {
+class PDPFetcher extends PolicyDataFetcher {
   public sessionId: string;
   constructor() {
     super();
@@ -32,7 +32,6 @@ class PDPService {
   private static fetcher: PDPFetcher;
   private constructor() {
     PDPService.fetcher = new PDPFetcher();
-    evaluator.setFetcher(PDPService.fetcher);
   }
 
   public static getInstance(): PDPService {
@@ -54,7 +53,7 @@ class PDPService {
     };
     const policy = instanciator.genPolicyFrom(base);
     if (policy) {
-      evaluator.setPolicy(policy);
+      evaluator.setPolicy(policy, PDPService.fetcher);
       PDPService.fetcher.sessionId = sessionId;
       return await evaluator.evalResourcePerformabilities(json);
     } else {

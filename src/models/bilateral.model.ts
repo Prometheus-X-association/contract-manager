@@ -1,7 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 import { IBilateralContractDB } from '../interfaces/contract.interface';
 
-// Purpose mongoose schema
+// Bilateral Contract Model
 const BilateralPurposeSchema = new mongoose.Schema({
   uid: String,
   purpose: String,
@@ -15,21 +15,16 @@ const BilateralPurposeSchema = new mongoose.Schema({
   thirdPartyDisclosure: Boolean,
   thirdPartyName: String,
 });
-// Constraints mongoose schemas
-const BilateralDefaultConstraintSchema = new mongoose.Schema(
+const BilateralConstraintSchema = new mongoose.Schema(
   {
     '@type': String,
     leftOperand: String,
     operator: String,
     rightOperand: mongoose.Schema.Types.Mixed,
   },
-  { _id: false },
-);
-const BilateralUnknownConstraintSchema = new mongoose.Schema(
-  { '@type': String },
   { strict: false, _id: false },
 );
-// Signature mongoose schema
+
 const BilateralSignatureSchema = new mongoose.Schema(
   {
     did: { type: String, required: true },
@@ -42,7 +37,22 @@ const BilateralSignatureSchema = new mongoose.Schema(
   },
   { _id: false },
 );
-//
+const ConsequenceSchema = new Schema(
+  {
+    action: String,
+    constraint: [BilateralConstraintSchema],
+    consequence: [this],
+  },
+  { _id: false },
+);
+const DutySchema = new Schema(
+  {
+    action: String,
+    constraint: [BilateralConstraintSchema],
+    consequence: [ConsequenceSchema],
+  },
+  { _id: false },
+);
 const PolicySchema = new Schema(
   {
     uid: String,
@@ -51,10 +61,8 @@ const PolicySchema = new Schema(
       {
         action: String,
         target: String,
-        constraint: [
-          BilateralDefaultConstraintSchema,
-          BilateralUnknownConstraintSchema,
-        ],
+        duty: [DutySchema],
+        constraint: [BilateralConstraintSchema],
         _id: false,
       },
     ],
@@ -62,17 +70,13 @@ const PolicySchema = new Schema(
       {
         action: String,
         target: String,
-        constraint: [
-          BilateralDefaultConstraintSchema,
-          BilateralUnknownConstraintSchema,
-        ],
+        constraint: [BilateralConstraintSchema],
         _id: false,
       },
     ],
   },
   { _id: false },
 );
-// Contract mongoose schema
 const BilateralContractSchema: Schema = new Schema(
   {
     uid: String,
@@ -104,7 +108,6 @@ const BilateralContractSchema: Schema = new Schema(
     timestamps: true,
   },
 );
-// Create a MongoDB model based on the schema
 export default mongoose.model<IBilateralContractDB>(
   'BilateralContract',
   BilateralContractSchema,

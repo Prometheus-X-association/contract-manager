@@ -5,6 +5,7 @@ import Contract from 'models/contract.model';
 import { config } from 'config/config';
 import axios from 'axios';
 import http from 'http';
+import { _logGreen, _logObject, _logYellow } from './utils/utils';
 
 let cookie: any;
 let contractId: any;
@@ -18,15 +19,7 @@ if (!config.catalog.registry.defined) {
   }
   axios.defaults.baseURL = `${config.server.url}:${SERVER_PORT}/`;
 }
-const _logYellow = (value: string) => {
-  console.log(`\x1b[93m${value}\x1b[37m`);
-};
-const _logGreen = (value: string) => {
-  console.log(`\x1b[32m${value}\x1b[37m`);
-};
-const _logObject = (data: any) => {
-  console.log(`\x1b[90m${JSON.stringify(data, null, 2)}\x1b[37m`);
-};
+
 describe('Policies injection test cases for contract (Dataspace use cases).', () => {
   let server: http.Server;
   before(async () => {
@@ -353,6 +346,7 @@ describe('Policies injection test cases for contract (Dataspace use cases).', ()
             action: 'use',
             target: 'target-offering-a',
             constraint: [],
+            duty: [],
           },
         ],
         prohibition: [],
@@ -364,6 +358,7 @@ describe('Policies injection test cases for contract (Dataspace use cases).', ()
             action: 'use',
             target: 'target-offering-b',
             constraint: [],
+            duty: [],
           },
         ],
         prohibition: [],
@@ -375,6 +370,7 @@ describe('Policies injection test cases for contract (Dataspace use cases).', ()
             action: 'use',
             target: 'target-offering-c',
             constraint: [],
+            duty: [],
           },
         ],
         prohibition: [],
