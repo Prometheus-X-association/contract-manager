@@ -17,6 +17,9 @@ const REGISTRY_URL = process.env.CATALOG_REGISTRY_URL ?? '/rules/';
 const REGISTRY_FILE_EXT = process.env.CATALOG_REGISTRY_FILE_EXT;
 const REGISTRY_DEFINED = !!process.env.CATALOG_REGISTRY_URL;
 const SERVER_URL = process.env.SERVER_URL ?? 'http://localhost';
+const CATALOG_AUTHORIZATION_KEY =
+  process.env.CATALOG_AUTHORIZATION_KEY ?? false;
+
 export const config = {
   mongo: {
     url: MONGO_URL,
@@ -30,6 +33,7 @@ export const config = {
   },
   auth: {
     secret: SECRET_AUTH_KEY,
+    catalogKey: CATALOG_AUTHORIZATION_KEY,
   },
   session: {
     secret: SECRET_SESSION_KEY,

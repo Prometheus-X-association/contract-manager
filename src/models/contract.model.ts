@@ -109,4 +109,5 @@ const ContractSchema: Schema = new Schema(
     timestamps: true,
   },
 );
+
 export default mongoose.model<IContractDB>('Contract', ContractSchema);
