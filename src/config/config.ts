@@ -1,6 +1,7 @@
 import dotenv from 'dotenv';
+import path from 'path';
 
-dotenv.config();
+dotenv.config({ path: path.join(__dirname, '..', '..', '.env') });
 
 const MONGO_USERNAME = process.env.MONGO_USERNAME ?? '';
 const MONGO_PASSWORD = process.env.MONGO_PASSWORD ?? '';
