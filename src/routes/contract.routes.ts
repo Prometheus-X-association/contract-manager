@@ -23,6 +23,7 @@ import {
   deleteDataProcessing,
 } from '../controllers/contract.controller';
 import { check } from 'express-validator';
+import { logPayloadMiddleware } from 'middlewares/logPayload.middleware';
 
 // Ecosystem Contract Routes
 const router: Router = express.Router();
@@ -44,7 +45,11 @@ router.put('/contracts/policies/:id', injectPolicies);
 router.put('/contracts/policies/role/:id', injectPoliciesForRole);
 router.put('/contracts/policies/roles/:id', injectPoliciesForRoles);
 // Service Offerings
-router.put('/contracts/policies/offering/:id', injectOfferingPolicies);
+router.put(
+  '/contracts/policies/offering/:id',
+  logPayloadMiddleware,
+  injectOfferingPolicies,
+);
 router.delete(
   '/contracts/policies/offering/:contractId/:offeringId/:participantId',
   [
