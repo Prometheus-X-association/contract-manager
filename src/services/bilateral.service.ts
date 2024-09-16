@@ -329,7 +329,7 @@ export class BilateralContractService {
             });
           }
         } catch (error: any) {
-          console.error(`Error injecting policy: ${error.message}`);
+          logger.error(`Error injecting policy: ${error.message}`);
         }
       }
       const updatedContract = await contract.save();
