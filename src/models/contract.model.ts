@@ -84,6 +84,12 @@ const MemberSchema = new Schema(
   },
   { _id: false },
 );
+
+const DataProcessingSchema = new Schema({
+    participant: { type: String, required: true },
+    serviceOffering: { type: String, required: true },
+});
+
 const ContractSchema: Schema = new Schema(
   {
     uid: String,
@@ -92,7 +98,7 @@ const ContractSchema: Schema = new Schema(
     orchestrator: String,
     serviceOfferings: [OfferingSchema],
     rolesAndObligations: [{ role: String, policies: [PolicySchema] }],
-    dataProcessings: { type: [String], default: [] },
+    dataProcessings: { type: [DataProcessingSchema], default: [] },
     purpose: [PurposeSchema],
     members: [MemberSchema],
     revokedMembers: [MemberSchema],

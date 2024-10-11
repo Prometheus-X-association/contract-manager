@@ -4,13 +4,13 @@ import { IContract, IContractDB } from 'interfaces/contract.interface';
 import Contract from 'models/contract.model';
 import { logger } from 'utils/logger';
 import {
-  // ContractDataProcessing,
+  ContractDataProcessing,
+  ContractDataProcessingDocument,
   ContractDocument,
   ContractMember,
   ContractServiceOffering,
   ContractServiceOfferingDocument,
   ContractServiceOfferingPolicieDocument,
-  // ContractDataProcessingDocument,
 } from 'interfaces/schemas.interface';
 import { IPolicyInjection } from 'interfaces/policy.interface';
 import { genPolicyFromRule } from './policy/utils';
@@ -649,12 +649,11 @@ export class ContractService {
   }
 
   // get data processings
-  public async getDataProcessings(contractId: string): Promise<string[]> {
+  public async getDataProcessings(contractId: string): Promise<ContractDataProcessing[]> {
     try {
       const contract = await Contract.findById(contractId).lean();
       if (contract) {
-        const dataProcessings: string[] = contract.dataProcessings;
-        return dataProcessings;
+        return contract.dataProcessings;
       } else {
         throw new Error('Contract not found');
       }
@@ -666,12 +665,12 @@ export class ContractService {
   // update data processings
   public async writeDataProcessings(
     contractId: string,
-    processings: string[],
-  ): Promise<string[]> {
+    processings: ContractDataProcessing[],
+  ): Promise<ContractDataProcessing[]> {
     try {
       const contract = await Contract.findById(contractId);
       if (contract) {
-        contract.dataProcessings = processings as Types.Array<string>;
+        contract.dataProcessings = processings as Types.DocumentArray<ContractDataProcessingDocument>;
         await contract.save();
         return contract.dataProcessings;
       } else {
@@ -684,9 +683,9 @@ export class ContractService {
 
   public async insertDataProcessing(
     contractId: string,
-    processing: string,
+    processing: ContractDataProcessing,
     index: number,
-  ): Promise<string> {
+  ): Promise<ContractDataProcessing> {
     try {
       if (index < 0) {
         throw new Error('Index cannot be negative');
@@ -696,7 +695,10 @@ export class ContractService {
         if (index >= contract.dataProcessings.length) {
           contract.dataProcessings.push(processing);
         } else {
-          contract.dataProcessings.splice(index, 0, processing);
+          const existingIndex = contract.dataProcessings.findIndex(item => item.serviceOffering === processing.serviceOffering);
+          if (existingIndex !== -1) {
+            contract.dataProcessings.splice(existingIndex, 1);
+          }
         }
         await contract.save();
         return processing;
@@ -710,13 +712,13 @@ export class ContractService {
 
   public async updateDataProcessing(
     contractId: string,
-    processing: string,
-  ): Promise<string> {
+    processing: ContractDataProcessing,
+  ): Promise<ContractDataProcessing> {
     try {
       const contract = await Contract.findById(contractId);
       if (contract) {
         const existingProcessing = contract.dataProcessings.find(
-          (item) => item === processing,
+          (item) => item.serviceOffering === processing.serviceOffering,
         );
         if (existingProcessing) {
           Object.assign(existingProcessing, processing);
@@ -736,7 +738,7 @@ export class ContractService {
   public async removeDataProcessing(
     contractId: string,
     index: number,
-  ): Promise<string[]> {
+  ): Promise<ContractDataProcessing[]> {
     try {
       const contract = await Contract.findById(contractId);
       if (contract) {
@@ -757,15 +759,15 @@ export class ContractService {
 
   public async deleteDataProcessing(
     contractId: string,
-    processing: string,
-  ): Promise<string> {
+    processing: ContractDataProcessing,
+  ): Promise<ContractDataProcessing> {
     try {
       const contract = await Contract.findById(contractId);
       if (contract) {
         const initialLength = contract.dataProcessings.length;
         contract.dataProcessings = contract.dataProcessings.filter(
-          (item) => item !== processing,
-        ) as Types.Array<string>;
+          (item) => item.serviceOffering !== processing.serviceOffering,
+        ) as Types.DocumentArray<ContractDataProcessingDocument>;
         if (contract.dataProcessings.length !== initialLength) {
           await contract.save();
           return processing;

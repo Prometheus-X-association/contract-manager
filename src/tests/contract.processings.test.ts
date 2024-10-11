@@ -56,7 +56,7 @@ describe('Create an ecosystem contract, test data processings related endpoints.
 
   it('should add connector data processings to the contract', async () => {
     _logYellow('\n-Adding the following data processings');
-    const processings = ['connector-uri-a', 'connector-uri-b'];
+    const processings = [{ serviceOffering: 'connector-uri-a', participant: 'participant-a' }, { serviceOffering: 'connector-uri-b', participant: 'participant-b' }];
     _logGreen('The input processings:');
     _logObject(processings);
     const response = await supertest(app.router)
@@ -67,7 +67,10 @@ describe('Create an ecosystem contract, test data processings related endpoints.
     _logObject(response.body);
     expect(response.status).to.equal(200);
     expect(response.body).to.be.an('array');
-    expect(response.body).to.have.same.members(processings);
+    expect(response.body[0]).to.be.an('object');
+    expect(response.body[0]).to.have.property('serviceOffering');
+    expect(response.body[0]).to.have.property('participant');
+    expect(response.body[0]).to.have.property('_id');
   });
 
   it('should get related processings', async () => {
