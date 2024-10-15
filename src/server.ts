@@ -45,7 +45,7 @@ const startServer = async (url: string) => {
     '/rules',
     express.static(path.join(__dirname, '..', 'public/rules')),
   );
-  router.use('/api-docs', swaggerUi.serve, (req: any, res: any, next: any) => {
+  router.use('/docs', swaggerUi.serve, (req: any, res: any, next: any) => {
     const baseUrl = `${req.get('host')}`;
     swaggerJson.host = baseUrl;
     swaggerUi.setup(swaggerJson, {
