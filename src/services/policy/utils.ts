@@ -1,6 +1,6 @@
 import { IPolicyInjection } from 'interfaces/policy.interface';
 import { replaceValues } from 'utils/utils';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { config } from 'config/config';
 import { logger } from 'utils/logger';
 
@@ -43,11 +43,20 @@ export const genPolicyFromRule = async ({
           : '';
     return rule.policy;
   } catch (error: any) {
-    const formattedResponse = error.response
-      ? JSON.stringify(error.response, null, 2)
-      : 'No response';
-    const message = `[contract/genPolicyFromRule] ${error.message} url: ${formattedResponse}`;
-    logger.error(message);
-    throw new Error(message);
+    if (error instanceof AxiosError) {
+      const status = error.response?.status;
+      const url = error.config?.url;
+      const message = `[contract/genPolicyFromRule] Error ${status}: ${
+        error.message
+      }${url ? ` for URL: ${url}` : ''}`;
+      logger.error(message);
+      throw new Error(message);
+    } else {
+      const message = `[contract/genPolicyFromRule] Unexpected error: ${
+        (error as Error).message
+      }`;
+      logger.error(message);
+      throw new Error(message);
+    }
   }
 };
