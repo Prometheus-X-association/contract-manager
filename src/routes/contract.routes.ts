@@ -21,6 +21,7 @@ import {
   removeDataProcessing,
   updateDataProcessing,
   deleteDataProcessing,
+  getDataProcessingsByParticipant,
 } from '../controllers/contract.controller';
 import { check } from 'express-validator';
 import { logPayloadMiddleware } from 'middlewares/logPayload.middleware';
@@ -61,16 +62,18 @@ router.delete(
 );
 
 // List the data processings within the chain available on the contrat
-router.get('/contracts/processings/:id', getDataProcessings);
+router.get('/contracts/:id/processings', getDataProcessings);
 // Add the data processing chain to the contract
-router.post('/contracts/processings/:id', writeDataProcessings);
+router.post('/contracts/:id/processings', writeDataProcessings);
 // Insert a new data processing inside the chain at a specific given index
-router.put('/contracts/processings/insert/:id/:index', insertDataProcessing);
+router.put('/contracts/:id/processings/insert/:index', insertDataProcessing);
 // Update a specific data processing from the chain
-router.put('/contracts/processings/update/:id', updateDataProcessing);
+router.put('/contracts/:id/processings/update/:processingId', updateDataProcessing);
 // Remove a specific data processing from the chain
-router.delete('/contracts/processings/:id', deleteDataProcessing);
+router.delete('/contracts/:id/processings/:processingId', deleteDataProcessing);
 // Remove a specific data processing from the chain by index
-router.delete('/contracts/processings/:id/:index', removeDataProcessing);
+router.delete('/contracts/:id/processings/:processingId', removeDataProcessing);
+// Get the data processing by participant
+router.get('/contracts/:id/processings/participant', getDataProcessingsByParticipant);
 
 export default router;

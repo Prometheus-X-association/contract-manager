@@ -84,6 +84,23 @@ const MemberSchema = new Schema(
   },
   { _id: false },
 );
+
+const InfrastructureServiceSchema = new Schema({
+  participant: { type: String, required: true },
+  serviceOffering: { type: String, required: true },
+});
+
+const DataProcessingSchema = new Schema({
+    provider: { type: String, required: true },
+    consumer: { type: String, required: true },
+    infrastructureServices: { type: [InfrastructureServiceSchema], default: [] },
+    status: {
+      type: String,
+      enum: ['active', 'inactive'],
+      default: 'active',
+    },
+});
+
 const ContractSchema: Schema = new Schema(
   {
     uid: String,
@@ -92,7 +109,7 @@ const ContractSchema: Schema = new Schema(
     orchestrator: String,
     serviceOfferings: [OfferingSchema],
     rolesAndObligations: [{ role: String, policies: [PolicySchema] }],
-    dataProcessings: { type: [String], default: [] },
+    dataProcessings: { type: [DataProcessingSchema], default: [] },
     purpose: [PurposeSchema],
     members: [MemberSchema],
     revokedMembers: [MemberSchema],

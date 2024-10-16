@@ -359,6 +359,28 @@ export const getDataProcessings = async (req: Request, res: Response) => {
   }
 };
 
+export const getDataProcessingsByParticipant = async (req: Request, res: Response) => {
+  try {
+    const contractId: string = req.params.id;
+    const participant: string = req.query.participant as string;
+    if (!participant) {
+      return res.status(400).json({ error: 'Participant base 64 encoded query parameter is required.' });
+    }
+    const decodedParticipant = Buffer.from(participant, 'base64').toString('utf-8');
+    const dataProcessings =
+      await contractService.getDataProcessingsByParticipant(contractId, decodedParticipant);
+    if (!dataProcessings) {
+      return res.json([]);
+    }
+    return res.json(dataProcessings);
+  } catch (error) {
+    logger.error('Error retrieving the data processings:', error);
+    res
+      .status(500)
+      .json({ error: 'An error occurred while retrieving data processings.' });
+  }
+};
+
 export const writeDataProcessings = async (req: Request, res: Response) => {
   try {
     const contractId: string = req.params.id;
@@ -368,13 +390,13 @@ export const writeDataProcessings = async (req: Request, res: Response) => {
       processings,
     );
     if (!dataProcessings) {
-      throw new Error('something went wrong while updating data processings');
+      throw new Error('something went wrong while writing data processings');
     }
     return res.json(dataProcessings);
   } catch (error) {
-    logger.error('Error while updating data processings:', error);
+    logger.error('Error while writing data processings:', error);
     res.status(500).json({
-      error: 'An error occurred while while updating data processings.',
+      error: 'An error occurred while while writing data processings.',
     });
   }
 };
@@ -395,17 +417,19 @@ export const insertDataProcessing = async (req: Request, res: Response) => {
   } catch (error) {
     logger.error('Error while inserting data processing:', error);
     res.status(500).json({
-      error: 'An error occurred while while inserting data processing.',
+      error: 'An error occurred while inserting data processing.',
     });
   }
 };
 
 export const updateDataProcessing = async (req: Request, res: Response) => {
   try {
-    const contractId: string = req.params.id;
+    const { id: contractId, processingId } = req.params;
     const processing = req.body;
+    console.log('processingId', processingId);
     const dataProcessings = await contractService.updateDataProcessing(
       contractId,
+      processingId,
       processing,
     );
     if (!dataProcessings) {
@@ -422,10 +446,10 @@ export const updateDataProcessing = async (req: Request, res: Response) => {
 
 export const removeDataProcessing = async (req: Request, res: Response) => {
   try {
-    const { id: contractId, index } = req.params;
+    const { id: contractId, processingId } = req.params;
     const dataProcessings = await contractService.removeDataProcessing(
       contractId,
-      +index,
+      processingId,
     );
     if (!dataProcessings) {
       throw new Error('something went wrong while deleting data processing');
