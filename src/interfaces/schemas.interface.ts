@@ -864,8 +864,25 @@ export type ContractRevokedMember = {
  * ```
  */
 export type ContractDataProcessing = {
+  provider: string;
+  consumer: string;
+  infrastructureServices: ContractInfrastructureService[];
+  status: 'active' | 'inactive';
+};
+
+
+/**
+ * Lean version of ContractInfrastructureServicesDocument
+ *
+ * This has all Mongoose getters & functions removed. This type will be returned from `ContractDocument.toObject()`.
+ * ```
+ * const contractObject = contract.toObject();
+ * ```
+ */
+export type ContractInfrastructureService = {
     participant: string;
     serviceOffering: string;
+    configParams?: { [key: string]: any };
 };
 
 
@@ -1259,8 +1276,21 @@ export type ContractRevokedMemberDocument = mongoose.Types.Subdocument & {
  * Type of `ContractDocument["dataProcessings"]` element.
  */
 export type ContractDataProcessingDocument = mongoose.Types.Subdocument & {
-    participant: string;
-    serviceOffering: string;
+    provider: string;
+    consumer: string;
+    infrastructureServices: mongoose.Types.DocumentArray<ContractInfrastructureServiceDocument>;
+    status: 'active' | 'inactive';
+};
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `ContractDocument["dataProcessings"]["infrastructureServices"]` element.
+ */
+export type ContractInfrastructureServiceDocument = mongoose.Types.Subdocument & {
+  participant: string;
+  serviceOffering: string;
+  configParams?: { [key: string]: any };
 };
 
 /**

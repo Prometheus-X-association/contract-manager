@@ -85,9 +85,20 @@ const MemberSchema = new Schema(
   { _id: false },
 );
 
+const InfrastructureServiceSchema = new Schema({
+  participant: { type: String, required: true },
+  serviceOffering: { type: String, required: true },
+});
+
 const DataProcessingSchema = new Schema({
-    participant: { type: String, required: true },
-    serviceOffering: { type: String, required: true },
+    provider: { type: String, required: true },
+    consumer: { type: String, required: true },
+    infrastructureServices: { type: [InfrastructureServiceSchema], default: [] },
+    status: {
+      type: String,
+      enum: ['active', 'inactive'],
+      default: 'active',
+    },
 });
 
 const ContractSchema: Schema = new Schema(
