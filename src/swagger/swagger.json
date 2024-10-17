@@ -2,14 +2,11 @@
   "swagger": "2.0",
   "info": {
     "title": "Contract Manager API",
-    "description": "Availables routes through the Contract Manager API",
+    "description": "Available routes through the Contract Manager API",
     "version": "1.0.0"
   },
   "host": "8888",
   "basePath": "/",
-  "schemes": [
-    "http"
-  ],
   "paths": {
     "/bilaterals/all/": {
       "get": {
@@ -1261,7 +1258,7 @@
             "description": "User object for login.",
             "required": true,
             "schema": {
-              "$ref": "#/components/schema/User"
+              "$ref": "#/definitions/User"
             }
           }
         ],
@@ -1334,22 +1331,12 @@
       "type": "object",
       "properties": {
         "name": {
-          "type": "object",
-          "properties": {
-            "type": {
-              "type": "string",
-              "example": "string"
-            }
-          }
+          "type": "string",
+          "example": "string"
         },
         "description": {
-          "type": "object",
-          "properties": {
-            "type": {
-              "type": "string",
-              "example": "string"
-            }
-          }
+          "type": "string",
+          "example": "string"
         },
         "requestedFields": {
           "type": "object",
@@ -1370,13 +1357,8 @@
           }
         },
         "policy": {
-          "type": "object",
-          "properties": {
-            "type": {
-              "type": "string",
-              "example": "object"
-            }
-          }
+          "type": "string",
+          "example": "object"
         }
       }
     },
@@ -2125,31 +2107,16 @@
       "type": "object",
       "properties": {
         "participant": {
-          "type": "object",
-          "properties": {
-            "type": {
-              "type": "string",
-              "example": "string"
-            }
-          }
+          "type": "string",
+          "example": "string"
         },
         "role": {
-          "type": "object",
-          "properties": {
-            "type": {
-              "type": "string",
-              "example": "string"
-            }
-          }
+          "type": "string",
+          "example": "string"
         },
         "signature": {
-          "type": "object",
-          "properties": {
-            "type": {
-              "type": "string",
-              "example": "string"
-            }
-          }
+          "type": "string",
+          "example": "string"
         }
       }
     }
