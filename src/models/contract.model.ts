@@ -91,8 +91,7 @@ const InfrastructureServiceSchema = new Schema({
 });
 
 const DataProcessingSchema = new Schema({
-    provider: { type: String, required: true },
-    consumer: { type: String, required: true },
+    _id: { type: String, required: true },
     infrastructureServices: { type: [InfrastructureServiceSchema], default: [] },
     status: {
       type: String,

@@ -359,28 +359,6 @@ export const getDataProcessings = async (req: Request, res: Response) => {
   }
 };
 
-export const getDataProcessingsByParticipant = async (req: Request, res: Response) => {
-  try {
-    const contractId: string = req.params.id;
-    const participant: string = req.query.participant as string;
-    if (!participant) {
-      return res.status(400).json({ error: 'Participant base 64 encoded query parameter is required.' });
-    }
-    const decodedParticipant = Buffer.from(participant, 'base64').toString('utf-8');
-    const dataProcessings =
-      await contractService.getDataProcessingsByParticipant(contractId, decodedParticipant);
-    if (!dataProcessings) {
-      return res.json([]);
-    }
-    return res.json(dataProcessings);
-  } catch (error) {
-    logger.error('Error retrieving the data processings:', error);
-    res
-      .status(500)
-      .json({ error: 'An error occurred while retrieving data processings.' });
-  }
-};
-
 export const writeDataProcessings = async (req: Request, res: Response) => {
   try {
     const contractId: string = req.params.id;
@@ -403,12 +381,11 @@ export const writeDataProcessings = async (req: Request, res: Response) => {
 
 export const insertDataProcessing = async (req: Request, res: Response) => {
   try {
-    const { id: contractId, index } = req.params;
+    const { id: contractId } = req.params;
     const processing = req.body;
     const dataProcessings = await contractService.insertDataProcessing(
       contractId,
       processing,
-      +index,
     );
     if (!dataProcessings) {
       throw new Error('something went wrong while insering data processing.');
@@ -426,7 +403,6 @@ export const updateDataProcessing = async (req: Request, res: Response) => {
   try {
     const { id: contractId, processingId } = req.params;
     const processing = req.body;
-    console.log('processingId', processingId);
     const dataProcessings = await contractService.updateDataProcessing(
       contractId,
       processingId,

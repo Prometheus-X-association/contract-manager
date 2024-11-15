@@ -21,7 +21,6 @@ import {
   removeDataProcessing,
   updateDataProcessing,
   deleteDataProcessing,
-  getDataProcessingsByParticipant,
 } from '../controllers/contract.controller';
 import { check } from 'express-validator';
 import { logPayloadMiddleware } from 'middlewares/logPayload.middleware';
@@ -73,7 +72,5 @@ router.put('/contracts/:id/processings/update/:processingId', updateDataProcessi
 router.delete('/contracts/:id/processings/:processingId', deleteDataProcessing);
 // Remove a specific data processing from the chain by index
 router.delete('/contracts/:id/processings/:processingId', removeDataProcessing);
-// Get the data processing by participant
-router.get('/contracts/:id/processings/participant', getDataProcessingsByParticipant);
 
 export default router;

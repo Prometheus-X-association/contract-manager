@@ -864,8 +864,7 @@ export type ContractRevokedMember = {
  * ```
  */
 export type ContractDataProcessing = {
-  provider: string;
-  consumer: string;
+  _id: string;
   infrastructureServices: ContractInfrastructureService[];
   status: 'active' | 'inactive';
 };
@@ -882,7 +881,8 @@ export type ContractDataProcessing = {
 export type ContractInfrastructureService = {
     participant: string;
     serviceOffering: string;
-    configParams?: { [key: string]: any };
+    params?: { [key: string]: any };
+    configuration?: string;
 };
 
 
@@ -1276,8 +1276,7 @@ export type ContractRevokedMemberDocument = mongoose.Types.Subdocument & {
  * Type of `ContractDocument["dataProcessings"]` element.
  */
 export type ContractDataProcessingDocument = mongoose.Types.Subdocument & {
-    provider: string;
-    consumer: string;
+    _id: string;
     infrastructureServices: mongoose.Types.DocumentArray<ContractInfrastructureServiceDocument>;
     status: 'active' | 'inactive';
 };
@@ -1290,7 +1289,8 @@ export type ContractDataProcessingDocument = mongoose.Types.Subdocument & {
 export type ContractInfrastructureServiceDocument = mongoose.Types.Subdocument & {
   participant: string;
   serviceOffering: string;
-  configParams?: { [key: string]: any };
+  params?: { [key: string]: any };
+  configuration?: string;
 };
 
 /**
