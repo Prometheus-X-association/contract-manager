@@ -780,6 +780,36 @@ export class ContractService {
     }
   }
 
+  /**
+   * Removes the service offering's presence from all contracts.
+   *
+   * This is useful when a service offering is removed from the catalog.
+   */
+  public async removeOfferingFromContracts(serviceOfferingId: string) {
+    const contractsToUpdate = await Contract.find({
+      'serviceOfferings.serviceOffering': serviceOfferingId,
+    });
+
+    const updatedResult = await Contract.updateMany(
+      { 'serviceOfferings.serviceOffering': serviceOfferingId },
+      { $pull: { serviceOfferings: { serviceOffering: serviceOfferingId } } },
+    );
+
+    // Remove offering from policies
+    const promises = contractsToUpdate.map((contract) => {
+      const participant = contract.serviceOfferings.find((so) => so.serviceOffering === serviceOfferingId)?.participant;
+
+      if (!participant) {
+        return Promise.resolve();
+      }
+
+      return this.removeOfferingPolicies(contract._id?.toString(), serviceOfferingId, participant);
+    });
+
+    await Promise.all(promises);
+    return updatedResult.modifiedCount;
+  }
+
   private convertContract(contract: IContractDB): any {
     return {};
   }
