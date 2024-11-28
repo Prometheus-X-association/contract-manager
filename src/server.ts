@@ -47,7 +47,7 @@ const startServer = async (url: string) => {
   );
   
   router.get('/todayslog', async (req, res) => {
-    if (req.query?.key !== 'NICOTMPKEY130920241800') {
+    if (req.query?.key !== process.env.LOGS_KEY) {
       return res.status(401).send('Unauthorized');
     }
 
