@@ -15,6 +15,7 @@ jobs:
     env:
       CATALOG_REGISTRY_URL: https://raw.githubusercontent.com/Prometheus-X-association/reference-models/main/src/references/rules/
       CATALOG_REGISTRY_FILE_EXT: json
+      NODE_ENV: development
     steps:
     - uses: actions/checkout@v2
     - name: Set up Node.js

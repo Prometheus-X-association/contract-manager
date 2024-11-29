@@ -373,6 +373,27 @@ export class BilateralContractService {
     }
   }
 
+  /**
+   * Removes all bilateral contracts associated with a service offering.
+   * This comes in handy when a service offering is deleted on a catalog and
+   * we want existing contracts to be deleted as well.
+   */
+  public async deleteManyFromOffering(serviceOfferingId: string) {
+    try {
+      const deleted = await BilateralContract.deleteMany({
+        $or: [
+          { serviceOffering: serviceOfferingId },
+          { 'purpose.purpose': { $in: [serviceOfferingId] } },
+        ],
+      });
+
+      return deleted.deletedCount;
+    } catch (error) {
+      logger.error('[bilateral/Service, deleteFromOffering]:', error);
+      throw error;
+    }
+  }
+
   private convertContract(contract: IBilateralContractDB): any {
     return {};
   }
