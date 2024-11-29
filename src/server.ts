@@ -81,7 +81,7 @@ const startServer = async (url: string) => {
     res.sendFile(logFile);
   });
 
-  router.use('/api-docs', swaggerUi.serve, (req: any, res: any, next: any) => {
+  router.use('/docs', swaggerUi.serve, (req: any, res: any, next: any) => {
     const baseUrl = `${req.get('host')}`;
     swaggerJson.host = baseUrl;
     swaggerUi.setup(swaggerJson, {
