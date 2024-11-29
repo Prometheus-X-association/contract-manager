@@ -670,7 +670,7 @@ export class ContractService {
     try {
       const contract = await Contract.findById(contractId);
       if (contract) {
-        contract.dataProcessings = processings as Types.DocumentArray<ContractDataProcessingDocument>;
+        contract.dataProcessings = processings as Types.Array<ContractDataProcessingDocument>;
         await contract.save();
         return contract.dataProcessings;
       } else {
@@ -688,7 +688,7 @@ export class ContractService {
     try {
       const contract = await Contract.findById(contractId);
       if (contract) {
-        if (!contract.dataProcessings.find(element => element._id === processing._id)) {
+        if (!contract.dataProcessings.find(element => element.catalogId === processing.catalogId)) {
           processing.status = 'active';
           contract.dataProcessings.push(processing);
         } else {
@@ -713,7 +713,7 @@ export class ContractService {
       const contract = await Contract.findById(contractId);
       if (contract) {
         const existingProcessing = contract.dataProcessings.find(
-          (item) => item._id.toString() === processingId && item.status === 'active',
+          (item) => item.catalogId.toString() === processingId && item.status === 'active',
         );
         if (existingProcessing) {
           existingProcessing.status = 'inactive';
@@ -764,7 +764,7 @@ export class ContractService {
       if (contract) {
         const initialLength = contract.dataProcessings.length;
         contract.dataProcessings = contract.dataProcessings.filter(
-          (item) => item._id !== processing._id && item.infrastructureServices !== processing.infrastructureServices,
+          (item) => item.catalogId !== processing.catalogId && item.infrastructureServices !== processing.infrastructureServices,
         ) as Types.DocumentArray<ContractDataProcessingDocument>;
         if (contract.dataProcessings.length !== initialLength) {
           await contract.save();

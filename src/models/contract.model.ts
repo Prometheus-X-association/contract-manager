@@ -91,7 +91,7 @@ const InfrastructureServiceSchema = new Schema({
 });
 
 const DataProcessingSchema = new Schema({
-    _id: { type: String, required: true },
+    catalogId: { type: String, required: true },
     infrastructureServices: { type: [InfrastructureServiceSchema], default: [] },
     status: {
       type: String,

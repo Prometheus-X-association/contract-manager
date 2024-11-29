@@ -58,7 +58,7 @@ describe('Create an ecosystem contract, test data processings related endpoints.
     _logYellow('\n-Adding the following data processings');
     const processings = [
       {
-        _id: "1",
+        catalogId: "1",
         infrastructureServices: [
         { serviceOffering: 'connector-uri-a', participant: 'participant-a' },
         { serviceOffering: 'connector-uri-b', participant: 'participant-b' },
@@ -75,10 +75,10 @@ describe('Create an ecosystem contract, test data processings related endpoints.
     expect(response.status).to.equal(200);
     expect(response.body).to.be.an('array');
     expect(response.body[0]).to.be.an('object');
-    expect(response.body[0]).to.have.property('_id', '1');
+    expect(response.body[0]).to.have.property('catalogId', '1');
     expect(response.body[0]).to.have.property('infrastructureServices');
-    expect(response.body[0]).to.have.property('_id');
-    processingId = response.body[0]._id;
+    expect(response.body[0]).to.have.property('catalogId');
+    processingId = response.body[0].catalogId;
   });
 
   it('should get related processings', async () => {
@@ -97,7 +97,7 @@ describe('Create an ecosystem contract, test data processings related endpoints.
       .put(`/contracts/${contractId}/processings/update/${processingId}`)
       .set('Cookie', cookie)
       .send({
-        _id: '1',
+        catalogId: '1',
         infrastructureServices: [
         { serviceOffering: 'connector-uri-b', participant: 'participant-b' },
         { serviceOffering: 'connector-uri-c', participant: 'participant-c' },

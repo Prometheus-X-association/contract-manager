@@ -864,7 +864,7 @@ export type ContractRevokedMember = {
  * ```
  */
 export type ContractDataProcessing = {
-  _id: string;
+  catalogId: string;
   infrastructureServices: ContractInfrastructureService[];
   status: 'active' | 'inactive';
 };
@@ -1276,8 +1276,8 @@ export type ContractRevokedMemberDocument = mongoose.Types.Subdocument & {
  * Type of `ContractDocument["dataProcessings"]` element.
  */
 export type ContractDataProcessingDocument = mongoose.Types.Subdocument & {
-    _id: string;
-    infrastructureServices: mongoose.Types.DocumentArray<ContractInfrastructureServiceDocument>;
+    catalogId: string;
+    infrastructureServices: mongoose.Types.Array<ContractInfrastructureServiceDocument>;
     status: 'active' | 'inactive';
 };
 
@@ -1312,7 +1312,7 @@ export type ContractDocument = mongoose.Document<
     orchestrator?: string;
     serviceOfferings: mongoose.Types.DocumentArray<ContractServiceOfferingDocument>;
     rolesAndObligations: mongoose.Types.DocumentArray<ContractRolesAndObligationDocument>;
-    dataProcessings: mongoose.Types.DocumentArray<ContractDataProcessingDocument>;
+    dataProcessings: mongoose.Types.Array<ContractDataProcessingDocument>;
     purpose: mongoose.Types.DocumentArray<ContractPurposeDocument>;
     members: mongoose.Types.DocumentArray<ContractRevokedMemberDocument>;
     revokedMembers: mongoose.Types.DocumentArray<ContractRevokedMemberDocument>;
