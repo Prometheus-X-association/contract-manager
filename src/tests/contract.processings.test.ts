@@ -8,7 +8,7 @@ import { _logYellow, _logGreen, _logObject } from './utils/utils';
 
 let cookie: any;
 let contractId: any;
-
+let processingId: any;
 const SERVER_PORT = 9999;
 
 describe('Create an ecosystem contract, test data processings related endpoints.', () => {
@@ -56,25 +56,54 @@ describe('Create an ecosystem contract, test data processings related endpoints.
 
   it('should add connector data processings to the contract', async () => {
     _logYellow('\n-Adding the following data processings');
-    const processings = ['connector-uri-a', 'connector-uri-b'];
+    const processings = [
+      {
+        catalogId: "1",
+        infrastructureServices: [
+        { serviceOffering: 'connector-uri-a', participant: 'participant-a' },
+        { serviceOffering: 'connector-uri-b', participant: 'participant-b' },
+      ],
+    }];
     _logGreen('The input processings:');
     _logObject(processings);
     const response = await supertest(app.router)
-      .post(`/contracts/processings/${contractId}`)
+      .post(`/contracts/${contractId}/processings`)
       .set('Cookie', cookie)
       .send(processings);
     _logGreen('The processings inside the contract:');
     _logObject(response.body);
     expect(response.status).to.equal(200);
     expect(response.body).to.be.an('array');
-    expect(response.body).to.have.same.members(processings);
+    expect(response.body[0]).to.be.an('object');
+    expect(response.body[0]).to.have.property('catalogId', '1');
+    expect(response.body[0]).to.have.property('infrastructureServices');
+    expect(response.body[0]).to.have.property('catalogId');
+    processingId = response.body[0].catalogId;
   });
 
   it('should get related processings', async () => {
     _logYellow('\n-Get related processings');
     const response = await supertest(app.router)
-      .get(`/contracts/processings/${contractId}`)
+      .get(`/contracts/${contractId}/processings`)
       .set('Cookie', cookie);
+    _logGreen('The processings inside the contract:');
+    _logObject(response.body);
+    expect(response.status).to.equal(200);
+  });
+
+  it('should update a processing', async () => {
+    _logYellow('\n-Update a processing');
+    const response = await supertest(app.router)
+      .put(`/contracts/${contractId}/processings/update/${processingId}`)
+      .set('Cookie', cookie)
+      .send({
+        catalogId: '1',
+        infrastructureServices: [
+        { serviceOffering: 'connector-uri-b', participant: 'participant-b' },
+        { serviceOffering: 'connector-uri-c', participant: 'participant-c' },
+        { serviceOffering: 'connector-uri-d', participant: 'participant-d' },
+      ],
+    });
     _logGreen('The processings inside the contract:');
     _logObject(response.body);
     expect(response.status).to.equal(200);

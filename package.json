@@ -24,7 +24,7 @@
     "winston-mongodb": "^5.1.1"
   },
   "name": "contract",
-  "version": "2.2.0",
+  "version": "2.3.0",
   "main": "src/start.ts",
   "scripts": {
     "gen-types": "npx mongoose-tsgen --config mtgen.config.json",

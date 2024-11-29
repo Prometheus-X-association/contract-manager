@@ -1,7 +1,8 @@
 import { IPolicyInjection } from 'interfaces/policy.interface';
 import { replaceValues } from 'utils/utils';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import { config } from 'config/config';
+import { logger } from 'utils/logger';
 
 type ConditionValue = boolean | number | string;
 export const getValueFromXSD = (operand: any): ConditionValue => {
@@ -42,8 +43,20 @@ export const genPolicyFromRule = async ({
           : '';
     return rule.policy;
   } catch (error: any) {
-    throw new Error(
-      `[contract/genPolicyFromRule] ${error.message} url: ${error.response}`,
-    );
+    if (error instanceof AxiosError) {
+      const status = error.response?.status;
+      const url = error.config?.url;
+      const message = `[contract/genPolicyFromRule] Error ${status}: ${
+        error.message
+      }${url ? ` for URL: ${url}` : ''}`;
+      logger.error(message);
+      throw new Error(message);
+    } else {
+      const message = `[contract/genPolicyFromRule] Unexpected error: ${
+        (error as Error).message
+      }`;
+      logger.error(message);
+      throw new Error(message);
+    }
   }
 };

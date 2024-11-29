@@ -277,4 +277,14 @@ describe('CRUD test cases for Bilateral Contracts.', () => {
     // Check if the 'status' field is set to 'revoked'
     expect(response.body.status).to.equal('revoked');
   });
+
+  it('should remove a bilateral contract using a service offering ID', async () => {
+    // Reuse the service offering ID from the contract created in the first test
+    const serviceOfferingId = 'offering';
+
+    // Should throw an error when failing
+    await bilateralContractService.deleteManyFromOffering(serviceOfferingId);
+
+    expect(true).to.equal(true);
+  });
 });

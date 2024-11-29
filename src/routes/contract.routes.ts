@@ -23,6 +23,7 @@ import {
   deleteDataProcessing,
 } from '../controllers/contract.controller';
 import { check } from 'express-validator';
+import { logPayloadMiddleware } from 'middlewares/logPayload.middleware';
 
 // Ecosystem Contract Routes
 const router: Router = express.Router();
@@ -44,7 +45,11 @@ router.put('/contracts/policies/:id', injectPolicies);
 router.put('/contracts/policies/role/:id', injectPoliciesForRole);
 router.put('/contracts/policies/roles/:id', injectPoliciesForRoles);
 // Service Offerings
-router.put('/contracts/policies/offering/:id', injectOfferingPolicies);
+router.put(
+  '/contracts/policies/offering/:id',
+  logPayloadMiddleware,
+  injectOfferingPolicies,
+);
 router.delete(
   '/contracts/policies/offering/:contractId/:offeringId/:participantId',
   [
@@ -56,16 +61,14 @@ router.delete(
 );
 
 // List the data processings within the chain available on the contrat
-router.get('/contracts/processings/:id', getDataProcessings);
+router.get('/contracts/:id/processings', getDataProcessings);
 // Add the data processing chain to the contract
-router.post('/contracts/processings/:id', writeDataProcessings);
+router.post('/contracts/:id/processings', writeDataProcessings);
 // Insert a new data processing inside the chain at a specific given index
-router.put('/contracts/processings/insert/:id/:index', insertDataProcessing);
+router.put('/contracts/:id/processings/insert', insertDataProcessing);
 // Update a specific data processing from the chain
-router.put('/contracts/processings/update/:id', updateDataProcessing);
-// Remove a specific data processing from the chain
-router.delete('/contracts/processings/:id', deleteDataProcessing);
+router.put('/contracts/:id/processings/update/:processingId', updateDataProcessing);
 // Remove a specific data processing from the chain by index
-router.delete('/contracts/processings/:id/:index', removeDataProcessing);
+router.delete('/contracts/:id/processings/:processingId', removeDataProcessing);
 
 export default router;
