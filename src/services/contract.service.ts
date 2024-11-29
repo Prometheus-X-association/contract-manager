@@ -662,22 +662,6 @@ export class ContractService {
     }
   }
 
-  // get data processings
-  public async getDataProcessingsByParticipant(contractId: string, participant: string): Promise<ContractDataProcessing[]> {
-    try {
-      const contract = await Contract.findById(contractId).lean();
-      if (contract) {
-        console.log('participant', participant);
-        console.log('contract', contract.dataProcessings);
-        return contract.dataProcessings.filter(processing => processing.provider === participant || processing.consumer === participant);
-      } else {
-        throw new Error('Contract not found');
-      }
-    } catch (error) {
-      throw error;
-    }
-  }
-
   // update data processings
   public async writeDataProcessings(
     contractId: string,
@@ -686,7 +670,7 @@ export class ContractService {
     try {
       const contract = await Contract.findById(contractId);
       if (contract) {
-        contract.dataProcessings = processings as Types.DocumentArray<ContractDataProcessingDocument>;
+        contract.dataProcessings = processings as Types.Array<ContractDataProcessingDocument>;
         await contract.save();
         return contract.dataProcessings;
       } else {
@@ -700,22 +684,15 @@ export class ContractService {
   public async insertDataProcessing(
     contractId: string,
     processing: ContractDataProcessing,
-    index: number,
   ): Promise<ContractDataProcessing> {
     try {
-      if (index < 0) {
-        throw new Error('Index cannot be negative');
-      }
       const contract = await Contract.findById(contractId);
       if (contract) {
-        if (index >= contract.dataProcessings.length) {
+        if (!contract.dataProcessings.find(element => element.catalogId === processing.catalogId)) {
           processing.status = 'active';
           contract.dataProcessings.push(processing);
         } else {
-          const existingIndex = contract.dataProcessings.findIndex(item => item.provider === processing.provider && item.consumer === processing.consumer && item.infrastructureServices === processing.infrastructureServices);
-          if (existingIndex !== -1) {
-            contract.dataProcessings.splice(existingIndex, 1);
-          }
+          throw new Error('data');
         }
         await contract.save();
         return processing;
@@ -736,7 +713,7 @@ export class ContractService {
       const contract = await Contract.findById(contractId);
       if (contract) {
         const existingProcessing = contract.dataProcessings.find(
-          (item) => item._id.toString() === processingId && item.status === 'active',
+          (item) => item.catalogId.toString() === processingId && item.status === 'active',
         );
         if (existingProcessing) {
           existingProcessing.status = 'inactive';
@@ -787,7 +764,7 @@ export class ContractService {
       if (contract) {
         const initialLength = contract.dataProcessings.length;
         contract.dataProcessings = contract.dataProcessings.filter(
-          (item) => item.provider !== processing.provider && item.consumer !== processing.consumer && item.infrastructureServices !== processing.infrastructureServices,
+          (item) => item.catalogId !== processing.catalogId && item.infrastructureServices !== processing.infrastructureServices,
         ) as Types.DocumentArray<ContractDataProcessingDocument>;
         if (contract.dataProcessings.length !== initialLength) {
           await contract.save();
@@ -801,6 +778,36 @@ export class ContractService {
     } catch (error) {
       throw error;
     }
+  }
+
+  /**
+   * Removes the service offering's presence from all contracts.
+   *
+   * This is useful when a service offering is removed from the catalog.
+   */
+  public async removeOfferingFromContracts(serviceOfferingId: string) {
+    const contractsToUpdate = await Contract.find({
+      'serviceOfferings.serviceOffering': serviceOfferingId,
+    });
+
+    const updatedResult = await Contract.updateMany(
+      { 'serviceOfferings.serviceOffering': serviceOfferingId },
+      { $pull: { serviceOfferings: { serviceOffering: serviceOfferingId } } },
+    );
+
+    // Remove offering from policies
+    const promises = contractsToUpdate.map((contract) => {
+      const participant = contract.serviceOfferings.find((so) => so.serviceOffering === serviceOfferingId)?.participant;
+
+      if (!participant) {
+        return Promise.resolve();
+      }
+
+      return this.removeOfferingPolicies(contract._id?.toString(), serviceOfferingId, participant);
+    });
+
+    await Promise.all(promises);
+    return updatedResult.modifiedCount;
   }
 
   private convertContract(contract: IContractDB): any {

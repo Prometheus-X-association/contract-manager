@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import contractRoutes from 'routes/contract.routes';
 import bilateralContractRoutes from 'routes/bilateral.routes';
 import userRoutes from 'routes/user.routes';
+import contractsRoutes from 'routes/contracts.routes';
 import { logger } from 'utils/logger';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJson from './swagger/swagger.json';
@@ -41,6 +42,20 @@ const startServer = async (url: string) => {
     );
     next();
   });
+
+  // TODO: This is a temporary solution since the catalog is the only
+  // entity that can act on contracts. But a proper layer of authorization
+  // should be implemented per participant.
+  router.use((req, res, next) => {
+    if (process.env.NODE_ENV !== 'development' && req.method !== 'GET') {
+      const authKey = req.headers['x-ptx-catalog-key'];
+      if (!authKey || authKey !== config.auth.catalogKey) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+    }
+    next();
+  });
+
   router.use(
     '/rules',
     express.static(path.join(__dirname, '..', 'public/rules')),
@@ -97,7 +112,7 @@ const startServer = async (url: string) => {
     }
     next();
   });
-  router.use('/', userRoutes, contractRoutes, bilateralContractRoutes);
+  router.use('/', userRoutes, contractRoutes, bilateralContractRoutes, contractsRoutes);
   router.use((req, res, next) => {
     const message = 'Route not found or incorrect method request!';
     const { method, url } = req;

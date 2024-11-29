@@ -91,8 +91,7 @@ const InfrastructureServiceSchema = new Schema({
 });
 
 const DataProcessingSchema = new Schema({
-    provider: { type: String, required: true },
-    consumer: { type: String, required: true },
+    catalogId: { type: String, required: true },
     infrastructureServices: { type: [InfrastructureServiceSchema], default: [] },
     status: {
       type: String,
@@ -126,4 +125,5 @@ const ContractSchema: Schema = new Schema(
     timestamps: true,
   },
 );
+
 export default mongoose.model<IContractDB>('Contract', ContractSchema);
