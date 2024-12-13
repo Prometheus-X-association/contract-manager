@@ -1,5 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
 import { IContractDB } from '../interfaces/contract.interface';
+import { ContractAgentService } from '../services/contract.agent.service';
 
 // Ecosystem Contract Model / Dataspace User Case
 const PurposeSchema = new Schema({
@@ -91,13 +92,13 @@ const InfrastructureServiceSchema = new Schema({
 });
 
 const DataProcessingSchema = new Schema({
-    catalogId: { type: String, required: true },
-    infrastructureServices: { type: [InfrastructureServiceSchema], default: [] },
-    status: {
-      type: String,
-      enum: ['active', 'inactive'],
-      default: 'active',
-    },
+  catalogId: { type: String, required: true },
+  infrastructureServices: { type: [InfrastructureServiceSchema], default: [] },
+  status: {
+    type: String,
+    enum: ['active', 'inactive'],
+    default: 'active',
+  },
 });
 
 const ContractSchema: Schema = new Schema(
@@ -126,4 +127,17 @@ const ContractSchema: Schema = new Schema(
   },
 );
 
-export default mongoose.model<IContractDB>('Contract', ContractSchema);
+// export default mongoose.model<IContractDB>('Contract', ContractSchema);
+
+export const initContractModel = async () => {
+  const contractAgentService = await ContractAgentService.retrieveService();
+  const contractCollection = contractAgentService.getCollection();
+
+  return mongoose.model<IContractDB>(
+    'Contract',
+    ContractSchema,
+    contractCollection.collectionName,
+  );
+};
+
+export default await initContractModel();

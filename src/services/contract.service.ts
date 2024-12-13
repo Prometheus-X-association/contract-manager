@@ -649,7 +649,9 @@ export class ContractService {
   }
 
   // get data processings
-  public async getDataProcessings(contractId: string): Promise<ContractDataProcessing[]> {
+  public async getDataProcessings(
+    contractId: string,
+  ): Promise<ContractDataProcessing[]> {
     try {
       const contract = await Contract.findById(contractId).lean();
       if (contract) {
@@ -670,7 +672,8 @@ export class ContractService {
     try {
       const contract = await Contract.findById(contractId);
       if (contract) {
-        contract.dataProcessings = processings as Types.Array<ContractDataProcessingDocument>;
+        contract.dataProcessings =
+          processings as Types.Array<ContractDataProcessingDocument>;
         await contract.save();
         return contract.dataProcessings;
       } else {
@@ -688,7 +691,11 @@ export class ContractService {
     try {
       const contract = await Contract.findById(contractId);
       if (contract) {
-        if (!contract.dataProcessings.find(element => element.catalogId === processing.catalogId)) {
+        if (
+          !contract.dataProcessings.find(
+            (element) => element.catalogId === processing.catalogId,
+          )
+        ) {
           processing.status = 'active';
           contract.dataProcessings.push(processing);
         } else {
@@ -713,7 +720,9 @@ export class ContractService {
       const contract = await Contract.findById(contractId);
       if (contract) {
         const existingProcessing = contract.dataProcessings.find(
-          (item) => item.catalogId.toString() === processingId && item.status === 'active',
+          (item) =>
+            item.catalogId.toString() === processingId &&
+            item.status === 'active',
         );
         if (existingProcessing) {
           existingProcessing.status = 'inactive';
@@ -739,7 +748,9 @@ export class ContractService {
     try {
       const contract = await Contract.findById(contractId);
       if (contract) {
-        const processing = contract.dataProcessings.find(item => item._id === processingId && item.status === 'active');
+        const processing = contract.dataProcessings.find(
+          (item) => item._id === processingId && item.status === 'active',
+        );
         if (processing) {
           processing.status = 'inactive';
           await contract.save();
@@ -764,7 +775,9 @@ export class ContractService {
       if (contract) {
         const initialLength = contract.dataProcessings.length;
         contract.dataProcessings = contract.dataProcessings.filter(
-          (item) => item.catalogId !== processing.catalogId && item.infrastructureServices !== processing.infrastructureServices,
+          (item) =>
+            item.catalogId !== processing.catalogId &&
+            item.infrastructureServices !== processing.infrastructureServices,
         ) as Types.DocumentArray<ContractDataProcessingDocument>;
         if (contract.dataProcessings.length !== initialLength) {
           await contract.save();
@@ -797,13 +810,19 @@ export class ContractService {
 
     // Remove offering from policies
     const promises = contractsToUpdate.map((contract) => {
-      const participant = contract.serviceOfferings.find((so) => so.serviceOffering === serviceOfferingId)?.participant;
+      const participant = contract.serviceOfferings.find(
+        (so) => so.serviceOffering === serviceOfferingId,
+      )?.participant;
 
       if (!participant) {
         return Promise.resolve();
       }
 
-      return this.removeOfferingPolicies(contract._id?.toString(), serviceOfferingId, participant);
+      return this.removeOfferingPolicies(
+        contract._id?.toString(),
+        serviceOfferingId,
+        participant,
+      );
     });
 
     await Promise.all(promises);

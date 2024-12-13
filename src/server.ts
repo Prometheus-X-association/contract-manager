@@ -15,6 +15,9 @@ import path from 'path';
 
 const router = express();
 const startServer = async (url: string) => {
+  //
+
+  //
   try {
     await mongoose.connect(url, { retryWrites: true });
     logger.info('MongoDB connected');
@@ -60,7 +63,7 @@ const startServer = async (url: string) => {
     '/rules',
     express.static(path.join(__dirname, '..', 'public/rules')),
   );
-  
+
   router.get('/todayslog', async (req, res) => {
     if (req.query?.key !== process.env.LOGS_KEY) {
       return res.status(401).send('Unauthorized');
@@ -112,7 +115,13 @@ const startServer = async (url: string) => {
     }
     next();
   });
-  router.use('/', userRoutes, contractRoutes, bilateralContractRoutes, contractsRoutes);
+  router.use(
+    '/',
+    userRoutes,
+    contractRoutes,
+    bilateralContractRoutes,
+    contractsRoutes,
+  );
   router.use((req, res, next) => {
     const message = 'Route not found or incorrect method request!';
     const { method, url } = req;
