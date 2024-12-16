@@ -127,8 +127,8 @@ const ContractSchema: Schema = new Schema(
     timestamps: true,
   },
 );
-/*
-export const initContractModel = async () => {
+
+const initContractModel = async () => {
   const contractAgentService = await ContractAgentService.retrieveService();
   const contractCollection = contractAgentService.getCollection();
 
@@ -138,7 +138,36 @@ export const initContractModel = async () => {
     contractCollection.collectionName,
   );
 };
+/*
+export const getContractModel = async (): Promise<
+  mongoose.Model<IContractDB>
+> => {
+  return mongoose.model<IContractDB>('Contract', ContractSchema);
+
+  //config.useContractAgent
+  //  ? await initContractModel()
+  //  :
+};
 */
-export default /*config.useContractAgent
-  ? await initContractModel()
-  : */ mongoose.model<IContractDB>('Contract', ContractSchema);
+/*
+export const getContractModel = async (): Promise<
+  mongoose.Model<IContractDB>
+> => {
+  try {
+    if (mongoose.models.Contract) {
+      return mongoose.models.Contract as mongoose.Model<IContractDB>;
+    }
+    return mongoose.model<IContractDB>('Contract', ContractSchema);
+  } catch (error) {
+    console.error('Error creating Contract model:', error);
+    throw error;
+  }
+};
+*/
+// const contract = mongoose.model<IContractDB>('Contract', ContractSchema);
+
+export default {
+  getModel: async () => {
+    return mongoose.model<IContractDB>('Contract', ContractSchema);
+  },
+};

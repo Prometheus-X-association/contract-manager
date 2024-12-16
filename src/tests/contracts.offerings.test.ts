@@ -6,7 +6,7 @@ import { config } from 'config/config';
 import bilateralService from 'services/bilateral.service';
 import { IBilateralContract } from 'interfaces/contract.interface';
 import { expect } from 'chai';
-import contractService from 'services/contract.service';
+import { ContractService } from 'services/contract.service';
 
 const SERVER_PORT = 9999;
 describe('Operations on offerings in contracts', () => {
@@ -29,7 +29,9 @@ describe('Operations on offerings in contracts', () => {
     const authResponse = await supertest(app.router).get('/ping');
     authTokenCookie = authResponse.headers['set-cookie'];
 
-    console.log('Setting up bilateral & ecosystem contracts with a serviceOffering')
+    console.log(
+      'Setting up bilateral & ecosystem contracts with a serviceOffering',
+    );
 
     // Create a bilateral contract
     const contractData: Partial<IBilateralContract> = {
@@ -63,6 +65,7 @@ describe('Operations on offerings in contracts', () => {
       ],
     };
 
+    const contractService = await ContractService.getInstance();
     await contractService.genContract(contract as any);
   });
 
@@ -82,5 +85,5 @@ describe('Operations on offerings in contracts', () => {
     expect(response.status).to.equal(200);
     expect(response.body.contractsModified).to.not.equal(0);
     expect(response.body.contractsRemoved).to.not.equal(0);
-  })
+  });
 });

@@ -66,6 +66,7 @@ describe('CRUD test cases for Bilateral Contracts.', () => {
       .set('Cookie', authTokenCookie)
       .send({ contract: contractData });
     //
+
     _logObject(response.body);
     // Check if the response status is 201 (Created)
     expect(response.status).to.equal(201);

@@ -3,7 +3,7 @@ import supertest from 'supertest';
 import { expect } from 'chai';
 import app from 'server';
 import { ContractMember } from 'interfaces/schemas.interface';
-import contractService from 'services/contract.service';
+import { ContractService } from 'services/contract.service';
 import Contract from 'models/contract.model';
 import { config } from 'config/config';
 
@@ -30,6 +30,7 @@ describe('CRUD test cases for Contracts (Dataspace use cases).', () => {
   });
 
   after(async () => {
+    const contractService = await ContractService.getInstance();
     try {
       await contractService.deleteContract(createdContractId);
     } catch (error: any) {
