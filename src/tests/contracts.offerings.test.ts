@@ -1,14 +1,17 @@
 import supertest from 'supertest';
 import app from 'server';
-import Contract from 'models/contract.model';
+import ContractModel from 'models/contract.model';
 import Bilateral from 'models/bilateral.model';
 import { config } from 'config/config';
 import bilateralService from 'services/bilateral.service';
-import { IBilateralContract } from 'interfaces/contract.interface';
+import { IBilateralContract, IContractDB } from 'interfaces/contract.interface';
 import { expect } from 'chai';
 import { ContractService } from 'services/contract.service';
+import { Model } from 'mongoose';
 
 const SERVER_PORT = 9999;
+
+let Contract: Model<IContractDB>;
 describe('Operations on offerings in contracts', () => {
   let server: any;
   let authTokenCookie: any;
@@ -23,6 +26,7 @@ describe('Operations on offerings in contracts', () => {
       });
     });
 
+    Contract = await ContractModel.getModel();
     await Contract.deleteMany({});
     await Bilateral.deleteMany({});
 

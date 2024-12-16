@@ -4,8 +4,10 @@ import { expect } from 'chai';
 import app from 'server';
 import { ContractMember } from 'interfaces/schemas.interface';
 import { ContractService } from 'services/contract.service';
-import Contract from 'models/contract.model';
+import ContractModel from 'models/contract.model';
 import { config } from 'config/config';
+import { IContractDB } from 'interfaces/contract.interface';
+import { Model } from 'mongoose';
 
 let authTokenCookie: any;
 const SERVER_PORT = 9999;
@@ -13,6 +15,7 @@ const API_ROUTE_BASE = '/contracts/';
 const _logObject = (data: any) => {
   console.log(`\x1b[90m${JSON.stringify(data, null, 2)}\x1b[37m`);
 };
+let Contract: Model<IContractDB>;
 describe('CRUD test cases for Contracts (Dataspace use cases).', () => {
   let server: any;
   before(async () => {
@@ -23,6 +26,7 @@ describe('CRUD test cases for Contracts (Dataspace use cases).', () => {
         resolve(true);
       });
     });
+    Contract = await ContractModel.getModel();
     Contract.deleteMany({});
 
     const authResponse = await supertest(app.router).get('/ping');

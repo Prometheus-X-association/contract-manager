@@ -138,36 +138,13 @@ const initContractModel = async () => {
     contractCollection.collectionName,
   );
 };
-/*
-export const getContractModel = async (): Promise<
-  mongoose.Model<IContractDB>
-> => {
-  return mongoose.model<IContractDB>('Contract', ContractSchema);
-
-  //config.useContractAgent
-  //  ? await initContractModel()
-  //  :
-};
-*/
-/*
-export const getContractModel = async (): Promise<
-  mongoose.Model<IContractDB>
-> => {
-  try {
-    if (mongoose.models.Contract) {
-      return mongoose.models.Contract as mongoose.Model<IContractDB>;
-    }
-    return mongoose.model<IContractDB>('Contract', ContractSchema);
-  } catch (error) {
-    console.error('Error creating Contract model:', error);
-    throw error;
-  }
-};
-*/
-// const contract = mongoose.model<IContractDB>('Contract', ContractSchema);
 
 export default {
-  getModel: async () => {
-    return mongoose.model<IContractDB>('Contract', ContractSchema);
+  getModel: async (): Promise<mongoose.Model<IContractDB>> => {
+    return config.useContractAgent
+      ? await initContractModel()
+      : mongoose.model<IContractDB>('Contract', ContractSchema);
   },
 };
+
+// export default mongoose.model<IContractDB>('Contract', ContractSchema);
