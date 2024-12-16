@@ -20,8 +20,10 @@ const REGISTRY_DEFINED = !!process.env.CATALOG_REGISTRY_URL;
 const SERVER_URL = process.env.SERVER_URL ?? 'http://localhost';
 const CATALOG_AUTHORIZATION_KEY =
   process.env.CATALOG_AUTHORIZATION_KEY ?? false;
+const USE_CONTRACT_AGENT = process.env ?? false;
 
 export const config = {
+  useContractAgent: USE_CONTRACT_AGENT,
   mongo: {
     url: MONGO_URL,
     testUrl: MONGO_TEST_URL,

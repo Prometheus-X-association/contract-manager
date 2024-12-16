@@ -1,6 +1,7 @@
 import mongoose, { Schema } from 'mongoose';
 import { IContractDB } from '../interfaces/contract.interface';
 import { ContractAgentService } from '../services/contract.agent.service';
+import { config } from '../config/config';
 
 // Ecosystem Contract Model / Dataspace User Case
 const PurposeSchema = new Schema({
@@ -126,9 +127,7 @@ const ContractSchema: Schema = new Schema(
     timestamps: true,
   },
 );
-
-// export default mongoose.model<IContractDB>('Contract', ContractSchema);
-
+/*
 export const initContractModel = async () => {
   const contractAgentService = await ContractAgentService.retrieveService();
   const contractCollection = contractAgentService.getCollection();
@@ -139,5 +138,7 @@ export const initContractModel = async () => {
     contractCollection.collectionName,
   );
 };
-
-export default await initContractModel();
+*/
+export default /*config.useContractAgent
+  ? await initContractModel()
+  : */ mongoose.model<IContractDB>('Contract', ContractSchema);

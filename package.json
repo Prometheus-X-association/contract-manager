@@ -13,6 +13,7 @@
     "express-validator": "^7.0.1",
     "json-odrl-manager": "github:Prometheus-X-association/odrl-manager#v2.0.0-alpha.4",
     "jsonwebtoken": "^9.0.2",
+    "logform": "^2.7.0",
     "memorystore": "^1.6.7",
     "mocha": "^10.2.0",
     "mongoose": "^7.6.7",
