@@ -2,6 +2,7 @@ import mongoose, { FilterQuery, Query, Schema } from 'mongoose';
 import { IContract, IContractDB } from '../interfaces/contract.interface';
 import { ContractAgentService } from '../services/contract.agent.service';
 import { config } from '../config/config';
+import { MongooseProvider } from 'contract-agent';
 
 // Ecosystem Contract Model / Dataspace User Case
 const PurposeSchema = new Schema({
@@ -136,7 +137,7 @@ const initContractModel = async () => {
       'Contract',
       ContractSchema,
     );
-    ContractAgentService.setMongooseCollection(contractModel.collection);
+    ContractAgentService.setMongooseModel(contractModel);
     await ContractAgentService.retrieveService();
     contractModelInstance = contractModel;
   }

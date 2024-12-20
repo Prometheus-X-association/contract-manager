@@ -1,14 +1,27 @@
-import { Agent, ContractAgent, Logger, MongoDBProvider } from 'contract-agent';
+import {
+  Agent,
+  ContractAgent,
+  Logger,
+  MongoDBProvider,
+  MongooseProvider,
+} from 'contract-agent';
+import Contract from '../models/contract.model';
+import mongoose from 'mongoose';
+import { IContractDB } from '../interfaces/contract.interface';
 
 export class ContractAgentService {
   private static instance: ContractAgentService;
-  private static mongooseCollection: any;
+  // private static mongooseCollection: any;
   private client: any;
 
   private constructor() {}
 
-  static setMongooseCollection(collection: any) {
-    this.mongooseCollection = collection;
+  // static setMongooseCollection(collection: any) {
+  //   ContractAgentService.mongooseCollection = collection;
+  // }
+
+  static setMongooseModel(model: mongoose.Model<IContractDB> | null): void {
+    MongooseProvider.setCollectionModel('contracts', model as any);
   }
 
   static async retrieveService(
@@ -47,7 +60,7 @@ export class ContractAgentService {
   private async initialize(): Promise<void> {
     Agent.setConfigPath('../../contract-agent.config.json', __filename);
 
-    const contractAgent = await ContractAgent.retrieveService();
+    const contractAgent = await ContractAgent.retrieveService(MongooseProvider);
     if (!contractAgent) {
       throw new Error('Failed to initialize ContractAgent.');
     }
@@ -58,19 +71,15 @@ export class ContractAgentService {
       'contracts',
     ) as MongoDBProvider;
 
-    await (provider as MongoDBProvider).ensureReady(
-      ContractAgentService.mongooseCollection,
-    );
+    // this.client = provider.getClient();
+    // if (!this.client) {
+    //   throw new Error('MongoDB client not initialized');
+    // }
 
-    this.client = provider.getClient();
-    if (!this.client) {
-      throw new Error('MongoDB client not initialized');
-    }
-
-    const collection = provider.getCollection();
-    if (!collection) {
-      throw new Error('MongoDB collection not initialized');
-    }
+    // const collection = provider.getCollection();
+    // if (!collection) {
+    //   throw new Error('MongoDB collection not initialized');
+    // }
   }
 
   getClient(): any {
