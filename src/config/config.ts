@@ -20,7 +20,7 @@ const REGISTRY_DEFINED = !!process.env.CATALOG_REGISTRY_URL;
 const SERVER_URL = process.env.SERVER_URL ?? 'http://localhost';
 const CATALOG_AUTHORIZATION_KEY =
   process.env.CATALOG_AUTHORIZATION_KEY ?? false;
-const USE_CONTRACT_AGENT = process.env.USE_CONTRACT_AGENT ?? false;
+const USE_CONTRACT_AGENT = process.env.USE_CONTRACT_AGENT === 'true';
 
 export const config = {
   useContractAgent: USE_CONTRACT_AGENT,

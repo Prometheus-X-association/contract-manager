@@ -6,7 +6,7 @@
     "ajv": "^8.12.0",
     "axios": "^1.6.2",
     "chai": "^4.3.10",
-    "contract-agent": "https://gitpkg.now.sh/mathieu-vision/contract-consent-agent/contract-agent?v1.0.0-alpha.3",
+    "contract-agent": "https://gitpkg.now.sh/mathieu-vision/contract-consent-agent/contract-agent?v1.0.0-alpha.4",
     "dotenv": "^16.3.1",
     "express": "^4.18.2",
     "express-session": "^1.17.3",

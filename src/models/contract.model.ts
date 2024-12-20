@@ -1,5 +1,5 @@
-import mongoose, { Query, Schema } from 'mongoose';
-import { IContractDB } from '../interfaces/contract.interface';
+import mongoose, { FilterQuery, Query, Schema } from 'mongoose';
+import { IContract, IContractDB } from '../interfaces/contract.interface';
 import { ContractAgentService } from '../services/contract.agent.service';
 import { config } from '../config/config';
 
@@ -128,100 +128,32 @@ const ContractSchema: Schema = new Schema(
   },
 );
 
+let contractModelInstance: mongoose.Model<IContractDB> | null = null;
+
 const initContractModel = async () => {
-  const contractAgentService = await ContractAgentService.retrieveService();
-  const contractCollection = contractAgentService.getCollection();
-  const contractModel = mongoose.model<IContractDB>(
-    'Contract',
-    ContractSchema,
-    // contractCollection.collectionName,
-  );
-
-  contractModel.prototype.save = async function () {
-    const cleanObject = JSON.parse(JSON.stringify(this));
-    const result = await contractCollection.insertOne(cleanObject);
-    return { ...cleanObject, _id: result.insertedId };
-  };
-
-  contractModel.create = async function (doc) {
-    const cleanDoc = JSON.parse(JSON.stringify(doc));
-    const result = await contractCollection.insertOne(cleanDoc);
-    return { ...cleanDoc, _id: result.insertedId };
-  };
-
-  contractModel.findByIdAndUpdate = function (id, update, options = {}) {
-    const cleanUpdate = JSON.parse(JSON.stringify(update));
-    return contractCollection.updateOne(
-      { _id: new mongoose.Types.ObjectId(id) },
-      { $set: cleanUpdate },
-      options,
+  if (!contractModelInstance) {
+    const contractModel = mongoose.model<IContractDB>(
+      'Contract',
+      ContractSchema,
     );
-  };
-
-  contractModel.updateMany = function (filter, update, options = {}) {
-    const cleanFilter = JSON.parse(JSON.stringify(filter));
-    const cleanUpdate = JSON.parse(JSON.stringify(update));
-    return contractCollection.updateMany(
-      cleanFilter,
-      { $set: cleanUpdate },
-      options,
-    );
-  };
-
-  contractModel.findByIdAndDelete = function (
-    id: string | mongoose.Types.ObjectId,
-  ) {
-    return {
-      select(): any {
-        return this;
-      },
-      async exec(): Promise<any> {
-        return contractCollection.findOneAndDelete({
-          _id: new mongoose.Types.ObjectId(id),
-        });
-      },
-    } as unknown as Query<any, any>;
-  };
-
-  contractModel.deleteMany = function (filter) {
-    const operation = contractCollection.deleteMany(
-      JSON.parse(JSON.stringify(filter)),
-    );
-    return {
-      select(): any {
-        return this;
-      },
-      exec(): Promise<any> {
-        return operation;
-      },
-    } as unknown as Query<any, any>;
-  };
-
-  contractModel.findOneAndUpdate = function (
-    filter: any,
-    update: any,
-    options: any = {},
-  ) {
-    return {} as any;
-  };
-
-  contractModel.updateOne = function (
-    filter: any,
-    update: any,
-    options: any = {},
-  ) {
-    return {} as any;
-  };
-  // contractModel.collection = contractCollection;
-  return contractModel;
+    ContractAgentService.setMongooseCollection(contractModel.collection);
+    await ContractAgentService.retrieveService();
+    contractModelInstance = contractModel;
+  }
+  return contractModelInstance;
 };
 
 export default {
   getModel: async (): Promise<mongoose.Model<IContractDB>> => {
-    return config.useContractAgent
-      ? await initContractModel()
-      : mongoose.model<IContractDB>('Contract', ContractSchema);
+    if (config.useContractAgent) {
+      return await initContractModel();
+    }
+    if (!contractModelInstance) {
+      contractModelInstance = mongoose.model<IContractDB>(
+        'Contract',
+        ContractSchema,
+      );
+    }
+    return contractModelInstance;
   },
 };
-
-// export default mongoose.model<IContractDB>('Contract', ContractSchema);

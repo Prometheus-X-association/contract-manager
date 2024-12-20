@@ -2,16 +2,15 @@ import { Agent, ContractAgent, Logger, MongoDBProvider } from 'contract-agent';
 
 export class ContractAgentService {
   private static instance: ContractAgentService;
+  private static mongooseCollection: any;
   private client: any;
-  private collection: any;
 
   private constructor() {}
 
-  /**
-   * Retrieves or creates an instance of ContractAgentService.
-   * @param refresh - Whether to force creation of a new instance.
-   * @returns Instance of ContractAgentService.
-   */
+  static setMongooseCollection(collection: any) {
+    this.mongooseCollection = collection;
+  }
+
   static async retrieveService(
     refresh: boolean = false,
   ): Promise<ContractAgentService> {
@@ -59,23 +58,22 @@ export class ContractAgentService {
       'contracts',
     ) as MongoDBProvider;
 
+    await (provider as MongoDBProvider).ensureReady(
+      ContractAgentService.mongooseCollection,
+    );
+
     this.client = provider.getClient();
     if (!this.client) {
       throw new Error('MongoDB client not initialized');
     }
 
-    this.collection = provider.getCollection();
-
-    if (!this.collection) {
+    const collection = provider.getCollection();
+    if (!collection) {
       throw new Error('MongoDB collection not initialized');
     }
   }
 
   getClient(): any {
     return this.client;
-  }
-
-  getCollection(): any {
-    return this.collection;
   }
 }
