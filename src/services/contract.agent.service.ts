@@ -1,28 +1,13 @@
-import {
-  Agent,
-  ContractAgent,
-  Logger,
-  MongoDBProvider,
-  MongooseProvider,
-} from 'contract-agent';
+import { Agent, ContractAgent, Logger, MongooseProvider } from 'contract-agent';
 import Contract from '../models/contract.model';
 import mongoose from 'mongoose';
 import { IContractDB } from '../interfaces/contract.interface';
 
 export class ContractAgentService {
   private static instance: ContractAgentService;
-  // private static mongooseCollection: any;
   private client: any;
 
   private constructor() {}
-
-  // static setMongooseCollection(collection: any) {
-  //   ContractAgentService.mongooseCollection = collection;
-  // }
-
-  static setMongooseModel(model: mongoose.Model<IContractDB> | null): void {
-    MongooseProvider.setCollectionModel('contracts', model as any);
-  }
 
   static async retrieveService(
     refresh: boolean = false,
@@ -69,20 +54,18 @@ export class ContractAgentService {
 
     const provider = contractAgent.getDataProvider(
       'contracts',
-    ) as MongoDBProvider;
+    ) as MongooseProvider;
 
-    // this.client = provider.getClient();
-    // if (!this.client) {
-    //   throw new Error('MongoDB client not initialized');
-    // }
-
-    // const collection = provider.getCollection();
-    // if (!collection) {
-    //   throw new Error('MongoDB collection not initialized');
-    // }
+    Logger.info(`Contrat provider set on ${provider.dataSource}`);
   }
 
-  getClient(): any {
-    return this.client;
+  async getMongoosePromise(): Promise<void> {
+    const contractAgent = await ContractAgent.retrieveService(MongooseProvider);
+
+    const provider = contractAgent.getDataProvider(
+      'contracts',
+    ) as MongooseProvider;
+
+    return provider.getMongoosePromise();
   }
 }

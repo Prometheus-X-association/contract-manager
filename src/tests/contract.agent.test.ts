@@ -15,9 +15,11 @@ const API_ROUTE_BASE = '/contracts/';
 const _logObject = (data: any) => {
   console.log(`\x1b[90m${JSON.stringify(data, null, 2)}\x1b[37m`);
 };
-let Contract: Model<IContractDB>;
+//let Contract: Model<IContractDB>;
 let createdContractId: string;
-describe('contract agent.', () => {
+describe('contract agent.', function () {
+  this.timeout(10000);
+
   let server: any;
   before(async () => {
     server = await app.startServer(config.mongo.testUrl);
@@ -27,13 +29,13 @@ describe('contract agent.', () => {
         resolve(true);
       });
     });
-    Contract = await ContractModel.getModel();
+    // Contract = await ContractModel.getModel();
 
     const authResponse = await supertest(app.router).get('/ping');
     authTokenCookie = authResponse.headers['set-cookie'];
   });
 
-  after(async () => {
+  after(async function () {
     const contractService = await ContractService.getInstance();
     try {
       await contractService.deleteContract(createdContractId);
@@ -44,7 +46,7 @@ describe('contract agent.', () => {
     console.log('Test server stopped.');
   });
 
-  it('should create...', async () => {
+  it('should create...', async function () {
     const contract = {
       '@context': 'http://www.w3.org/ns/odrl/2/',
       '@type': 'Offer',
@@ -70,7 +72,7 @@ describe('contract agent.', () => {
     createdContractId = response.body._id;
   });
 
-  it('should update...', async () => {
+  it('should update...', async function () {
     const updatedContractData = {
       updated: true,
     };

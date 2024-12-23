@@ -15,7 +15,7 @@ dependencies:
     specifier: ^4.3.10
     version: 4.5.0
   contract-agent:
-    specifier: https://gitpkg.now.sh/mathieu-vision/contract-consent-agent/contract-agent?v1.0.0-alpha.4
+    specifier: https://gitpkg.now.sh/mathieu-vision/contract-consent-agent/contract-agent?v1.0.0-alpha.5
     version: link:../contract-consent-agent/contract-agent
   dotenv:
     specifier: ^16.3.1
@@ -45,7 +45,7 @@ dependencies:
     specifier: ^10.2.0
     version: 10.8.2
   mongoose:
-    specifier: ^7.6.7
+    specifier: ^7.8.3
     version: 7.8.3
   sinon:
     specifier: ^16.1.3
