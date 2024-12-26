@@ -6,8 +6,24 @@ import { IContractDB } from '../interfaces/contract.interface';
 export class ContractAgentService {
   private static instance: ContractAgentService;
   private client: any;
+  private signalUpdatePromise: Promise<void>;
+  private signalUpdatePromiseResolve: (() => void) | null = null;
 
-  private constructor() {}
+  private constructor() {
+    this.signalUpdatePromise = new Promise((resolve) => {
+      this.signalUpdatePromiseResolve = resolve;
+    });
+  }
+
+  getSignalUpdatePromise(): Promise<void> {
+    return this.signalUpdatePromise;
+  }
+
+  genSignalUpdatePromise(): void {
+    this.signalUpdatePromise = new Promise((resolve) => {
+      this.signalUpdatePromiseResolve = resolve;
+    });
+  }
 
   static async retrieveService(
     refresh: boolean = false,
@@ -22,6 +38,13 @@ export class ContractAgentService {
 
   private setupAgentMonitoring() {
     const agent = ContractAgent.prototype as any;
+    agent.signalUpdate = () => {
+      if (this.signalUpdatePromiseResolve) {
+        this.signalUpdatePromiseResolve();
+      }
+    };
+
+    /*
     const handleDataInserted = agent.handleDataInserted;
     const originalHandleDataUpdated = agent.originalHandleDataUpdated;
     const originalHandleDataDeleted = agent.handleDataDeleted;
@@ -40,13 +63,14 @@ export class ContractAgentService {
       Logger.info(`Data deleted: ${JSON.stringify(data, null, 2)}`);
       return await originalHandleDataDeleted.call(this, data);
     };
+    */
   }
 
   private async initialize(): Promise<void> {
     Logger.info('Init contract model through Contract Agent');
     MongooseProvider.setCollectionModel<IContractDB>(
       'contracts',
-      Contract.ContractSchema, //getSchema(),
+      Contract.ContractSchema,
     );
 
     Agent.setConfigPath('../../contract-agent.config.json', __filename);
@@ -56,7 +80,7 @@ export class ContractAgentService {
       throw new Error('Failed to initialize ContractAgent.');
     }
 
-    // this.setupAgentMonitoring();
+    this.setupAgentMonitoring();
 
     const provider = contractAgent.getDataProvider(
       'contracts',

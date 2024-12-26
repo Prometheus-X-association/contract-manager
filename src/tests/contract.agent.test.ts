@@ -8,6 +8,7 @@ import ContractModel from 'models/contract.model';
 import { config } from 'config/config';
 import { IContractDB } from 'interfaces/contract.interface';
 import { Model } from 'mongoose';
+import { ContractAgentService } from '../services/contract.agent.service';
 
 let authTokenCookie: any;
 const SERVER_PORT = 9999;
@@ -45,9 +46,9 @@ describe('contract agent.', function () {
     console.log('Test server stopped.');
   });
 
-  // it('', async function () {});
-
-  it('should create...', async function () {
+  it('should update profiles after contrat creation', async function () {
+    const contractAgentService = await ContractAgentService.retrieveService();
+    contractAgentService.genSignalUpdatePromise();
     const contract = {
       '@context': 'http://www.w3.org/ns/odrl/2/',
       '@type': 'Offer',
@@ -91,10 +92,13 @@ describe('contract agent.', function () {
 
     expect(response.body).to.have.property('_id');
     createdContractId = response.body._id;
+
+    await contractAgentService.getSignalUpdatePromise();
   });
 
-  /*
-  it('should update...', async function () {
+  it('should update profiles after contract updates', async function () {
+    const contractAgentService = await ContractAgentService.retrieveService();
+    contractAgentService.genSignalUpdatePromise();
     const updatedContractData = {
       updated: true,
     };
@@ -105,6 +109,6 @@ describe('contract agent.', function () {
     _logObject(response.body);
     expect(response.status).to.equal(200);
     expect(response.body).to.have.property('_id');
+    await contractAgentService.getSignalUpdatePromise();
   });
-  */
 });
