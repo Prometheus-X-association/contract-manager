@@ -43,9 +43,16 @@ export class ContractAgentService {
   }
 
   private async initialize(): Promise<void> {
+    Logger.info('Init contract model through Contract Agent');
+    /*MongooseProvider.setCollectionModel<IContractDB>(
+      'contracts',
+      Contract.getSchema(),
+    );*/
+
     Agent.setConfigPath('../../contract-agent.config.json', __filename);
 
     const contractAgent = await ContractAgent.retrieveService(MongooseProvider);
+    console.log('D!');
     if (!contractAgent) {
       throw new Error('Failed to initialize ContractAgent.');
     }

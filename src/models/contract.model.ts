@@ -138,7 +138,11 @@ const initContractModel = async () => {
       'contracts',
       ContractSchema,
     );
-    await ContractAgentService.retrieveService();
+    console.log('A!');
+    const agent = await ContractAgentService.retrieveService();
+    console.log('B!');
+    await agent.getMongoosePromise();
+    console.log('C!');
     try {
       contractModelInstance = mongoose.model<IContractDB>('Contract');
     } catch {

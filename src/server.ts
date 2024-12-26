@@ -13,13 +13,14 @@ import createMemoryStore from 'memorystore';
 import { config } from 'config/config';
 import path from 'path';
 import { ContractAgentService } from 'services/contract.agent.service';
+import Contract from './models/contract.model';
 
 const router = express();
 const startServer = async (url: string) => {
   try {
     if (config.useContractAgent) {
-      const agent = await ContractAgentService.retrieveService();
-      await agent.getMongoosePromise();
+      await Contract.getModel();
+      console.log('E!');
     } else {
       await mongoose.connect(url, { retryWrites: true });
     }
