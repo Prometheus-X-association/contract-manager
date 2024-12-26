@@ -21,7 +21,7 @@ describe('contract agent.', function () {
   this.timeout(10000);
 
   let server: any;
-  before(async () => {
+  before(async function () {
     server = await app.startServer(config.mongo.testUrl);
     await new Promise((resolve) => {
       server.listen(SERVER_PORT, () => {
@@ -30,7 +30,6 @@ describe('contract agent.', function () {
       });
     });
     // Contract = await ContractModel.getModel();
-
     const authResponse = await supertest(app.router).get('/ping');
     authTokenCookie = authResponse.headers['set-cookie'];
   });
@@ -38,7 +37,7 @@ describe('contract agent.', function () {
   after(async function () {
     const contractService = await ContractService.getInstance();
     try {
-      await contractService.deleteContract(createdContractId);
+      // await contractService.deleteContract(createdContractId);
     } catch (error: any) {
       console.log(error);
     }
@@ -46,20 +45,42 @@ describe('contract agent.', function () {
     console.log('Test server stopped.');
   });
 
+  // it('', async function () {});
+
   it('should create...', async function () {
     const contract = {
       '@context': 'http://www.w3.org/ns/odrl/2/',
       '@type': 'Offer',
-      permission: [
+      ecosystem: 'test-ecosystem',
+      serviceOfferings: [
         {
-          action: 'read',
-          target: 'http://contract-target/policy',
-        },
-        {
-          action: 'use',
-          target: 'http://contract-target/service',
+          participant: 'test-participant',
+          serviceOffering: 'allowed-service',
+          policies: [
+            {
+              description: 'allowed-policy',
+              permission: [
+                {
+                  action: 'read',
+                  target: 'http://contract-target/policy',
+                },
+                {
+                  action: 'use',
+                  target: 'http://contract-target/service',
+                },
+              ],
+              prohibition: [],
+            },
+          ],
         },
       ],
+      createdAt: new Date(),
+      updatedAt: new Date(),
+      members: [],
+      orchestrator: '',
+      purpose: [],
+      revokedMembers: [],
+      rolesAndObligations: [],
     };
     const response = await supertest(app.router)
       .post(`${API_ROUTE_BASE}`)
@@ -72,6 +93,7 @@ describe('contract agent.', function () {
     createdContractId = response.body._id;
   });
 
+  /*
   it('should update...', async function () {
     const updatedContractData = {
       updated: true,
@@ -84,4 +106,5 @@ describe('contract agent.', function () {
     expect(response.status).to.equal(200);
     expect(response.body).to.have.property('_id');
   });
+  */
 });

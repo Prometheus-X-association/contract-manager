@@ -133,7 +133,9 @@ let contractModelInstance: mongoose.Model<IContractDB> | null = null;
 
 const initContractModel = async () => {
   if (!contractModelInstance) {
-    Logger.info('Init contract model through Contract Agent');
+    Logger.info(
+      'initContractModel: Init contract model through Contract Agent',
+    );
     MongooseProvider.setCollectionModel<IContractDB>(
       'contracts',
       ContractSchema,
@@ -156,16 +158,27 @@ const initContractModel = async () => {
 };
 
 export default {
+  ContractSchema,
+  getModel: async (): Promise<mongoose.Model<IContractDB>> => {
+    contractModelInstance = mongoose.model<IContractDB>(
+      'Contract',
+      ContractSchema,
+    );
+    return contractModelInstance;
+  },
+  /*
   getModel: async (): Promise<mongoose.Model<IContractDB>> => {
     if (config.useContractAgent) {
       return await initContractModel();
-    }
-    if (!contractModelInstance) {
-      contractModelInstance = mongoose.model<IContractDB>(
-        'Contract',
-        ContractSchema,
-      );
+    } else {
+      if (!contractModelInstance) {
+        contractModelInstance = mongoose.model<IContractDB>(
+          'Contract',
+          ContractSchema,
+        );
+      }
     }
     return contractModelInstance;
   },
+  */
 };

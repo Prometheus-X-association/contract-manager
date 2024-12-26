@@ -19,8 +19,8 @@ const router = express();
 const startServer = async (url: string) => {
   try {
     if (config.useContractAgent) {
-      await Contract.getModel();
-      console.log('E!');
+      const agent = await ContractAgentService.retrieveService();
+      await agent.getMongoosePromise();
     } else {
       await mongoose.connect(url, { retryWrites: true });
     }
