@@ -6,7 +6,7 @@ import { ContractMember } from 'interfaces/schemas.interface';
 import { ContractService } from 'services/contract.service';
 import ContractModel from 'models/contract.model';
 import { config } from 'config/config';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 
 const SERVER_PORT = 9999;
 const API_ROUTE_BASE = '/contracts/';
@@ -14,7 +14,8 @@ const _logObject = (data: any) => {
   console.log(`\x1b[90m${JSON.stringify(data, null, 2)}\x1b[37m`);
 };
 
-let Contract: Model<IContractDB>;
+let Contract: mongoose.Model<IContractDB>;
+
 // Test suite for the route to get all contracts with filters
 describe('Filtering test cases for Contracts (Dataspace use cases).', () => {
   let server: any;

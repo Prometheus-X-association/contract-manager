@@ -7,7 +7,7 @@ import axios from 'axios';
 import http from 'http';
 import { _logYellow, _logGreen, _logObject } from './utils/utils';
 import { IContractDB } from 'interfaces/contract.interface';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 
 let cookie: any;
 let contractId: any;
@@ -21,7 +21,8 @@ if (!config.catalog.registry.defined) {
   axios.defaults.baseURL = `${config.server.url}:${SERVER_PORT}/`;
 }
 
-let Contract: Model<IContractDB>;
+let Contract: mongoose.Model<IContractDB>;
+
 describe('Billing rules injection and removal test cases for contract', () => {
   let server: http.Server;
 

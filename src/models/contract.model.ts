@@ -34,7 +34,7 @@ const ConsequenceSchema = new Schema(
   {
     action: String,
     constraint: [ConstraintSchema],
-    consequence: [this],
+    consequence: [{ type: Schema.Types.Mixed }],
   },
   { _id: false },
 );
@@ -129,56 +129,9 @@ const ContractSchema: Schema = new Schema(
   },
 );
 
-let contractModelInstance: mongoose.Model<IContractDB> | null = null;
-
-const initContractModel = async () => {
-  if (!contractModelInstance) {
-    Logger.info(
-      'initContractModel: Init contract model through Contract Agent',
-    );
-    MongooseProvider.setCollectionModel<IContractDB>(
-      'contracts',
-      ContractSchema,
-    );
-    console.log('A!');
-    const agent = await ContractAgentService.retrieveService();
-    console.log('B!');
-    await agent.getMongoosePromise();
-    console.log('C!');
-    try {
-      contractModelInstance = mongoose.model<IContractDB>('Contract');
-    } catch {
-      contractModelInstance = mongoose.model<IContractDB>(
-        'Contract',
-        ContractSchema,
-      );
-    }
-  }
-  return contractModelInstance;
-};
-
+export { ContractSchema };
 export default {
-  ContractSchema,
   getModel: async (): Promise<mongoose.Model<IContractDB>> => {
-    contractModelInstance = mongoose.model<IContractDB>(
-      'Contract',
-      ContractSchema,
-    );
-    return contractModelInstance;
+    return mongoose.model<IContractDB>('Contract', ContractSchema);
   },
-  /*
-  getModel: async (): Promise<mongoose.Model<IContractDB>> => {
-    if (config.useContractAgent) {
-      return await initContractModel();
-    } else {
-      if (!contractModelInstance) {
-        contractModelInstance = mongoose.model<IContractDB>(
-          'Contract',
-          ContractSchema,
-        );
-      }
-    }
-    return contractModelInstance;
-  },
-  */
 };

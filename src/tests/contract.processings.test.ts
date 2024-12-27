@@ -6,14 +6,15 @@ import { config } from 'config/config';
 import http from 'http';
 import { _logYellow, _logGreen, _logObject } from './utils/utils';
 import { IContractDB } from 'interfaces/contract.interface';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 
 let cookie: any;
 let contractId: any;
 let processingId: any;
 const SERVER_PORT = 9999;
 
-let Contract: Model<IContractDB>;
+let Contract: mongoose.Model<IContractDB>;
+
 describe('Create an ecosystem contract, test data processings related endpoints.', () => {
   let server: http.Server;
   before(async () => {

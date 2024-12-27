@@ -7,11 +7,12 @@ import bilateralService from 'services/bilateral.service';
 import { IBilateralContract, IContractDB } from 'interfaces/contract.interface';
 import { expect } from 'chai';
 import { ContractService } from 'services/contract.service';
-import { Model } from 'mongoose';
+import mongoose, { Model } from 'mongoose';
 
 const SERVER_PORT = 9999;
 
-let Contract: Model<IContractDB>;
+let Contract: mongoose.Model<IContractDB>;
+
 describe('Operations on offerings in contracts', () => {
   let server: any;
   let authTokenCookie: any;

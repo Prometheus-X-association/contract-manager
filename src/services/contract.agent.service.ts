@@ -1,6 +1,5 @@
 import { Agent, ContractAgent, Logger, MongooseProvider } from 'contract-agent';
-import Contract from '../models/contract.model';
-import mongoose from 'mongoose';
+import { ContractSchema } from '../models/contract.model';
 import { IContractDB } from '../interfaces/contract.interface';
 
 export class ContractAgentService {
@@ -70,7 +69,7 @@ export class ContractAgentService {
     Logger.info('Init contract model through Contract Agent');
     MongooseProvider.setCollectionModel<IContractDB>(
       'contracts',
-      Contract.ContractSchema,
+      ContractSchema,
     );
 
     Agent.setConfigPath('../../contract-agent.config.json', __filename);

@@ -4,7 +4,6 @@ import { expect } from 'chai';
 import app from 'server';
 import { ContractMember } from 'interfaces/schemas.interface';
 import { ContractService } from 'services/contract.service';
-import ContractModel from 'models/contract.model';
 import { config } from 'config/config';
 import { IContractDB } from 'interfaces/contract.interface';
 import { Model } from 'mongoose';

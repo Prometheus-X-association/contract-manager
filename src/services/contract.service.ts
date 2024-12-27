@@ -1,7 +1,7 @@
 import mongoose, { Types } from 'mongoose';
 
 import { IContract, IContractDB } from 'interfaces/contract.interface';
-import Contract from '../models/contract.model';
+import ContractModel from '../models/contract.model';
 import { logger } from 'utils/logger';
 import {
   ContractDataProcessing,
@@ -17,15 +17,15 @@ import { genPolicyFromRule } from './policy/utils';
 import pdp from 'services/policy/pdp.service';
 
 // Ecosystem Contract Service
+let Contract: mongoose.Model<IContractDB>;
 export class ContractService {
   private static instance: ContractService;
-  public static model: mongoose.Model<IContractDB>;
 
   private constructor() {}
 
   public static async getInstance(): Promise<ContractService> {
     if (!ContractService.instance) {
-      ContractService.model = await Contract.getModel();
+      Contract = await ContractModel.getModel();
       ContractService.instance = new ContractService();
     }
     return ContractService.instance;
@@ -51,7 +51,7 @@ export class ContractService {
             },
           ]
         : [];
-      const newContract = new ContractService.model({
+      const newContract = new Contract({
         ...rest,
         rolesAndObligations,
       });
@@ -65,8 +65,7 @@ export class ContractService {
   // get contract
   public async getContract(contractId: string): Promise<IContractDB | null> {
     try {
-      const contract = await ContractService.model
-        .findById(contractId)
+      const contract = await Contract.findById(contractId)
         .select('-jsonLD')
         .lean();
       return contract;
@@ -83,7 +82,7 @@ export class ContractService {
     serviceOfferingId: string,
   ): Promise<any | null> {
     try {
-      const contract = await ContractService.model.findById(contractId);
+      const contract = await Contract.findById(contractId);
       if (!contract) {
         return null;
       }
@@ -109,12 +108,14 @@ export class ContractService {
     updates: Partial<IContractDB>,
   ): Promise<IContractDB | null> {
     try {
-      const updatedContract = await ContractService.model
-        .findByIdAndUpdate(contractId, updates, {
+      const updatedContract = await Contract.findByIdAndUpdate(
+        contractId,
+        updates,
+        {
           new: true,
           select: '-jsonLD',
-        })
-        .lean();
+        },
+      ).lean();
       return updatedContract;
     } catch (error) {
       logger.error('[Contract/Service, updateContract]:', error);
@@ -124,9 +125,8 @@ export class ContractService {
   // delete contract
   public async deleteContract(contractId: string): Promise<void> {
     try {
-      const deletedContract = await ContractService.model
-        .findByIdAndDelete(contractId)
-        .select('-jsonLD');
+      const deletedContract =
+        await Contract.findByIdAndDelete(contractId).select('-jsonLD');
       if (!deletedContract) {
         throw new Error('Contract not found.');
       }
@@ -142,14 +142,12 @@ export class ContractService {
   ): Promise<IContract> {
     try {
       // Find the contract by its ID
-      const contract = await ContractService.model
-        .findById(contractId, {
-          // Exclude unnecessary metadata
-          _id: 0,
-          __v: 0,
-          jsonLD: 0,
-        })
-        .lean();
+      const contract = await Contract.findById(contractId, {
+        // Exclude unnecessary metadata
+        _id: 0,
+        __v: 0,
+        jsonLD: 0,
+      }).lean();
       if (!contract) {
         throw new Error('Contract does not exist.');
       }
@@ -175,7 +173,7 @@ export class ContractService {
         contract.status = 'signed';
       }
       // Update the contract in the database
-      const updatedContract = await ContractService.model.findByIdAndUpdate(
+      const updatedContract = await Contract.findByIdAndUpdate(
         contractId,
         contract,
         { new: true, _id: 0, __v: 0, jsonLD: 0 },
@@ -197,9 +195,7 @@ export class ContractService {
   ): Promise<IContract> {
     try {
       // Find the contract by ID
-      const contract = await ContractService.model
-        .findById(contractId)
-        .select('-jsonLD');
+      const contract = await Contract.findById(contractId).select('-jsonLD');
       // Check if the contract exists
       if (!contract) {
         throw new Error('Contract not found');
@@ -236,7 +232,7 @@ export class ContractService {
     role: string,
   ): Promise<boolean> {
     try {
-      const contract = await ContractService.model.findById(contractId).lean();
+      const contract = await Contract.findById(contractId).lean();
       if (!contract || !contract.rolesAndObligations) {
         return false;
       }
@@ -284,9 +280,7 @@ export class ContractService {
         // Participant must not appear in signatures
         filter.members = { $not: { $elemMatch: { participant: did } } };
       }
-      const contracts = await ContractService.model
-        .find(filter)
-        .select('-jsonLD');
+      const contracts = await Contract.find(filter).select('-jsonLD');
       return contracts;
     } catch (error: any) {
       logger.error('[Contract/Service, getContractsFor]:', error);
@@ -310,9 +304,7 @@ export class ContractService {
           };
         }
       }
-      const contracts = await ContractService.model
-        .find(filter)
-        .select('-jsonLD');
+      const contracts = await Contract.find(filter).select('-jsonLD');
       return contracts;
     } catch (error: any) {
       logger.error('[Contract/Service, getContracts]:', error);
@@ -380,7 +372,7 @@ export class ContractService {
     data: { roles: string[]; policies: IPolicyInjection[] }[],
   ): Promise<IContractDB | null> {
     try {
-      const contract = await ContractService.model.findById(contractId);
+      const contract = await Contract.findById(contractId);
       if (!contract) {
         throw new Error('Contract not found');
       }
@@ -456,7 +448,7 @@ export class ContractService {
       if (!role) {
         throw new Error('Role is not defined');
       }
-      const contract = await ContractService.model.findById(contractId);
+      const contract = await Contract.findById(contractId);
       if (!contract) {
         throw new Error('Contract not found');
       }
@@ -497,7 +489,7 @@ export class ContractService {
     injections: IPolicyInjection[],
   ): Promise<IContractDB | null> {
     try {
-      const contract = await ContractService.model.findById(contractId);
+      const contract = await Contract.findById(contractId);
       if (!contract) {
         throw new Error('Contract not found');
       }
@@ -539,7 +531,7 @@ export class ContractService {
     injection: IPolicyInjection,
   ): Promise<IContractDB | null> {
     try {
-      const contract = await ContractService.model.findById(contractId);
+      const contract = await Contract.findById(contractId);
       if (!contract) {
         throw new Error('Contract not found');
       }
@@ -576,7 +568,7 @@ export class ContractService {
     injections: IPolicyInjection[],
   ): Promise<IContractDB | null> {
     try {
-      const contract = await ContractService.model.findById(contractId);
+      const contract = await Contract.findById(contractId);
       if (!contract) {
         throw new Error('Contract not found');
       }
@@ -632,7 +624,7 @@ export class ContractService {
   ): Promise<IContractDB | null> {
     try {
       const contract: ContractDocument | null =
-        await ContractService.model.findById(contractId);
+        await Contract.findById(contractId);
       if (!contract) {
         throw new Error('Contract not found');
       }
@@ -663,7 +655,7 @@ export class ContractService {
     contractId: string,
   ): Promise<ContractDataProcessing[]> {
     try {
-      const contract = await ContractService.model.findById(contractId).lean();
+      const contract = await Contract.findById(contractId).lean();
       if (contract) {
         return contract.dataProcessings;
       } else {
@@ -680,7 +672,7 @@ export class ContractService {
     processings: ContractDataProcessing[],
   ): Promise<ContractDataProcessing[]> {
     try {
-      const contract = await ContractService.model.findById(contractId);
+      const contract = await Contract.findById(contractId);
       if (!contract) {
         throw new Error('Contract not found');
       }
@@ -717,7 +709,7 @@ export class ContractService {
     processing: ContractDataProcessing,
   ): Promise<ContractDataProcessing> {
     try {
-      const contract = await ContractService.model.findById(contractId);
+      const contract = await Contract.findById(contractId);
       if (contract) {
         if (
           !contract.dataProcessings.find(
@@ -745,7 +737,7 @@ export class ContractService {
     processing: ContractDataProcessing,
   ): Promise<ContractDataProcessing[]> {
     try {
-      const contract = await ContractService.model.findById(contractId);
+      const contract = await Contract.findById(contractId);
       if (contract) {
         const existingProcessing = contract.dataProcessings.find(
           (item) =>
@@ -774,7 +766,7 @@ export class ContractService {
     processingId: string,
   ): Promise<ContractDataProcessing> {
     try {
-      const contract = await ContractService.model.findById(contractId);
+      const contract = await Contract.findById(contractId);
       if (contract) {
         const processing = contract.dataProcessings.find(
           (item) =>
@@ -800,7 +792,7 @@ export class ContractService {
     processing: ContractDataProcessing,
   ): Promise<ContractDataProcessing> {
     try {
-      const contract = await ContractService.model.findById(contractId);
+      const contract = await Contract.findById(contractId);
       if (contract) {
         const initialLength = contract.dataProcessings.length;
         contract.dataProcessings = contract.dataProcessings.filter(
@@ -828,11 +820,11 @@ export class ContractService {
    * This is useful when a service offering is removed from the catalog.
    */
   public async removeOfferingFromContracts(serviceOfferingId: string) {
-    const contractsToUpdate = await ContractService.model.find({
+    const contractsToUpdate = await Contract.find({
       'serviceOfferings.serviceOffering': serviceOfferingId,
     });
 
-    const updatedResult = await ContractService.model.updateMany(
+    const updatedResult = await Contract.updateMany(
       { 'serviceOfferings.serviceOffering': serviceOfferingId },
       { $pull: { serviceOfferings: { serviceOffering: serviceOfferingId } } },
     );
