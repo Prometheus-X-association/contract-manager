@@ -13,6 +13,8 @@ import createMemoryStore from 'memorystore';
 import { config } from 'config/config';
 import path from 'path';
 import { ContractAgentService } from 'services/contract.agent.service';
+import { NegotiationAgentRouter } from 'contract-agent';
+
 import Contract from './models/contract.model';
 
 const router = express();
@@ -125,7 +127,9 @@ const startServer = async (url: string) => {
     contractRoutes,
     bilateralContractRoutes,
     contractsRoutes,
+    NegotiationAgentRouter,
   );
+
   router.use((req, res, next) => {
     const message = 'Route not found or incorrect method request!';
     const { method, url } = req;
