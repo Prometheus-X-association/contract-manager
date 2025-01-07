@@ -15,8 +15,8 @@ dependencies:
     specifier: ^4.3.10
     version: 4.5.0
   contract-agent:
-    specifier: https://gitpkg.now.sh/VisionsOfficial/contract-consent-agent/contract-agent?v1.0.0-beta.1
-    version: '@gitpkg.now.sh/VisionsOfficial/contract-consent-agent/contract-agent?v1.0.0-beta.1(mongoose@7.8.3)(openapi-types@12.1.3)'
+    specifier: https://gitpkg.now.sh/Prometheus-X-association/contract-consent-agent/contract-agent?v1.0.0
+    version: '@gitpkg.now.sh/Prometheus-X-association/contract-consent-agent/contract-agent?v1.0.0(mongoose@7.8.3)(openapi-types@12.1.3)'
   dotenv:
     specifier: ^16.3.1
     version: 16.4.7
@@ -30,8 +30,8 @@ dependencies:
     specifier: ^7.0.1
     version: 7.2.0
   json-odrl-manager:
-    specifier: github:Prometheus-X-association/odrl-manager#v2.0.0-alpha.4
-    version: github.com/Prometheus-X-association/odrl-manager/5c6bbfb6ea9d61db8e674e694e00be2ec9ac98ca
+    specifier: github:Prometheus-X-association/odrl-manager#v2.0.0
+    version: github.com/Prometheus-X-association/odrl-manager/30139812ab609405a104a61f78fa98515e907c5b
   jsonwebtoken:
     specifier: ^9.0.2
     version: 9.0.2
@@ -3027,14 +3027,6 @@ packages:
     resolution: {integrity: sha512-6fPc+R4ihwqP6N/aIv2f1gMH8lOVtWQHoqC4yK6oSDVVocumAsfCqjkXnqiYMhmMwS/mEHLp7Vehlt3ql6lEig==}
     engines: {node: '>=8'}
 
-  /stripe@16.12.0:
-    resolution: {integrity: sha512-H7eFVLDxeTNNSn4JTRfL2//LzCbDrMSZ+2q1c7CanVWgK2qIW5TwS+0V7N9KcKZZNpYh/uCqK0PyZh/2UsaAtQ==}
-    engines: {node: '>=12.*'}
-    dependencies:
-      '@types/node': 22.10.2
-      qs: 6.13.1
-    dev: false
-
   /superagent@8.1.2:
     resolution: {integrity: sha512-6WTxW1EB6yCxV5VFOIPQruWGHqc3yI7hEmZK6h+pyk69Lk/Ut7rLUY6W/ONF2MjBuGjvmMiIpsrVJ2vjrHlslA==}
     engines: {node: '>=6.4.0 <13 || >=14'}
@@ -3584,11 +3576,11 @@ packages:
       commander: 9.5.0
     dev: false
 
-  '@gitpkg.now.sh/VisionsOfficial/contract-consent-agent/contract-agent?v1.0.0-beta.1(mongoose@7.8.3)(openapi-types@12.1.3)':
-    resolution: {tarball: https://gitpkg.now.sh/VisionsOfficial/contract-consent-agent/contract-agent?v1.0.0-beta.1}
-    id: '@gitpkg.now.sh/VisionsOfficial/contract-consent-agent/contract-agent?v1.0.0-beta.1'
+  '@gitpkg.now.sh/Prometheus-X-association/contract-consent-agent/contract-agent?v1.0.0(mongoose@7.8.3)(openapi-types@12.1.3)':
+    resolution: {tarball: https://gitpkg.now.sh/Prometheus-X-association/contract-consent-agent/contract-agent?v1.0.0}
+    id: '@gitpkg.now.sh/Prometheus-X-association/contract-consent-agent/contract-agent?v1.0.0'
     name: contract-agent
-    version: 1.0.0-beta.1
+    version: 1.0.0
     peerDependencies:
       mongoose: ^7.8.3
     dependencies:
@@ -3600,7 +3592,6 @@ packages:
       mongodb-memory-server: 10.1.3
       mongoose: 7.8.3
       node-cron: 3.0.3
-      stripe: 16.12.0
       swagger-autogen: 2.23.7
       swagger-jsdoc: 6.2.8(openapi-types@12.1.3)
       swagger-ui-express: 5.0.1(express@4.21.2)
@@ -3617,9 +3608,9 @@ packages:
       - supports-color
     dev: false
 
-  github.com/Prometheus-X-association/odrl-manager/5c6bbfb6ea9d61db8e674e694e00be2ec9ac98ca:
-    resolution: {tarball: https://codeload.github.com/Prometheus-X-association/odrl-manager/tar.gz/5c6bbfb6ea9d61db8e674e694e00be2ec9ac98ca}
+  github.com/Prometheus-X-association/odrl-manager/30139812ab609405a104a61f78fa98515e907c5b:
+    resolution: {tarball: https://codeload.github.com/Prometheus-X-association/odrl-manager/tar.gz/30139812ab609405a104a61f78fa98515e907c5b}
     name: json-odrl-manager
-    version: 2.0.0-alpha.4
+    version: 2.0.0
     engines: {node: '>=14.0.0'}
     dev: false
