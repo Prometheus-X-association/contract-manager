@@ -1,12 +1,13 @@
 // Ecosystem Contract Controller
 import { Request, Response } from 'express';
 import { IContract, IContractDB } from 'interfaces/contract.interface';
-import contractService from 'services/contract.service';
+import { ContractService } from 'services/contract.service';
 import { logger } from 'utils/logger';
 import { ContractMember } from 'interfaces/schemas.interface';
 import { validationResult } from 'express-validator';
 
 export const createContract = async (req: Request, res: Response) => {
+  const contractService = await ContractService.getInstance();
   try {
     const { contract, role } = req.body;
     if (contract) {
@@ -27,6 +28,7 @@ export const createContract = async (req: Request, res: Response) => {
   }
 };
 export const getContract = async (req: Request, res: Response) => {
+  const contractService = await ContractService.getInstance();
   try {
     const contractId: string = req.params.id;
     const contract = await contractService.getContract(contractId);
@@ -47,6 +49,7 @@ export const getPolicyForServiceOffering = async (
   req: Request,
   res: Response,
 ) => {
+  const contractService = await ContractService.getInstance();
   try {
     const contractId: string = req.params.id;
     const participantId: string = req.query.participant as string;
@@ -80,6 +83,7 @@ export const getPolicyForServiceOffering = async (
 };
 
 export const updateContract = async (req: Request, res: Response) => {
+  const contractService = await ContractService.getInstance();
   try {
     const contractId: string = req.params.id;
     const updates: Partial<IContractDB> = req.body;
@@ -101,6 +105,7 @@ export const updateContract = async (req: Request, res: Response) => {
 };
 
 export const deleteContract = async (req: Request, res: Response) => {
+  const contractService = await ContractService.getInstance();
   try {
     const contractId: string = req.params.id;
     await contractService.deleteContract(contractId);
@@ -115,6 +120,7 @@ export const deleteContract = async (req: Request, res: Response) => {
 };
 
 export const signContract = async (req: Request, res: Response) => {
+  const contractService = await ContractService.getInstance();
   try {
     const contractId: string = req.params.id;
     const member: ContractMember = req.body;
@@ -133,6 +139,7 @@ export const signContract = async (req: Request, res: Response) => {
 };
 
 export const revokeContractSignature = async (req: Request, res: Response) => {
+  const contractService = await ContractService.getInstance();
   const { id, did } = req.params;
   try {
     const revokedSignature = await contractService.revokeSignatureService(
@@ -150,6 +157,7 @@ export const revokeContractSignature = async (req: Request, res: Response) => {
 };
 
 export const checkExploitationByRole = async (req: Request, res: Response) => {
+  const contractService = await ContractService.getInstance();
   const contractId = req.params.id;
   const role = req.params.role;
   const data = { policy: req.body };
@@ -176,6 +184,7 @@ export const getContractsFor = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
+  const contractService = await ContractService.getInstance();
   try {
     const did: string | undefined = req.params.did;
     const hasSigned: boolean = req.query.hasSigned !== 'false';
@@ -197,6 +206,7 @@ export const getContracts = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
+  const contractService = await ContractService.getInstance();
   try {
     const status = req.query.status ? String(req.query.status) : undefined;
     const contracts: IContractDB[] = await contractService.getContracts(status);
@@ -212,6 +222,7 @@ export const injectPoliciesForRoles = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
+  const contractService = await ContractService.getInstance();
   try {
     const contractId: string = req.params.id;
     const updatedContract = await contractService.addPoliciesForRoles(
@@ -230,6 +241,7 @@ export const injectPoliciesForRole = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
+  const contractService = await ContractService.getInstance();
   try {
     const contractId: string = req.params.id;
     const updatedContract = await contractService.addPoliciesForRole(
@@ -248,6 +260,7 @@ export const injectPolicies = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
+  const contractService = await ContractService.getInstance();
   try {
     const contractId: string = req.params.id;
     const updatedContract = await contractService.addPolicies(
@@ -266,6 +279,7 @@ export const injectPolicy = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
+  const contractService = await ContractService.getInstance();
   try {
     const role: string = req.body.role;
     const contractId: string = req.params.id;
@@ -291,6 +305,7 @@ export const injectOfferingPolicies = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
+  const contractService = await ContractService.getInstance();
   try {
     const contractId: string = req.params.id;
     const { serviceOffering, policies, participant } = req.body;
@@ -319,6 +334,7 @@ export const removeOfferingPolicies = async (
   req: Request,
   res: Response,
 ): Promise<void> => {
+  const contractService = await ContractService.getInstance();
   try {
     validationResult(req).throw();
     const { contractId, offeringId, participantId } = req.params;
@@ -343,6 +359,7 @@ export const removeOfferingPolicies = async (
 };
 
 export const getDataProcessings = async (req: Request, res: Response) => {
+  const contractService = await ContractService.getInstance();
   try {
     const contractId: string = req.params.id;
     const dataProcessings =
@@ -360,6 +377,7 @@ export const getDataProcessings = async (req: Request, res: Response) => {
 };
 
 export const writeDataProcessings = async (req: Request, res: Response) => {
+  const contractService = await ContractService.getInstance();
   try {
     const contractId: string = req.params.id;
     const processings = req.body;
@@ -368,25 +386,25 @@ export const writeDataProcessings = async (req: Request, res: Response) => {
       processings,
     );
     if (!dataProcessings) {
-      throw new Error('something went wrong while updating data processings');
+      throw new Error('something went wrong while writing data processings');
     }
     return res.json(dataProcessings);
   } catch (error) {
-    logger.error('Error while updating data processings:', error);
+    logger.error('Error while writing data processings:', error);
     res.status(500).json({
-      error: 'An error occurred while while updating data processings.',
+      error: 'An error occurred while while writing data processings.',
     });
   }
 };
 
 export const insertDataProcessing = async (req: Request, res: Response) => {
+  const contractService = await ContractService.getInstance();
   try {
-    const { id: contractId, index } = req.params;
+    const { id: contractId } = req.params;
     const processing = req.body;
     const dataProcessings = await contractService.insertDataProcessing(
       contractId,
       processing,
-      +index,
     );
     if (!dataProcessings) {
       throw new Error('something went wrong while insering data processing.');
@@ -395,17 +413,19 @@ export const insertDataProcessing = async (req: Request, res: Response) => {
   } catch (error) {
     logger.error('Error while inserting data processing:', error);
     res.status(500).json({
-      error: 'An error occurred while while inserting data processing.',
+      error: 'An error occurred while inserting data processing.',
     });
   }
 };
 
 export const updateDataProcessing = async (req: Request, res: Response) => {
+  const contractService = await ContractService.getInstance();
   try {
-    const contractId: string = req.params.id;
+    const { id: contractId, processingId } = req.params;
     const processing = req.body;
     const dataProcessings = await contractService.updateDataProcessing(
       contractId,
+      processingId,
       processing,
     );
     if (!dataProcessings) {
@@ -421,11 +441,12 @@ export const updateDataProcessing = async (req: Request, res: Response) => {
 };
 
 export const removeDataProcessing = async (req: Request, res: Response) => {
+  const contractService = await ContractService.getInstance();
   try {
-    const { id: contractId, index } = req.params;
+    const { id: contractId, processingId } = req.params;
     const dataProcessings = await contractService.removeDataProcessing(
       contractId,
-      +index,
+      processingId,
     );
     if (!dataProcessings) {
       throw new Error('something went wrong while deleting data processing');
@@ -440,6 +461,7 @@ export const removeDataProcessing = async (req: Request, res: Response) => {
 };
 
 export const deleteDataProcessing = async (req: Request, res: Response) => {
+  const contractService = await ContractService.getInstance();
   try {
     const contractId: string = req.params.id;
     const processing = req.body;

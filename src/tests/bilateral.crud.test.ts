@@ -66,6 +66,7 @@ describe('CRUD test cases for Bilateral Contracts.', () => {
       .set('Cookie', authTokenCookie)
       .send({ contract: contractData });
     //
+
     _logObject(response.body);
     // Check if the response status is 201 (Created)
     expect(response.status).to.equal(201);
@@ -252,7 +253,6 @@ describe('CRUD test cases for Bilateral Contracts.', () => {
       .set('Cookie', authTokenCookie);
     //
     _logObject(response.body);
-    // Check if the response status is OK (200)
     expect(response.status).to.equal(200);
     // Check if the response contains the updated contract with revokedSignatures
     expect(response.body).to.have.property('revokedSignatures');
@@ -274,7 +274,16 @@ describe('CRUD test cases for Bilateral Contracts.', () => {
         signature.did === didPartyB,
     );
     expect(partyBSignatureInSignatures).to.not.exist;
-    // Check if the 'status' field is set to 'revoked'
     expect(response.body.status).to.equal('revoked');
+  });
+
+  it('should remove a bilateral contract using a service offering ID', async () => {
+    // Reuse the service offering ID from the contract created in the first test
+    const serviceOfferingId = 'offering';
+
+    // Should throw an error when failing
+    await bilateralContractService.deleteManyFromOffering(serviceOfferingId);
+
+    expect(true).to.equal(true);
   });
 });

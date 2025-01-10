@@ -7,3 +7,7 @@ export const _logGreen = (value: string) => {
 export const _logObject = (data: any) => {
   console.log(`\x1b[90m${JSON.stringify(data, null, 2)}\x1b[37m`);
 };
+
+export function wait(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}

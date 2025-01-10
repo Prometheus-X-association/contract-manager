@@ -1,11 +1,13 @@
 import supertest from 'supertest';
 import { expect } from 'chai';
 import app from 'server';
-import Contract from 'models/contract.model';
+import ContractModel from 'models/contract.model';
 import { config } from 'config/config';
 import axios from 'axios';
 import http from 'http';
 import { _logYellow, _logGreen, _logObject } from './utils/utils';
+import { IContractDB } from 'interfaces/contract.interface';
+import mongoose, { Model } from 'mongoose';
 
 let cookie: any;
 let contractId: any;
@@ -19,6 +21,8 @@ if (!config.catalog.registry.defined) {
   axios.defaults.baseURL = `${config.server.url}:${SERVER_PORT}/`;
 }
 
+let Contract: mongoose.Model<IContractDB>;
+
 describe('Billing rules injection test cases for contract', () => {
   let server: http.Server;
 
@@ -30,6 +34,7 @@ describe('Billing rules injection test cases for contract', () => {
         resolve(true);
       });
     });
+    Contract = await ContractModel.getModel();
     await Contract.deleteMany({});
   });
 

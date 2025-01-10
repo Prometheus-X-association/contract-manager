@@ -4,6 +4,7 @@ import mongoose from 'mongoose';
 import contractRoutes from 'routes/contract.routes';
 import bilateralContractRoutes from 'routes/bilateral.routes';
 import userRoutes from 'routes/user.routes';
+import contractsRoutes from 'routes/contracts.routes';
 import { logger } from 'utils/logger';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJson from './swagger/swagger.json';
@@ -11,11 +12,20 @@ import session from 'express-session';
 import createMemoryStore from 'memorystore';
 import { config } from 'config/config';
 import path from 'path';
+import { ContractAgentService } from 'services/contract.agent.service';
+import { NegotiationAgentRouter } from 'contract-agent';
+
+import Contract from './models/contract.model';
 
 const router = express();
 const startServer = async (url: string) => {
   try {
-    await mongoose.connect(url, { retryWrites: true });
+    if (config.useContractAgent) {
+      const agent = await ContractAgentService.retrieveService();
+      await agent.getMongoosePromise();
+    } else {
+      await mongoose.connect(url, { retryWrites: true });
+    }
     logger.info('MongoDB connected');
   } catch (error) {
     logger.error('Error connecting to MongoDB:', error);
@@ -41,10 +51,45 @@ const startServer = async (url: string) => {
     );
     next();
   });
+
+  // TODO: This is a temporary solution since the catalog is the only
+  // entity that can act on contracts. But a proper layer of authorization
+  // should be implemented per participant.
+  router.use((req, res, next) => {
+    if (process.env.NODE_ENV !== 'development' && req.method !== 'GET') {
+      const authKey = req.headers['x-ptx-catalog-key'];
+      if (!authKey || authKey !== config.auth.catalogKey) {
+        return res.status(401).json({ message: 'Unauthorized' });
+      }
+    }
+    next();
+  });
+
   router.use(
     '/rules',
     express.static(path.join(__dirname, '..', 'public/rules')),
   );
+
+  router.get('/todayslog', async (req, res) => {
+    if (req.query?.key !== process.env.LOGS_KEY) {
+      return res.status(401).send('Unauthorized');
+    }
+
+    const date = new Date();
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const logPath = path.join(
+      __dirname,
+      'logs',
+      'all',
+      `all_${year}-${month}-${day}.log`,
+    );
+
+    const logFile = path.resolve(logPath);
+    res.sendFile(logFile);
+  });
+
   router.use('/docs', swaggerUi.serve, (req: any, res: any, next: any) => {
     const baseUrl = `${req.get('host')}`;
     swaggerJson.host = baseUrl;
@@ -76,7 +121,15 @@ const startServer = async (url: string) => {
     }
     next();
   });
-  router.use('/', userRoutes, contractRoutes, bilateralContractRoutes);
+  router.use(
+    '/',
+    userRoutes,
+    contractRoutes,
+    bilateralContractRoutes,
+    contractsRoutes,
+    NegotiationAgentRouter,
+  );
+
   router.use((req, res, next) => {
     const message = 'Route not found or incorrect method request!';
     const { method, url } = req;

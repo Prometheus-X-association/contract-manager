@@ -329,7 +329,7 @@ export class BilateralContractService {
             });
           }
         } catch (error: any) {
-          console.error(`Error injecting policy: ${error.message}`);
+          logger.error(`Error injecting policy: ${error.message}`);
         }
       }
       const updatedContract = await contract.save();
@@ -369,6 +369,27 @@ export class BilateralContractService {
       return updatedContract;
     } catch (error) {
       logger.error('[bilateral/Service, addPolicyFromId]:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Removes all bilateral contracts associated with a service offering.
+   * This comes in handy when a service offering is deleted on a catalog and
+   * we want existing contracts to be deleted as well.
+   */
+  public async deleteManyFromOffering(serviceOfferingId: string) {
+    try {
+      const deleted = await BilateralContract.deleteMany({
+        $or: [
+          { serviceOffering: serviceOfferingId },
+          { 'purpose.purpose': { $in: [serviceOfferingId] } },
+        ],
+      });
+
+      return deleted.deletedCount;
+    } catch (error) {
+      logger.error('[bilateral/Service, deleteFromOffering]:', error);
       throw error;
     }
   }

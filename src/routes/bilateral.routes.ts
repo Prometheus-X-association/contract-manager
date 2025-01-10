@@ -12,6 +12,8 @@ import {
   injectPolicy,
   injectPolicies,
 } from '../controllers/bilateral.controller';
+import { logger } from '../utils/logger';
+import { logPayloadMiddleware } from 'middlewares/logPayload.middleware';
 
 const router: Router = express.Router();
 
@@ -25,6 +27,6 @@ router.put('/bilaterals/sign/:id', signContract);
 router.delete('/bilaterals/sign/revoke/:id/:did', revokeContractSignature);
 router.post('/bilaterals/check-exploitability/:id', checkDataExploitation);
 router.put('/bilaterals/policy/:id', injectPolicy);
-router.put('/bilaterals/policies/:id', injectPolicies);
+router.put('/bilaterals/policies/:id', logPayloadMiddleware, injectPolicies);
 
 export default router;

@@ -1,29 +1,31 @@
-import { Types } from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 
 import { IContract, IContractDB } from 'interfaces/contract.interface';
-import Contract from 'models/contract.model';
+import ContractModel from '../models/contract.model';
 import { logger } from 'utils/logger';
 import {
-  // ContractDataProcessing,
+  ContractDataProcessing,
+  ContractDataProcessingDocument,
   ContractDocument,
   ContractMember,
   ContractServiceOffering,
   ContractServiceOfferingDocument,
-  ContractServiceOfferingPolicieDocument,
-  // ContractDataProcessingDocument,
+  ContractServiceOfferingPolicyDocument,
 } from 'interfaces/schemas.interface';
 import { IPolicyInjection } from 'interfaces/policy.interface';
 import { genPolicyFromRule } from './policy/utils';
 import pdp from 'services/policy/pdp.service';
 
 // Ecosystem Contract Service
+let Contract: mongoose.Model<IContractDB>;
 export class ContractService {
   private static instance: ContractService;
 
   private constructor() {}
 
-  public static getInstance(): ContractService {
+  public static async getInstance(): Promise<ContractService> {
     if (!ContractService.instance) {
+      Contract = await ContractModel.getModel();
       ContractService.instance = new ContractService();
     }
     return ContractService.instance;
@@ -53,7 +55,7 @@ export class ContractService {
         ...rest,
         rolesAndObligations,
       });
-      return newContract.save();
+      return newContract.save() as Promise<IContract>;
     } catch (error: any) {
       logger.error('[Contract/Service, genContract]:', error);
       throw error;
@@ -582,7 +584,7 @@ export class ContractService {
           participant: participant,
           serviceOffering: serviceOffering,
           policies:
-            [] as unknown as Types.DocumentArray<ContractServiceOfferingPolicieDocument>,
+            [] as unknown as Types.DocumentArray<ContractServiceOfferingPolicyDocument>,
         } as ContractServiceOfferingDocument;
         contract.serviceOfferings.push(offering);
         offering =
@@ -649,12 +651,13 @@ export class ContractService {
   }
 
   // get data processings
-  public async getDataProcessings(contractId: string): Promise<string[]> {
+  public async getDataProcessings(
+    contractId: string,
+  ): Promise<ContractDataProcessing[]> {
     try {
       const contract = await Contract.findById(contractId).lean();
       if (contract) {
-        const dataProcessings: string[] = contract.dataProcessings;
-        return dataProcessings;
+        return contract.dataProcessings;
       } else {
         throw new Error('Contract not found');
       }
@@ -666,12 +669,30 @@ export class ContractService {
   // update data processings
   public async writeDataProcessings(
     contractId: string,
-    processings: string[],
-  ): Promise<string[]> {
+    processings: ContractDataProcessing[],
+  ): Promise<ContractDataProcessing[]> {
+    try {
+      const contract = await Contract.findById(contractId);
+      if (!contract) {
+        throw new Error('Contract not found');
+      }
+      contract.set('dataProcessings', processings);
+      await contract.save();
+      return contract.dataProcessings;
+    } catch (error) {
+      throw error;
+    }
+  }
+  /*
+  public async writeDataProcessings(
+    contractId: string,
+    processings: ContractDataProcessing[],
+  ): Promise<ContractDataProcessing[]> {
     try {
       const contract = await Contract.findById(contractId);
       if (contract) {
-        contract.dataProcessings = processings as Types.Array<string>;
+        contract.dataProcessings =
+          processings as Types.Array<ContractDataProcessingDocument>;
         await contract.save();
         return contract.dataProcessings;
       } else {
@@ -681,22 +702,24 @@ export class ContractService {
       throw error;
     }
   }
+  */
 
   public async insertDataProcessing(
     contractId: string,
-    processing: string,
-    index: number,
-  ): Promise<string> {
+    processing: ContractDataProcessing,
+  ): Promise<ContractDataProcessing> {
     try {
-      if (index < 0) {
-        throw new Error('Index cannot be negative');
-      }
       const contract = await Contract.findById(contractId);
       if (contract) {
-        if (index >= contract.dataProcessings.length) {
+        if (
+          !contract.dataProcessings.find(
+            (element) => element.catalogId === processing.catalogId,
+          )
+        ) {
+          processing.status = 'active';
           contract.dataProcessings.push(processing);
         } else {
-          contract.dataProcessings.splice(index, 0, processing);
+          throw new Error('data');
         }
         await contract.save();
         return processing;
@@ -710,18 +733,23 @@ export class ContractService {
 
   public async updateDataProcessing(
     contractId: string,
-    processing: string,
-  ): Promise<string> {
+    processingId: string,
+    processing: ContractDataProcessing,
+  ): Promise<ContractDataProcessing[]> {
     try {
       const contract = await Contract.findById(contractId);
       if (contract) {
         const existingProcessing = contract.dataProcessings.find(
-          (item) => item === processing,
+          (item) =>
+            item.catalogId.toString() === processingId &&
+            item.status === 'active',
         );
         if (existingProcessing) {
-          Object.assign(existingProcessing, processing);
+          existingProcessing.status = 'inactive';
+          processing.status = 'active';
+          contract.dataProcessings.push(processing);
           await contract.save();
-          return existingProcessing;
+          return contract.dataProcessings;
         } else {
           throw new Error('Processing not found in the contract');
         }
@@ -735,15 +763,19 @@ export class ContractService {
 
   public async removeDataProcessing(
     contractId: string,
-    index: number,
-  ): Promise<string[]> {
+    processingId: string,
+  ): Promise<ContractDataProcessing> {
     try {
       const contract = await Contract.findById(contractId);
       if (contract) {
-        if (index >= 0 && index < contract.dataProcessings.length) {
-          contract.dataProcessings.splice(index, 1);
+        const processing = contract.dataProcessings.find(
+          (item) =>
+            item._id.toString() === processingId && item.status === 'active',
+        );
+        if (processing) {
+          processing.status = 'inactive';
           await contract.save();
-          return contract.dataProcessings;
+          return processing;
         } else {
           throw new Error('Index out of bounds');
         }
@@ -757,15 +789,17 @@ export class ContractService {
 
   public async deleteDataProcessing(
     contractId: string,
-    processing: string,
-  ): Promise<string> {
+    processing: ContractDataProcessing,
+  ): Promise<ContractDataProcessing> {
     try {
       const contract = await Contract.findById(contractId);
       if (contract) {
         const initialLength = contract.dataProcessings.length;
         contract.dataProcessings = contract.dataProcessings.filter(
-          (item) => item !== processing,
-        ) as Types.Array<string>;
+          (item) =>
+            item.catalogId !== processing.catalogId &&
+            item.infrastructureServices !== processing.infrastructureServices,
+        ) as Types.DocumentArray<ContractDataProcessingDocument>;
         if (contract.dataProcessings.length !== initialLength) {
           await contract.save();
           return processing;
@@ -780,9 +814,45 @@ export class ContractService {
     }
   }
 
+  /**
+   * Removes the service offering's presence from all contracts.
+   *
+   * This is useful when a service offering is removed from the catalog.
+   */
+  public async removeOfferingFromContracts(serviceOfferingId: string) {
+    const contractsToUpdate = await Contract.find({
+      'serviceOfferings.serviceOffering': serviceOfferingId,
+    });
+
+    const updatedResult = await Contract.updateMany(
+      { 'serviceOfferings.serviceOffering': serviceOfferingId },
+      { $pull: { serviceOfferings: { serviceOffering: serviceOfferingId } } },
+    );
+
+    // Remove offering from policies
+    const promises = contractsToUpdate.map((contract) => {
+      const participant = contract.serviceOfferings.find(
+        (so) => so.serviceOffering === serviceOfferingId,
+      )?.participant;
+
+      if (!participant) {
+        return Promise.resolve();
+      }
+
+      return this.removeOfferingPolicies(
+        contract._id?.toString(),
+        serviceOfferingId,
+        participant,
+      );
+    });
+
+    await Promise.all(promises);
+    return updatedResult.modifiedCount;
+  }
+
   private convertContract(contract: IContractDB): any {
     return {};
   }
 }
 
-export default ContractService.getInstance();
+// export default ContractService.getInstance();
