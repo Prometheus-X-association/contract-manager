@@ -3,9 +3,11 @@ import supertest from 'supertest';
 import { expect } from 'chai';
 import app from 'server';
 import { ContractMember } from 'interfaces/schemas.interface';
-import contractService from 'services/contract.service';
-import Contract from 'models/contract.model';
+import { ContractService } from 'services/contract.service';
+import ContractModel from 'models/contract.model';
 import { config } from 'config/config';
+import mongoose from 'mongoose';
+import { IContractDB } from '../interfaces/contract.interface';
 
 let authTokenCookie: any;
 const SERVER_PORT = 9999;
@@ -13,6 +15,7 @@ const API_ROUTE_BASE = '/contracts/';
 const _logObject = (data: any) => {
   console.log(`\x1b[90m${JSON.stringify(data, null, 2)}\x1b[37m`);
 };
+let Contract: mongoose.Model<IContractDB>;
 describe('CRUD test cases for Contracts (Dataspace use cases).', () => {
   let server: any;
   before(async () => {
@@ -23,6 +26,7 @@ describe('CRUD test cases for Contracts (Dataspace use cases).', () => {
         resolve(true);
       });
     });
+    Contract = await ContractModel.getModel();
     Contract.deleteMany({});
 
     const authResponse = await supertest(app.router).get('/ping');
@@ -30,6 +34,7 @@ describe('CRUD test cases for Contracts (Dataspace use cases).', () => {
   });
 
   after(async () => {
+    const contractService = await ContractService.getInstance();
     try {
       await contractService.deleteContract(createdContractId);
     } catch (error: any) {
@@ -62,11 +67,8 @@ describe('CRUD test cases for Contracts (Dataspace use cases).', () => {
       .post(`${API_ROUTE_BASE}`)
       .set('Cookie', authTokenCookie)
       .send({ contract, role: 'ecosystem' });
-    // log
     _logObject(response.body);
-    // Check if the response status is 201 (Created)
     expect(response.status).to.equal(201);
-    // Check if the response has a 'id' property
     expect(response.body).to.have.property('_id');
     // Store the contract ID for later use (for update and delete tests)
     createdContractId = response.body._id;
@@ -78,11 +80,8 @@ describe('CRUD test cases for Contracts (Dataspace use cases).', () => {
     const response = await supertest(app.router)
       .get(`${API_ROUTE_BASE}${createdContractId}`)
       .set('Cookie', authTokenCookie);
-    // log
     _logObject(response.body);
-    // Check if the response status is 200 (OK)
     expect(response.status).to.equal(200);
-    // Check if the response has a 'id' property
     expect(response.body).to.have.property('_id');
   });
 
@@ -96,11 +95,8 @@ describe('CRUD test cases for Contracts (Dataspace use cases).', () => {
       .put(`${API_ROUTE_BASE}${createdContractId}`)
       .set('Cookie', authTokenCookie)
       .send(updatedContractData);
-    // log
     _logObject(response.body);
-    // Check if the response status is 200 (OK)
     expect(response.status).to.equal(200);
-    // Check if the response has the expected 'message'
     expect(response.body).to.have.property('_id');
   });
 
@@ -163,7 +159,6 @@ describe('CRUD test cases for Contracts (Dataspace use cases).', () => {
       .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
       .set('Cookie', authTokenCookie)
       .send(signatureDataPartyA2);
-    // log
     _logObject(responsePartyA2.body);
     // Define the signature data for party B
     const signatureDataPartyB: ContractMember = {
@@ -177,9 +172,7 @@ describe('CRUD test cases for Contracts (Dataspace use cases).', () => {
       .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
       .set('Cookie', authTokenCookie)
       .send(signatureDataPartyB);
-    // log
     _logObject(responsePartyB.body);
-    // Check if the response status for party B's signature is OK (200)
     console.log(
       "Check if the response status for party B's signature is OK (200)",
     );
@@ -228,9 +221,7 @@ describe('CRUD test cases for Contracts (Dataspace use cases).', () => {
       .set('Cookie', authTokenCookie);
     //
     _logObject(response.body);
-    // Check if the response status is OK (200)
     expect(response.status).to.equal(200);
-    // Check if the response contains the updated contract with revokedMembers
     expect(response.body).to.have.property('revokedMembers');
     const revokedMembers = response.body.revokedMembers;
     // Check if the revoked signature exists in the revokedSignatures array
@@ -250,7 +241,6 @@ describe('CRUD test cases for Contracts (Dataspace use cases).', () => {
         member.participant === didPartyB,
     );
     expect(partyBSignatureInSignatures).to.not.exist;
-    // Check if the 'status' field is set to 'revoked'
     expect(response.body.status).to.equal('revoked');
   });
 });

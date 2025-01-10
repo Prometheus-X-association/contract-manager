@@ -12,11 +12,20 @@ import session from 'express-session';
 import createMemoryStore from 'memorystore';
 import { config } from 'config/config';
 import path from 'path';
+import { ContractAgentService } from 'services/contract.agent.service';
+import { NegotiationAgentRouter } from 'contract-agent';
+
+import Contract from './models/contract.model';
 
 const router = express();
 const startServer = async (url: string) => {
   try {
-    await mongoose.connect(url, { retryWrites: true });
+    if (config.useContractAgent) {
+      const agent = await ContractAgentService.retrieveService();
+      await agent.getMongoosePromise();
+    } else {
+      await mongoose.connect(url, { retryWrites: true });
+    }
     logger.info('MongoDB connected');
   } catch (error) {
     logger.error('Error connecting to MongoDB:', error);
@@ -60,7 +69,7 @@ const startServer = async (url: string) => {
     '/rules',
     express.static(path.join(__dirname, '..', 'public/rules')),
   );
-  
+
   router.get('/todayslog', async (req, res) => {
     if (req.query?.key !== process.env.LOGS_KEY) {
       return res.status(401).send('Unauthorized');
@@ -112,7 +121,15 @@ const startServer = async (url: string) => {
     }
     next();
   });
-  router.use('/', userRoutes, contractRoutes, bilateralContractRoutes, contractsRoutes);
+  router.use(
+    '/',
+    userRoutes,
+    contractRoutes,
+    bilateralContractRoutes,
+    contractsRoutes,
+    NegotiationAgentRouter,
+  );
+
   router.use((req, res, next) => {
     const message = 'Route not found or incorrect method request!';
     const { method, url } = req;

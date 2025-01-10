@@ -1,4 +1,5 @@
 import * as winston from 'winston';
+import { TransformableInfo } from 'logform';
 import path from 'path';
 import DailyRotateFile from 'winston-daily-rotate-file';
 // Add custom colors
@@ -11,25 +12,32 @@ winston.addColors({
   meta: 'italic gray',
 });
 const colorizer = winston.format.colorize();
-const format = winston.format.printf(
-    ({ timestamp, level, message, ...meta }) => {
-      if (meta !== null && Object.keys(meta).length > 0) {
-        return `${message}${colorizer.colorize(
-            'meta',
-            `\n${JSON.stringify(meta, null, 2)}`,
-        )}`;
-      }
-      return message;
-    },
-);
+const format = winston.format.printf((info: TransformableInfo) => {
+  const msg = info.message?.toString() ?? '';
+  const meta: Record<string, unknown> = {};
+
+  Object.entries(info).forEach(([key, value]) => {
+    if (!['timestamp', 'level', 'message'].includes(key)) {
+      meta[key] = value;
+    }
+  });
+
+  if (Object.keys(meta).length > 0) {
+    return `${msg}${colorizer.colorize(
+      'meta',
+      `\n${JSON.stringify(meta, null, 2)}`,
+    )}`;
+  }
+  return msg;
+});
 
 const customFormat = (level: string) => {
   return winston.format.combine(
-      winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-      winston.format.printf(
-          (info) => `${info.timestamp} ${info.level}: ${info.message}`,
-      ),
-      winston.format.json(),
+    winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+    winston.format.printf(
+      (info) => `${info.timestamp} ${info.level}: ${info.message}`,
+    ),
+    winston.format.json(),
   );
 };
 
@@ -55,8 +63,8 @@ export const logger = winston.createLogger({
     new winston.transports.Console({
       level: 'info',
       format: winston.format.combine(
-          winston.format.colorize({ all: true }),
-          format,
+        winston.format.colorize({ all: true }),
+        format,
       ),
     }),
     new DailyRotateFile({
@@ -67,10 +75,10 @@ export const logger = winston.createLogger({
       maxSize: '20m',
       filename: path.join(__dirname, '../logs/all/all_%DATE%.log'),
       format: winston.format.combine(
-          winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
-          winston.format.printf(
-              (info) => `${info.timestamp} ${info.level}: ${info.message}`,
-          ),
+        winston.format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+        winston.format.printf(
+          (info) => `${info.timestamp} ${info.level}: ${info.message}`,
+        ),
       ),
       level: 'info',
     }),

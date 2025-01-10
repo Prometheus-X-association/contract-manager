@@ -2,15 +2,16 @@
 
 import { Request, Response } from 'express';
 import bilateralService from 'services/bilateral.service';
-import contractService from 'services/contract.service';
+// import contractService from 'services/contract.service';
+import { ContractService } from 'services/contract.service';
 
 export const removeOfferingFromContracts = async (
   req: Request,
   res: Response,
 ) => {
+  const contractService = await ContractService.getInstance();
   try {
     const { offeringId } = req.params;
-
     const [contractsRemoved, contractsModified] = await Promise.all([
       contractService.removeOfferingFromContracts(offeringId),
       bilateralService.deleteManyFromOffering(offeringId),

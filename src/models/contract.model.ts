@@ -1,5 +1,8 @@
-import mongoose, { Schema } from 'mongoose';
-import { IContractDB } from '../interfaces/contract.interface';
+import mongoose, { FilterQuery, Query, Schema } from 'mongoose';
+import { IContract, IContractDB } from '../interfaces/contract.interface';
+import { ContractAgentService } from '../services/contract.agent.service';
+import { config } from '../config/config';
+import { Logger, MongooseProvider } from 'contract-agent';
 
 // Ecosystem Contract Model / Dataspace User Case
 const PurposeSchema = new Schema({
@@ -31,7 +34,7 @@ const ConsequenceSchema = new Schema(
   {
     action: String,
     constraint: [ConstraintSchema],
-    consequence: [this],
+    consequence: [{ type: Schema.Types.Mixed }],
   },
   { _id: false },
 );
@@ -91,13 +94,13 @@ const InfrastructureServiceSchema = new Schema({
 });
 
 const DataProcessingSchema = new Schema({
-    catalogId: { type: String, required: true },
-    infrastructureServices: { type: [InfrastructureServiceSchema], default: [] },
-    status: {
-      type: String,
-      enum: ['active', 'inactive'],
-      default: 'active',
-    },
+  catalogId: { type: String, required: true },
+  infrastructureServices: { type: [InfrastructureServiceSchema], default: [] },
+  status: {
+    type: String,
+    enum: ['active', 'inactive'],
+    default: 'active',
+  },
 });
 
 const ContractSchema: Schema = new Schema(
@@ -126,4 +129,9 @@ const ContractSchema: Schema = new Schema(
   },
 );
 
-export default mongoose.model<IContractDB>('Contract', ContractSchema);
+export { ContractSchema };
+export default {
+  getModel: async (): Promise<mongoose.Model<IContractDB>> => {
+    return mongoose.model<IContractDB>('Contract', ContractSchema);
+  },
+};

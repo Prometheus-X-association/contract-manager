@@ -1,11 +1,13 @@
 import supertest from 'supertest';
 import { expect } from 'chai';
 import app from 'server';
-import Contract from 'models/contract.model';
+import ContractModel from 'models/contract.model';
 import { config } from 'config/config';
 import axios from 'axios';
 import http from 'http';
 import { _logGreen, _logObject, _logYellow } from './utils/utils';
+import { IContractDB } from 'interfaces/contract.interface';
+import mongoose, { Model } from 'mongoose';
 
 let cookie: any;
 let contractId: any;
@@ -20,6 +22,8 @@ if (!config.catalog.registry.defined) {
   axios.defaults.baseURL = `${config.server.url}:${SERVER_PORT}/`;
 }
 
+let Contract: mongoose.Model<IContractDB>;
+
 describe('Policies injection test cases for contract (Dataspace use cases).', () => {
   let server: http.Server;
   before(async () => {
@@ -33,6 +37,7 @@ describe('Policies injection test cases for contract (Dataspace use cases).', ()
         resolve(true);
       });
     });
+    Contract = await ContractModel.getModel();
     await Contract.deleteMany({});
   });
 

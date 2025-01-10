@@ -66,6 +66,7 @@ describe('CRUD test cases for Bilateral Contracts.', () => {
       .set('Cookie', authTokenCookie)
       .send({ contract: contractData });
     //
+
     _logObject(response.body);
     // Check if the response status is 201 (Created)
     expect(response.status).to.equal(201);
@@ -252,7 +253,6 @@ describe('CRUD test cases for Bilateral Contracts.', () => {
       .set('Cookie', authTokenCookie);
     //
     _logObject(response.body);
-    // Check if the response status is OK (200)
     expect(response.status).to.equal(200);
     // Check if the response contains the updated contract with revokedSignatures
     expect(response.body).to.have.property('revokedSignatures');
@@ -274,7 +274,6 @@ describe('CRUD test cases for Bilateral Contracts.', () => {
         signature.did === didPartyB,
     );
     expect(partyBSignatureInSignatures).to.not.exist;
-    // Check if the 'status' field is set to 'revoked'
     expect(response.body.status).to.equal('revoked');
   });
 

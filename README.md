@@ -153,7 +153,6 @@ terraform output contract_manager_service_ip
 > * Ensure the `server_port` value matches the port used in your application.
 > * Configure your MongoDB connection details in the values.yaml file to point to your managed MongoDB instance.
 
-
 ## Tests
 
 1. Run tests:
@@ -162,8 +161,51 @@ terraform output contract_manager_service_ip
   pnpm test
   ```
 
-  This command will run your tests using Mocha. Make sure your tests are
-  located in `./src/tests/*.test.ts`.
+  This command will run your tests using Mocha, with test files located at `./src/tests/!(*.agent).test.ts`.
+
+## Using the Contract Agent
+
+To enable the Contract Agent, add the following line to your `.env` file:
+
+```
+USE_CONTRACT_AGENT=true
+```
+
+### Configuring a DataProvider (`contract-agent.config.json`)
+
+The configuration file is a JSON document consisting of sections, where each section describes the configuration for a specific **DataProvider**. Below is a detailed explanation of the available attributes:
+
+- **`source`**: The name of the target collection or table that the DataProvider connects to.
+- **`url`**: The base URL of the database host.
+- **`dbName`**: The name of the database to be used.
+- **`watchChanges`**: A boolean that enables or disables change monitoring for the DataProvider. When enabled, events will be fired upon detecting changes.
+- **`hostsProfiles`**: A boolean indicating whether the DataProvider hosts the profiles.
+- **`existingDataCheck`**: A boolean that enables the creation of profiles when the module is initialized.
+
+### Example Configuration
+
+Here’s an example of a JSON configuration:
+
+```json
+{
+  "source": "profiles",
+  "url": "mongodb://localhost:27017",
+  "dbName": "contract_consent_agent_db",
+  "watchChanges": false,
+  "hostsProfiles": true,
+  "existingDataCheck": true
+}
+```
+
+### Contract Agent Tests
+
+1. Run tests:
+
+  ```bash
+  pnpm test-agent
+  ```
+
+  This command will run your tests using Mocha, with test files located at `./src/tests/*.agent.test.ts`.
 
 ## License
 

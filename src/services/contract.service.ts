@@ -1,7 +1,7 @@
-import { Types } from 'mongoose';
+import mongoose, { Types } from 'mongoose';
 
 import { IContract, IContractDB } from 'interfaces/contract.interface';
-import Contract from 'models/contract.model';
+import ContractModel from '../models/contract.model';
 import { logger } from 'utils/logger';
 import {
   ContractDataProcessing,
@@ -10,20 +10,22 @@ import {
   ContractMember,
   ContractServiceOffering,
   ContractServiceOfferingDocument,
-  ContractServiceOfferingPolicieDocument,
+  ContractServiceOfferingPolicyDocument,
 } from 'interfaces/schemas.interface';
 import { IPolicyInjection } from 'interfaces/policy.interface';
 import { genPolicyFromRule } from './policy/utils';
 import pdp from 'services/policy/pdp.service';
 
 // Ecosystem Contract Service
+let Contract: mongoose.Model<IContractDB>;
 export class ContractService {
   private static instance: ContractService;
 
   private constructor() {}
 
-  public static getInstance(): ContractService {
+  public static async getInstance(): Promise<ContractService> {
     if (!ContractService.instance) {
+      Contract = await ContractModel.getModel();
       ContractService.instance = new ContractService();
     }
     return ContractService.instance;
@@ -582,7 +584,7 @@ export class ContractService {
           participant: participant,
           serviceOffering: serviceOffering,
           policies:
-            [] as unknown as Types.DocumentArray<ContractServiceOfferingPolicieDocument>,
+            [] as unknown as Types.DocumentArray<ContractServiceOfferingPolicyDocument>,
         } as ContractServiceOfferingDocument;
         contract.serviceOfferings.push(offering);
         offering =
@@ -649,7 +651,9 @@ export class ContractService {
   }
 
   // get data processings
-  public async getDataProcessings(contractId: string): Promise<ContractDataProcessing[]> {
+  public async getDataProcessings(
+    contractId: string,
+  ): Promise<ContractDataProcessing[]> {
     try {
       const contract = await Contract.findById(contractId).lean();
       if (contract) {
@@ -669,8 +673,26 @@ export class ContractService {
   ): Promise<ContractDataProcessing[]> {
     try {
       const contract = await Contract.findById(contractId);
+      if (!contract) {
+        throw new Error('Contract not found');
+      }
+      contract.set('dataProcessings', processings);
+      await contract.save();
+      return contract.dataProcessings;
+    } catch (error) {
+      throw error;
+    }
+  }
+  /*
+  public async writeDataProcessings(
+    contractId: string,
+    processings: ContractDataProcessing[],
+  ): Promise<ContractDataProcessing[]> {
+    try {
+      const contract = await Contract.findById(contractId);
       if (contract) {
-        contract.dataProcessings = processings as Types.Array<ContractDataProcessingDocument>;
+        contract.dataProcessings =
+          processings as Types.Array<ContractDataProcessingDocument>;
         await contract.save();
         return contract.dataProcessings;
       } else {
@@ -680,6 +702,7 @@ export class ContractService {
       throw error;
     }
   }
+  */
 
   public async insertDataProcessing(
     contractId: string,
@@ -688,7 +711,11 @@ export class ContractService {
     try {
       const contract = await Contract.findById(contractId);
       if (contract) {
-        if (!contract.dataProcessings.find(element => element.catalogId === processing.catalogId)) {
+        if (
+          !contract.dataProcessings.find(
+            (element) => element.catalogId === processing.catalogId,
+          )
+        ) {
           processing.status = 'active';
           contract.dataProcessings.push(processing);
         } else {
@@ -713,7 +740,9 @@ export class ContractService {
       const contract = await Contract.findById(contractId);
       if (contract) {
         const existingProcessing = contract.dataProcessings.find(
-          (item) => item.catalogId.toString() === processingId && item.status === 'active',
+          (item) =>
+            item.catalogId.toString() === processingId &&
+            item.status === 'active',
         );
         if (existingProcessing) {
           existingProcessing.status = 'inactive';
@@ -739,7 +768,10 @@ export class ContractService {
     try {
       const contract = await Contract.findById(contractId);
       if (contract) {
-        const processing = contract.dataProcessings.find(item => item._id === processingId && item.status === 'active');
+        const processing = contract.dataProcessings.find(
+          (item) =>
+            item._id.toString() === processingId && item.status === 'active',
+        );
         if (processing) {
           processing.status = 'inactive';
           await contract.save();
@@ -764,7 +796,9 @@ export class ContractService {
       if (contract) {
         const initialLength = contract.dataProcessings.length;
         contract.dataProcessings = contract.dataProcessings.filter(
-          (item) => item.catalogId !== processing.catalogId && item.infrastructureServices !== processing.infrastructureServices,
+          (item) =>
+            item.catalogId !== processing.catalogId &&
+            item.infrastructureServices !== processing.infrastructureServices,
         ) as Types.DocumentArray<ContractDataProcessingDocument>;
         if (contract.dataProcessings.length !== initialLength) {
           await contract.save();
@@ -797,13 +831,19 @@ export class ContractService {
 
     // Remove offering from policies
     const promises = contractsToUpdate.map((contract) => {
-      const participant = contract.serviceOfferings.find((so) => so.serviceOffering === serviceOfferingId)?.participant;
+      const participant = contract.serviceOfferings.find(
+        (so) => so.serviceOffering === serviceOfferingId,
+      )?.participant;
 
       if (!participant) {
         return Promise.resolve();
       }
 
-      return this.removeOfferingPolicies(contract._id?.toString(), serviceOfferingId, participant);
+      return this.removeOfferingPolicies(
+        contract._id?.toString(),
+        serviceOfferingId,
+        participant,
+      );
     });
 
     await Promise.all(promises);
@@ -815,4 +855,4 @@ export class ContractService {
   }
 }
 
-export default ContractService.getInstance();
+// export default ContractService.getInstance();

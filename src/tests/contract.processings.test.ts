@@ -1,15 +1,19 @@
 import supertest from 'supertest';
 import { expect } from 'chai';
 import app from 'server';
-import Contract from 'models/contract.model';
+import ContractModel from 'models/contract.model';
 import { config } from 'config/config';
 import http from 'http';
 import { _logYellow, _logGreen, _logObject } from './utils/utils';
+import { IContractDB } from 'interfaces/contract.interface';
+import mongoose, { Model } from 'mongoose';
 
 let cookie: any;
 let contractId: any;
 let processingId: any;
 const SERVER_PORT = 9999;
+
+let Contract: mongoose.Model<IContractDB>;
 
 describe('Create an ecosystem contract, test data processings related endpoints.', () => {
   let server: http.Server;
@@ -21,6 +25,7 @@ describe('Create an ecosystem contract, test data processings related endpoints.
         resolve(true);
       });
     });
+    Contract = await ContractModel.getModel();
     await Contract.deleteMany({});
   });
 
@@ -58,12 +63,13 @@ describe('Create an ecosystem contract, test data processings related endpoints.
     _logYellow('\n-Adding the following data processings');
     const processings = [
       {
-        catalogId: "1",
+        catalogId: '1',
         infrastructureServices: [
-        { serviceOffering: 'connector-uri-a', participant: 'participant-a' },
-        { serviceOffering: 'connector-uri-b', participant: 'participant-b' },
-      ],
-    }];
+          { serviceOffering: 'connector-uri-a', participant: 'participant-a' },
+          { serviceOffering: 'connector-uri-b', participant: 'participant-b' },
+        ],
+      },
+    ];
     _logGreen('The input processings:');
     _logObject(processings);
     const response = await supertest(app.router)
@@ -99,11 +105,11 @@ describe('Create an ecosystem contract, test data processings related endpoints.
       .send({
         catalogId: '1',
         infrastructureServices: [
-        { serviceOffering: 'connector-uri-b', participant: 'participant-b' },
-        { serviceOffering: 'connector-uri-c', participant: 'participant-c' },
-        { serviceOffering: 'connector-uri-d', participant: 'participant-d' },
-      ],
-    });
+          { serviceOffering: 'connector-uri-b', participant: 'participant-b' },
+          { serviceOffering: 'connector-uri-c', participant: 'participant-c' },
+          { serviceOffering: 'connector-uri-d', participant: 'participant-d' },
+        ],
+      });
     _logGreen('The processings inside the contract:');
     _logObject(response.body);
     expect(response.status).to.equal(200);
