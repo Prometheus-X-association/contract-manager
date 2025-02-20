@@ -1,8 +1,8 @@
-import { ContractRolesAndObligationPolicie } from './schemas.interface';
+import { ContractRolesAndObligationPolicy } from './schemas.interface';
 
 export type PDPAction = 'write' | 'POST' | 'GET' | 'PUT' | 'DELETE';
 export type ICondition = Record<string, unknown>;
-export type IContractPolicy = ContractRolesAndObligationPolicie;
+export type IContractPolicy = ContractRolesAndObligationPolicy;
 
 //
 export interface IPolicySet {
