@@ -207,6 +207,91 @@ Here’s an example of a JSON configuration:
 
   This command will run your tests using Mocha, with test files located at `./src/tests/*.agent.test.ts`.
 
+#### example endpoints
+
+> Before using these endpoints you need to signup and login with a user
+
+> <details><summary>POST /negotiation/contract/negotiate</summary>
+>
+> headers: `{"x-ptx-catalog-key": process.env.CATALOG_AUTHORIZATION_KEY}`
+>
+> input: 
+> ```json
+>  {
+>     "profileId":  "participant-1",
+>     "contractData": {
+>       "_id": "67c70ff1e8ccfc4faadc683a",
+>       "ecosystem": "test-ecosystem",
+>       "@context": "http://www.w3.org/ns/odrl/2/",
+>       "@type": "Offer",
+>       "serviceOfferings": [
+>         {
+>           "participant": "test",
+>           "serviceOffering": "test-service",
+>           "policies": [
+>             {
+>               "description": "test-policy",
+>               "permission": [
+>                 {
+>                   "action": "use",
+>                   "target": "test-target",
+>                   "constraint": [],
+>                   "duty": []
+>                 }
+>               ],
+>               "prohibition": []
+>             }
+>           ]
+>         }
+>       ],
+>       "status": "signed"
+>     }
+>   }
+>```
+> output :
+>
+> ```json
+> {
+>   "canAccept": false,
+>   "reason": "Contract contains unacceptable policies or services",
+>   "unacceptablePolicies": [
+>     "test-policy"
+>   ],
+>   "unacceptableServices": [
+>     "test-service"
+>   ]
+> }
+> ```
+>
+> </details>
+
+> <details><summary>PUT /negotiation/profile/preferences</summary>
+>
+> headers: `{"x-ptx-catalog-key": process.env.CATALOG_AUTHORIZATION_KEY}`
+>
+> input:
+>
+> ```json
+> {
+>   "profileId": "participant-1",
+>   "preferences": {
+>        "policies": [{ "policy": "test-policy", "frequency": 1 }],
+>        "services": ["test-service"],
+>        "ecosystems": ["test-ecosystem"]
+>      }
+> }
+> ```
+>
+> output :
+>
+> ```json
+> {
+>   "message": "Profile preferences updated successfully."
+> }
+> ```
+>
+> </details>
+
 ## License
 
 This project is licensed under MIT License
