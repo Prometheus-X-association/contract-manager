@@ -3,8 +3,8 @@ import { Request, Response } from 'express';
 import { IContract, IContractDB } from 'interfaces/contract.interface';
 import { ContractService } from 'services/contract.service';
 import { logger } from 'utils/logger';
-import { ContractMember } from 'interfaces/schemas.interface';
 import { validationResult } from 'express-validator';
+import { ContractMember } from '../interfaces/schemas.interface';
 
 export const createContract = async (req: Request, res: Response) => {
   const contractService = await ContractService.getInstance();

@@ -1,7 +1,7 @@
 import mongoose, { Types } from 'mongoose';
 
 import { IContract, IContractDB } from 'interfaces/contract.interface';
-import ContractModel from '../models/contract.model';
+import Contract from 'models/contract.model';
 import { logger } from 'utils/logger';
 import {
   ContractDataProcessing,
@@ -17,7 +17,6 @@ import { genPolicyFromRule } from './policy/utils';
 import pdp from 'services/policy/pdp.service';
 
 // Ecosystem Contract Service
-let Contract: mongoose.Model<IContractDB>;
 export class ContractService {
   private static instance: ContractService;
 
@@ -25,7 +24,6 @@ export class ContractService {
 
   public static async getInstance(): Promise<ContractService> {
     if (!ContractService.instance) {
-      Contract = await ContractModel.getModel();
       ContractService.instance = new ContractService();
     }
     return ContractService.instance;
@@ -711,6 +709,7 @@ export class ContractService {
     try {
       const contract = await Contract.findById(contractId);
       if (contract) {
+        console.log("contract found", contract)
         if (
           !contract.dataProcessings.find(
             (element) => element.catalogId === processing.catalogId,
@@ -718,10 +717,13 @@ export class ContractService {
         ) {
           processing.status = 'active';
           contract.dataProcessings.push(processing);
+          console.log("processing push")
         } else {
           throw new Error('data');
         }
+        console.log('before save')
         await contract.save();
+        console.log("after save")
         return processing;
       } else {
         throw new Error('Contract not found');

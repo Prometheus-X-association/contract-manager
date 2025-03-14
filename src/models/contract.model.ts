@@ -1,8 +1,5 @@
-import mongoose, { FilterQuery, Query, Schema } from 'mongoose';
-import { IContract, IContractDB } from '../interfaces/contract.interface';
-import { ContractAgentService } from '../services/contract.agent.service';
-import { config } from '../config/config';
-import { Logger, MongooseProvider } from 'contract-agent';
+import mongoose, { Schema } from 'mongoose';
+import { IBilateralContractDB, IContractDB } from '../interfaces/contract.interface';
 
 // Ecosystem Contract Model / Dataspace User Case
 const PurposeSchema = new Schema({
@@ -88,22 +85,23 @@ const MemberSchema = new Schema(
   { _id: false },
 );
 
-const InfrastructureServiceSchema = new Schema({
-  participant: { type: String, required: true },
-  serviceOffering: { type: String, required: true },
-});
-
 const DataProcessingSchema = new Schema({
-  catalogId: { type: String, required: true },
-  infrastructureServices: { type: [InfrastructureServiceSchema], default: [] },
-  status: {
-    type: String,
-    enum: ['active', 'inactive'],
-    default: 'active',
-  },
+    catalogId: { type: String, required: true },
+    infrastructureServices: { type: [mongoose.Schema.Types.Mixed], default: [] }, // Changed to Mixed
+    status: {
+        type: String,
+        enum: ['active', 'inactive'],
+        default: 'active',
+    },
 });
 
-const ContractSchema: Schema = new Schema(
+// const InfrastructureServiceSchema: any = new Schema({
+//     participant: { type: String, required: true },
+//     serviceOffering: { type: String, required: true },
+//     pre: { type: [mongoose.Schema.Types.Mixed], default: [] } as any, // Changed to Mixed
+// });
+
+export const ContractSchema: Schema = new Schema(
   {
     uid: String,
     profile: String,
@@ -129,9 +127,8 @@ const ContractSchema: Schema = new Schema(
   },
 );
 
-export { ContractSchema };
-export default {
-  getModel: async (): Promise<mongoose.Model<IContractDB>> => {
-    return mongoose.model<IContractDB>('Contract', ContractSchema);
-  },
-};
+export default mongoose.model<IContractDB>(
+    'Contract',
+    ContractSchema,
+);
+
