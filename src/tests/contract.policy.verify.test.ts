@@ -1,10 +1,8 @@
 import supertest from 'supertest';
 import { expect } from 'chai';
 import app from 'server';
-import ContractModel from 'models/contract.model';
+import Contract from 'models/contract.model';
 import { config } from 'config/config';
-import { IContractDB } from 'interfaces/contract.interface';
-import mongoose, { Model } from 'mongoose';
 
 let cookie: any;
 let contractId: any;
@@ -20,8 +18,6 @@ const _logObject = (data: any) => {
   console.log(`\x1b[90m${JSON.stringify(data, null, 2)}\x1b[37m`);
 };
 
-let Contract: mongoose.Model<IContractDB>;
-
 describe('Scenario creating a Contract (Dataspace use cases) and verify a policy.', () => {
   let server: any;
   before(async () => {
@@ -32,7 +28,6 @@ describe('Scenario creating a Contract (Dataspace use cases) and verify a policy
         resolve(true);
       });
     });
-    Contract = await ContractModel.getModel();
     await Contract.deleteMany({});
   });
 

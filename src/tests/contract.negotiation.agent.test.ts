@@ -1,16 +1,13 @@
 import supertest from 'supertest';
 import { expect } from 'chai';
 import app from 'server';
-import ContractModel from 'models/contract.model';
+import Contract from 'models/contract.model';
 import { config } from 'config/config';
 import axios from 'axios';
 import http from 'http';
 import { _logYellow, _logGreen, _logObject, wait } from './utils/utils';
-import { IContractDB } from 'interfaces/contract.interface';
-import mongoose from 'mongoose';
 
 let cookie: any;
-let Contract: mongoose.Model<IContractDB>;
 let server: http.Server;
 let contractId: string;
 const SERVER_PORT = 9999;
@@ -30,7 +27,6 @@ describe('Contract Negotiation Integration Tests', () => {
         resolve(true);
       });
     });
-    Contract = await ContractModel.getModel();
     await Contract.deleteMany({});
   });
 
