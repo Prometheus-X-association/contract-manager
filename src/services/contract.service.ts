@@ -766,20 +766,18 @@ export class ContractService {
   public async removeDataProcessing(
     contractId: string,
     processingId: string,
-  ): Promise<ContractDataProcessing> {
+  ): Promise<ContractDataProcessing | undefined> {
     try {
       const contract = await Contract.findById(contractId);
       if (contract) {
         const processing = contract.dataProcessings.find(
           (item) =>
-            item._id.toString() === processingId && item.status === 'active',
+            item.catalogId.toString() === processingId && item.status === 'active',
         );
         if (processing) {
           processing.status = 'inactive';
           await contract.save();
           return processing;
-        } else {
-          throw new Error('Index out of bounds');
         }
       } else {
         throw new Error('Contract not found');

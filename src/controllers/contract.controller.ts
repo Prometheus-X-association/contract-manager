@@ -449,7 +449,7 @@ export const removeDataProcessing = async (req: Request, res: Response) => {
       processingId,
     );
     if (!dataProcessings) {
-      throw new Error('something went wrong while deleting data processing');
+      return res.json({});
     }
     return res.json(dataProcessings);
   } catch (error) {
