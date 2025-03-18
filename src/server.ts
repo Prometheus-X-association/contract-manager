@@ -15,8 +15,6 @@ import path from 'path';
 import { ContractAgentService } from 'services/contract.agent.service';
 import { NegotiationAgentRouter } from 'contract-agent';
 
-import Contract from './models/contract.model';
-
 const router = express();
 const startServer = async (url: string) => {
   try {
@@ -56,7 +54,7 @@ const startServer = async (url: string) => {
   // entity that can act on contracts. But a proper layer of authorization
   // should be implemented per participant.
   router.use((req, res, next) => {
-    if (process.env.NODE_ENV !== 'development' && req.method !== 'GET') {
+    if (process.env.NODE_ENV !== 'development' && req.method !== 'GET' && req.method !== 'OPTIONS') {
       const authKey = req.headers['x-ptx-catalog-key'];
       if (!authKey || authKey !== config.auth.catalogKey) {
         return res.status(401).json({ message: 'Unauthorized' });
