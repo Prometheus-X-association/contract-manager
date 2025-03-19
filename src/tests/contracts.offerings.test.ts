@@ -30,10 +30,6 @@ describe('Operations on offerings in contracts', () => {
     const authResponse = await supertest(app.router).get('/ping');
     authTokenCookie = authResponse.headers['set-cookie'];
 
-    console.log(
-      'Setting up bilateral & ecosystem contracts with a serviceOffering',
-    );
-
     // Create a bilateral contract
     const contractData: Partial<IBilateralContract> = {
       dataProvider: 'provider',

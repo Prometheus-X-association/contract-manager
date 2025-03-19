@@ -10,9 +10,6 @@ import { config } from 'config/config';
 let authTokenCookie: any;
 const SERVER_PORT = 9999;
 const API_ROUTE_BASE = '/contracts/';
-const _logObject = (data: any) => {
-  console.log(`\x1b[90m${JSON.stringify(data, null, 2)}\x1b[37m`);
-};
 describe('CRUD test cases for Contracts (Dataspace use cases).', () => {
   let server: any;
   before(async () => {
@@ -63,7 +60,6 @@ describe('CRUD test cases for Contracts (Dataspace use cases).', () => {
       .post(`${API_ROUTE_BASE}`)
       .set('Cookie', authTokenCookie)
       .send({ contract, role: 'ecosystem' });
-    _logObject(response.body);
     expect(response.status).to.equal(201);
     expect(response.body).to.have.property('_id');
     // Store the contract ID for later use (for update and delete tests)
@@ -76,7 +72,6 @@ describe('CRUD test cases for Contracts (Dataspace use cases).', () => {
     const response = await supertest(app.router)
       .get(`${API_ROUTE_BASE}${createdContractId}`)
       .set('Cookie', authTokenCookie);
-    _logObject(response.body);
     expect(response.status).to.equal(200);
     expect(response.body).to.have.property('_id');
   });
@@ -91,7 +86,6 @@ describe('CRUD test cases for Contracts (Dataspace use cases).', () => {
       .put(`${API_ROUTE_BASE}${createdContractId}`)
       .set('Cookie', authTokenCookie)
       .send(updatedContractData);
-    _logObject(response.body);
     expect(response.status).to.equal(200);
     expect(response.body).to.have.property('_id');
   });
@@ -115,12 +109,6 @@ describe('CRUD test cases for Contracts (Dataspace use cases).', () => {
       .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
       .set('Cookie', authTokenCookie)
       .send(signatureDataOrchestrator);
-    // log
-    _logObject(responseOrchestrator.body);
-    // Check if the response status for the orchestrator's signature is OK (200)
-    console.log(
-      "Check if the response status for the orchestrator's signature is OK (200)",
-    );
     expect(responseOrchestrator.status).to.equal(200);
 
     // Define the signature data for party A for the first time
@@ -135,12 +123,6 @@ describe('CRUD test cases for Contracts (Dataspace use cases).', () => {
       .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
       .set('Cookie', authTokenCookie)
       .send(signatureDataPartyA1);
-    // log
-    _logObject(responsePartyA1.body);
-    // Check if the response status for party A's first signature is OK (200)
-    console.log(
-      "Check if the response status for party A's first signature is OK (200)",
-    );
     expect(responsePartyA1.status).to.equal(200);
 
     // Define the signature data for party A for the second time
@@ -155,7 +137,6 @@ describe('CRUD test cases for Contracts (Dataspace use cases).', () => {
       .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
       .set('Cookie', authTokenCookie)
       .send(signatureDataPartyA2);
-    _logObject(responsePartyA2.body);
     // Define the signature data for party B
     const signatureDataPartyB: ContractMember = {
       participant: didPartyB,
@@ -168,10 +149,6 @@ describe('CRUD test cases for Contracts (Dataspace use cases).', () => {
       .put(`${API_ROUTE_BASE}sign/${createdContractId}`)
       .set('Cookie', authTokenCookie)
       .send(signatureDataPartyB);
-    _logObject(responsePartyB.body);
-    console.log(
-      "Check if the response status for party B's signature is OK (200)",
-    );
     expect(responsePartyB.status).to.equal(200);
 
     // Check if the response contains the updated contract with the signatures
@@ -216,7 +193,6 @@ describe('CRUD test cases for Contracts (Dataspace use cases).', () => {
       .delete(`${API_ROUTE_BASE}sign/revoke/${createdContractId}/${didPartyB}`)
       .set('Cookie', authTokenCookie);
     //
-    _logObject(response.body);
     expect(response.status).to.equal(200);
     expect(response.body).to.have.property('revokedMembers');
     const revokedMembers = response.body.revokedMembers;

@@ -85,9 +85,9 @@ const MemberSchema = new Schema(
   { _id: false },
 );
 
-const DataProcessingSchema = new Schema({
+const ServiceChainSchema = new Schema({
     catalogId: { type: String, required: true },
-    infrastructureServices: { type: [mongoose.Schema.Types.Mixed], default: [] }, // Changed to Mixed
+    services: { type: [mongoose.Schema.Types.Mixed], default: [] }, // Changed to Mixed
     status: {
         type: String,
         enum: ['active', 'inactive'],
@@ -97,7 +97,7 @@ const DataProcessingSchema = new Schema({
 
 // const InfrastructureServiceSchema: any = new Schema({
 //     participant: { type: String, required: true },
-//     serviceOffering: { type: String, required: true },
+//     service: { type: String, required: true },
 //     pre: { type: [mongoose.Schema.Types.Mixed], default: [] } as any, // Changed to Mixed
 // });
 
@@ -109,7 +109,7 @@ export const ContractSchema: Schema = new Schema(
     orchestrator: String,
     serviceOfferings: [OfferingSchema],
     rolesAndObligations: [{ role: String, policies: [PolicySchema] }],
-    dataProcessings: { type: [DataProcessingSchema], default: [] },
+    serviceChains: { type: [ServiceChainSchema], default: [] },
     purpose: [PurposeSchema],
     members: [MemberSchema],
     revokedMembers: [MemberSchema],

@@ -12,9 +12,7 @@ import { ContractAgentService } from '../services/contract.agent.service';
 let authTokenCookie: any;
 const SERVER_PORT = 9999;
 const API_ROUTE_BASE = '/contracts/';
-const _logObject = (data: any) => {
-  console.log(`\x1b[90m${JSON.stringify(data, null, 2)}\x1b[37m`);
-};
+
 //let Contract: Model<IContractDB>;
 let createdContractId: string;
 describe('contract agent.', function () {
@@ -86,7 +84,6 @@ describe('contract agent.', function () {
       .post(`${API_ROUTE_BASE}`)
       .set('Cookie', authTokenCookie)
       .send({ contract, role: 'ecosystem' });
-    _logObject(`BODY:\n${JSON.stringify(response.body)}`);
     expect(response.status).to.equal(201);
 
     expect(response.body).to.have.property('_id');
@@ -105,7 +102,6 @@ describe('contract agent.', function () {
       .put(`${API_ROUTE_BASE}${createdContractId}`)
       .set('Cookie', authTokenCookie)
       .send(updatedContractData);
-    _logObject(response.body);
     expect(response.status).to.equal(200);
     expect(response.body).to.have.property('_id');
     await contractAgentService.getSignalUpdatePromise();

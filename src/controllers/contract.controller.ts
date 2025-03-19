@@ -358,125 +358,125 @@ export const removeOfferingPolicies = async (
   }
 };
 
-export const getDataProcessings = async (req: Request, res: Response) => {
+export const getServiceChains = async (req: Request, res: Response) => {
   const contractService = await ContractService.getInstance();
   try {
     const contractId: string = req.params.id;
-    const dataProcessings =
-      await contractService.getDataProcessings(contractId);
-    if (!dataProcessings) {
+    const serviceChains =
+      await contractService.getServiceChains(contractId);
+    if (!serviceChains) {
       return res.json([]);
     }
-    return res.json(dataProcessings);
+    return res.json(serviceChains);
   } catch (error) {
-    logger.error('Error retrieving the data processings:', error);
+    logger.error('Error retrieving the service chains:', error);
     res
       .status(500)
-      .json({ error: 'An error occurred while retrieving data processings.' });
+      .json({ error: 'An error occurred while retrieving service chains.' });
   }
 };
 
-export const writeDataProcessings = async (req: Request, res: Response) => {
+export const writeServiceChains = async (req: Request, res: Response) => {
   const contractService = await ContractService.getInstance();
   try {
     const contractId: string = req.params.id;
     const processings = req.body;
-    const dataProcessings = await contractService.writeDataProcessings(
+    const serviceChains = await contractService.writeServiceChains(
       contractId,
       processings,
     );
-    if (!dataProcessings) {
-      throw new Error('something went wrong while writing data processings');
+    if (!serviceChains) {
+      throw new Error('something went wrong while writing service chains');
     }
-    return res.json(dataProcessings);
+    return res.json(serviceChains);
   } catch (error) {
-    logger.error('Error while writing data processings:', error);
+    logger.error('Error while writing service chains:', error);
     res.status(500).json({
-      error: 'An error occurred while while writing data processings.',
+      error: 'An error occurred while while writing service chains.',
     });
   }
 };
 
-export const insertDataProcessing = async (req: Request, res: Response) => {
+export const insertServiceChain = async (req: Request, res: Response) => {
   const contractService = await ContractService.getInstance();
   try {
     const { id: contractId } = req.params;
     const processing = req.body;
-    const dataProcessings = await contractService.insertDataProcessing(
+    const serviceChains = await contractService.insertServiceChain(
       contractId,
       processing,
     );
-    if (!dataProcessings) {
-      throw new Error('something went wrong while insering data processing.');
+    if (!serviceChains) {
+      throw new Error('something went wrong while inserting service chain.');
     }
-    return res.json(dataProcessings);
+    return res.json(serviceChains);
   } catch (error) {
-    logger.error('Error while inserting data processing:', error);
+    logger.error('Error while inserting service chain:', error);
     res.status(500).json({
-      error: 'An error occurred while inserting data processing.',
+      error: 'An error occurred while inserting service chain.',
     });
   }
 };
 
-export const updateDataProcessing = async (req: Request, res: Response) => {
+export const updateServiceChain = async (req: Request, res: Response) => {
   const contractService = await ContractService.getInstance();
   try {
-    const { id: contractId, processingId } = req.params;
+    const { id: contractId, chainId } = req.params;
     const processing = req.body;
-    const dataProcessings = await contractService.updateDataProcessing(
+    const serviceChains = await contractService.updateServiceChain(
       contractId,
-      processingId,
+      chainId,
       processing,
     );
-    if (!dataProcessings) {
-      throw new Error('something went wrong while updating data processing');
+    if (!serviceChains) {
+      throw new Error('something went wrong while updating service chain');
     }
-    return res.json(dataProcessings);
+    return res.json(serviceChains);
   } catch (error) {
-    logger.error('Error while inserting data processing:', error);
+    logger.error('Error while inserting service chain:', error);
     res.status(500).json({
-      error: 'An error occurred while while inserting data processing.',
+      error: 'An error occurred while while inserting service chain.',
     });
   }
 };
 
-export const removeDataProcessing = async (req: Request, res: Response) => {
+export const removeServiceChain = async (req: Request, res: Response) => {
   const contractService = await ContractService.getInstance();
   try {
-    const { id: contractId, processingId } = req.params;
-    const dataProcessings = await contractService.removeDataProcessing(
+    const { id: contractId, chainId } = req.params;
+    const serviceChains = await contractService.removeServiceChain(
       contractId,
-      processingId,
+      chainId,
     );
-    if (!dataProcessings) {
+    if (!serviceChains) {
       return res.json({});
     }
-    return res.json(dataProcessings);
+    return res.json(serviceChains);
   } catch (error) {
-    logger.error('Error while deleting data processing:', error);
+    logger.error('Error while deleting service chain:', error);
     res.status(500).json({
-      error: 'An error occurred while deleting data processing.',
+      error: 'An error occurred while deleting service chain.',
     });
   }
 };
 
-export const deleteDataProcessing = async (req: Request, res: Response) => {
+export const deleteServiceChain = async (req: Request, res: Response) => {
   const contractService = await ContractService.getInstance();
   try {
     const contractId: string = req.params.id;
     const processing = req.body;
-    const deletedProcessing = await contractService.deleteDataProcessing(
+    const deletedProcessing = await contractService.deleteServiceChain(
       contractId,
       processing,
     );
     if (!deletedProcessing) {
-      throw new Error('something went wrong while deleting data processing');
+      throw new Error('something went wrong while deleting service chain');
     }
     return res.json(deletedProcessing);
   } catch (error) {
-    logger.error('Error while deleting data processing:', error);
+    logger.error('Error while deleting service chain:', error);
     res.status(500).json({
-      error: 'An error occurred while deleting data processing.',
+      error: 'An error occurred while deleting service chain.',
     });
   }
 };

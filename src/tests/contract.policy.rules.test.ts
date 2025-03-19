@@ -7,15 +7,6 @@ import { config } from 'config/config';
 let cookie: any;
 let contractId: any;
 const SERVER_PORT = 9999;
-const _logYellow = (value: string) => {
-  console.log(`\x1b[93m${value}\x1b[37m`);
-};
-const _logGreen = (value: string) => {
-  console.log(`\x1b[32m${value}\x1b[37m`);
-};
-const _logObject = (data: any) => {
-  console.log(`\x1b[90m${JSON.stringify(data, null, 2)}\x1b[37m`);
-};
 
 describe('Scenario creating a contract (Dataspace use cases)\n\tthen process an input policy with permission obligation and prohibition.', () => {
   let server: any;
@@ -31,11 +22,8 @@ describe('Scenario creating a contract (Dataspace use cases)\n\tthen process an 
   });
 
   it('Should ping the server', async () => {
-    _logYellow('\n-Ping the server');
     const authResponse = await supertest(app.router).get('/ping');
     cookie = authResponse.headers['set-cookie'];
-    _logGreen('Cookies:');
-    _logObject(cookie);
     expect(authResponse.status).to.equal(200);
   });
 
@@ -52,7 +40,6 @@ describe('Scenario creating a contract (Dataspace use cases)\n\tthen process an 
   });
 
   it('should generate an ecosystem contract', async () => {
-    _logYellow('\n-Generate a contract with the following odrl policy');
     const contract = {
       '@context': 'http://www.w3.org/ns/odrl/2/',
       '@type': 'Offer',
@@ -88,14 +75,10 @@ describe('Scenario creating a contract (Dataspace use cases)\n\tthen process an 
         },
       ],
     };
-    _logGreen('The odrl input contract:');
-    _logObject(contract);
     const response = await supertest(app.router)
       .post('/contracts/')
       .set('Cookie', cookie)
       .send({ contract, role: 'ecosystem' });
-    _logGreen('The contract in database:');
-    _logObject(response.body);
     expect(response.status).to.equal(201);
     contractId = response.body._id;
   });
@@ -124,15 +107,10 @@ describe('Scenario creating a contract (Dataspace use cases)\n\tthen process an 
         },
       ],
     };
-    _logYellow('\n-Check if resource is exploitable');
-    _logGreen('The odrl user policy:');
-    _logObject(policy);
     const response = await supertest(app.router)
       .post(`/contracts/role/exploitability/${contractId}/${role}`)
       .set('Cookie', cookie)
       .send(policy);
-    _logGreen('Resource is exploitable:');
-    _logObject(response.body);
     expect(response.body.authorised).to.equal(true);
   });
   after(async () => {

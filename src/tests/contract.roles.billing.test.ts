@@ -5,7 +5,7 @@ import Contract from 'models/contract.model';
 import { config } from 'config/config';
 import axios from 'axios';
 import http from 'http';
-import { _logYellow, _logGreen, _logObject } from './utils/utils';
+import { ruleBilling1, ruleBilling2, ruleBilling3, ruleBilling4 } from './mock/registryMock';
 
 let cookie: any;
 let contractId: any;
@@ -34,16 +34,12 @@ describe('Billing rules injection test cases for contract', () => {
   });
 
   it('Retrieve the cookie after pinging the server', async () => {
-    _logYellow('\n-Login the user');
     const authResponse = await supertest(app.router).get('/ping');
     cookie = authResponse.headers['set-cookie'];
-    _logGreen('Cookies:');
-    _logObject(cookie);
     expect(authResponse.status).to.equal(200);
   });
 
   it('should generate an ecosystem contract', async () => {
-    _logYellow('\n-Generate a contract with the following odrl policy');
     const contract = {
       ecosystem: 'ecosystem-id',
       '@context': 'http://www.w3.org/ns/odrl/2/',
@@ -51,20 +47,16 @@ describe('Billing rules injection test cases for contract', () => {
       permission: [],
       prohibition: [],
     };
-    _logGreen('The odrl input contract:');
-    _logObject(contract);
     const response = await supertest(app.router)
       .post('/contracts/')
       .set('Cookie', cookie)
       .send({ contract, role: 'ecosystem' });
-    _logGreen('The contract in database:');
-    _logObject(response.body);
     expect(response.status).to.equal(201);
     contractId = response.body._id;
   });
 
   it('Should inject rule-billing-1', async () => {
-    _logYellow('\n-Inject rule-billing-1');
+    ruleBilling1();
     const role = 'participant';
     const policyData = {
       role,
@@ -74,15 +66,11 @@ describe('Billing rules injection test cases for contract', () => {
         currentDateTime: new Date().toISOString(),
       },
     };
-    _logGreen('The input policy set:');
-    _logObject(policyData);
     const response = await supertest(app.router)
       .put(`/contracts/policy/${contractId}`)
       .set('Cookie', cookie)
       .send(policyData);
     expect(response.status).to.equal(200);
-    _logGreen('The new contract in database:');
-    _logObject(response.body.contract);
     expect(response.body.contract.rolesAndObligations).to.be.an('array');
     const roleEntry = response.body.contract.rolesAndObligations.find(
       (entry: any) => entry.role === role,
@@ -99,7 +87,7 @@ describe('Billing rules injection test cases for contract', () => {
   });
 
   it('Should inject rule-billing-2', async () => {
-    _logYellow('\n-Inject rule-billing-2');
+    ruleBilling2();
     const role = 'participant';
     const policyData = {
       role,
@@ -109,15 +97,11 @@ describe('Billing rules injection test cases for contract', () => {
         amount: 100,
       },
     };
-    _logGreen('The input policy set:');
-    _logObject(policyData);
     const response = await supertest(app.router)
       .put(`/contracts/policy/${contractId}`)
       .set('Cookie', cookie)
       .send(policyData);
     expect(response.status).to.equal(200);
-    _logGreen('The new contract in database:');
-    _logObject(response.body.contract);
     expect(response.body.contract.rolesAndObligations).to.be.an('array');
     const roleEntry = response.body.contract.rolesAndObligations.find(
       (entry: any) => entry.role === role,
@@ -137,7 +121,7 @@ describe('Billing rules injection test cases for contract', () => {
   });
 
   it('Should inject rule-billing-3', async () => {
-    _logYellow('\n-Inject rule-billing-3');
+    ruleBilling3();
     const role = 'participant';
     const policyData = {
       role,
@@ -146,15 +130,11 @@ describe('Billing rules injection test cases for contract', () => {
         target: 'billing-target-3',
       },
     };
-    _logGreen('The input policy set:');
-    _logObject(policyData);
     const response = await supertest(app.router)
       .put(`/contracts/policy/${contractId}`)
       .set('Cookie', cookie)
       .send(policyData);
     expect(response.status).to.equal(200);
-    _logGreen('The new contract in database:');
-    _logObject(response.body.contract);
     expect(response.body.contract.rolesAndObligations).to.be.an('array');
     const roleEntry = response.body.contract.rolesAndObligations.find(
       (entry: any) => entry.role === role,
@@ -171,7 +151,7 @@ describe('Billing rules injection test cases for contract', () => {
   });
 
   it('Should inject rule-billing-4', async () => {
-    _logYellow('\n-Inject rule-billing-4');
+    ruleBilling4();
     const role = 'participant';
     const policyData = {
       role,
@@ -182,15 +162,11 @@ describe('Billing rules injection test cases for contract', () => {
         amount: 150,
       },
     };
-    _logGreen('The input policy set:');
-    _logObject(policyData);
     const response = await supertest(app.router)
       .put(`/contracts/policy/${contractId}`)
       .set('Cookie', cookie)
       .send(policyData);
     expect(response.status).to.equal(200);
-    _logGreen('The new contract in database:');
-    _logObject(response.body.contract);
     expect(response.body.contract.rolesAndObligations).to.be.an('array');
     const roleEntry = response.body.contract.rolesAndObligations.find(
       (entry: any) => entry.role === role,

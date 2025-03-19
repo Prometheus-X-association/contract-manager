@@ -9,9 +9,7 @@ import { config } from 'config/config';
 
 const SERVER_PORT = 9999;
 const API_ROUTE_BASE = '/contracts/';
-const _logObject = (data: any) => {
-  console.log(`\x1b[90m${JSON.stringify(data, null, 2)}\x1b[37m`);
-};
+
 
 // Test suite for the route to get all contracts with filters
 describe('Filtering test cases for Contracts (Dataspace use cases).', () => {
@@ -83,8 +81,6 @@ describe('Filtering test cases for Contracts (Dataspace use cases).', () => {
       .get(`${API_ROUTE_BASE}all/`)
       .set('Cookie', authTokenCookie);
     //
-    _logObject(response.body);
-    //
     expect(response.status).to.equal(200);
     const contracts: IContractDB[] = response.body.contracts;
     // Compare with the IDs created at the beginning
@@ -102,8 +98,6 @@ describe('Filtering test cases for Contracts (Dataspace use cases).', () => {
       .get(`${API_ROUTE_BASE}for/${did}`)
       .set('Cookie', authTokenCookie);
     //
-    _logObject(response.body);
-    //
     expect(response.status).to.equal(200);
     const contracts: IContractDB[] = response.body.contracts;
     // Only the signed contract should be returned
@@ -119,8 +113,6 @@ describe('Filtering test cases for Contracts (Dataspace use cases).', () => {
       .get(`${API_ROUTE_BASE}for/${did}?hasSigned=${hasSigned}`)
       .set('Cookie', authTokenCookie);
     //
-    _logObject(response.body);
-    //
     expect(response.status).to.equal(200);
     const contracts: IContractDB[] = response.body.contracts;
     // Only the unsigned contract should be returned
@@ -135,7 +127,6 @@ describe('Filtering test cases for Contracts (Dataspace use cases).', () => {
     const response = await supertest(app.router)
       .get(`${API_ROUTE_BASE}all?status=${status}`)
       .set('Cookie', authTokenCookie);
-    _logObject(response.body);
     expect(response.status).to.equal(200);
     const contracts: Array<any> = response.body.contracts;
     expect(contracts.length).to.equal(2);

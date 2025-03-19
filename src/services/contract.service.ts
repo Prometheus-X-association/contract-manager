@@ -4,8 +4,8 @@ import { IContract, IContractDB } from 'interfaces/contract.interface';
 import Contract from 'models/contract.model';
 import { logger } from 'utils/logger';
 import {
-  ContractDataProcessing,
-  ContractDataProcessingDocument,
+  ContractServiceChain,
+  ContractServiceChainDocument,
   ContractDocument,
   ContractMember,
   ContractServiceOffering,
@@ -648,14 +648,14 @@ export class ContractService {
     }
   }
 
-  // get data processings
-  public async getDataProcessings(
+  // get data chains
+  public async getServiceChains(
     contractId: string,
-  ): Promise<ContractDataProcessing[]> {
+  ): Promise<ContractServiceChain[]> {
     try {
       const contract = await Contract.findById(contractId).lean();
       if (contract) {
-        return contract.dataProcessings;
+        return contract.serviceChains;
       } else {
         throw new Error('Contract not found');
       }
@@ -664,67 +664,44 @@ export class ContractService {
     }
   }
 
-  // update data processings
-  public async writeDataProcessings(
+  // update data chains
+  public async writeServiceChains(
     contractId: string,
-    processings: ContractDataProcessing[],
-  ): Promise<ContractDataProcessing[]> {
+    chains: ContractServiceChain[],
+  ): Promise<ContractServiceChain[]> {
     try {
       const contract = await Contract.findById(contractId);
       if (!contract) {
         throw new Error('Contract not found');
       }
-      contract.set('dataProcessings', processings);
+      contract.set('serviceChains', chains);
       await contract.save();
-      return contract.dataProcessings;
+      return contract.serviceChains;
     } catch (error) {
       throw error;
     }
   }
-  /*
-  public async writeDataProcessings(
-    contractId: string,
-    processings: ContractDataProcessing[],
-  ): Promise<ContractDataProcessing[]> {
-    try {
-      const contract = await Contract.findById(contractId);
-      if (contract) {
-        contract.dataProcessings =
-          processings as Types.Array<ContractDataProcessingDocument>;
-        await contract.save();
-        return contract.dataProcessings;
-      } else {
-        throw new Error('Contract not found');
-      }
-    } catch (error) {
-      throw error;
-    }
-  }
-  */
 
-  public async insertDataProcessing(
+  public async insertServiceChain(
     contractId: string,
-    processing: ContractDataProcessing,
-  ): Promise<ContractDataProcessing> {
+    chain: ContractServiceChain,
+  ): Promise<ContractServiceChain> {
     try {
       const contract = await Contract.findById(contractId);
       if (contract) {
-        console.log("contract found", contract)
         if (
-          !contract.dataProcessings.find(
-            (element) => element.catalogId === processing.catalogId,
+          !contract.serviceChains.find(
+            (element) => element.catalogId === chain.catalogId &&
+                element.status === 'active'
           )
         ) {
-          processing.status = 'active';
-          contract.dataProcessings.push(processing);
-          console.log("processing push")
+          chain.status = 'active';
+          contract.serviceChains.push(chain);
         } else {
-          throw new Error('data');
+          throw new Error('Active same data chain already exists');
         }
-        console.log('before save')
         await contract.save();
-        console.log("after save")
-        return processing;
+        return chain;
       } else {
         throw new Error('Contract not found');
       }
@@ -733,25 +710,25 @@ export class ContractService {
     }
   }
 
-  public async updateDataProcessing(
+  public async updateServiceChain(
     contractId: string,
-    processingId: string,
-    processing: ContractDataProcessing,
-  ): Promise<ContractDataProcessing[]> {
+    chainId: string,
+    chain: ContractServiceChain,
+  ): Promise<ContractServiceChain[]> {
     try {
       const contract = await Contract.findById(contractId);
       if (contract) {
-        const existingProcessing = contract.dataProcessings.find(
+        const existingProcessing = contract.serviceChains.find(
           (item) =>
-            item.catalogId.toString() === processingId &&
+            item.catalogId.toString() === chainId &&
             item.status === 'active',
         );
         if (existingProcessing) {
           existingProcessing.status = 'inactive';
-          processing.status = 'active';
-          contract.dataProcessings.push(processing);
+          chain.status = 'active';
+          contract.serviceChains.push(chain);
           await contract.save();
-          return contract.dataProcessings;
+          return contract.serviceChains;
         } else {
           throw new Error('Processing not found in the contract');
         }
@@ -763,21 +740,21 @@ export class ContractService {
     }
   }
 
-  public async removeDataProcessing(
+  public async removeServiceChain(
     contractId: string,
-    processingId: string,
-  ): Promise<ContractDataProcessing | undefined> {
+    chainId: string,
+  ): Promise<ContractServiceChain | undefined> {
     try {
       const contract = await Contract.findById(contractId);
       if (contract) {
-        const processing = contract.dataProcessings.find(
+        const chain = contract.serviceChains.find(
           (item) =>
-            item.catalogId.toString() === processingId && item.status === 'active',
+            item.catalogId.toString() === chainId && item.status === 'active',
         );
-        if (processing) {
-          processing.status = 'inactive';
+        if (chain) {
+          chain.status = 'inactive';
           await contract.save();
-          return processing;
+          return chain;
         }
       } else {
         throw new Error('Contract not found');
@@ -787,22 +764,22 @@ export class ContractService {
     }
   }
 
-  public async deleteDataProcessing(
+  public async deleteServiceChain(
     contractId: string,
-    processing: ContractDataProcessing,
-  ): Promise<ContractDataProcessing> {
+    chain: ContractServiceChain,
+  ): Promise<ContractServiceChain> {
     try {
       const contract = await Contract.findById(contractId);
       if (contract) {
-        const initialLength = contract.dataProcessings.length;
-        contract.dataProcessings = contract.dataProcessings.filter(
+        const initialLength = contract.serviceChains.length;
+        contract.serviceChains = contract.serviceChains.filter(
           (item) =>
-            item.catalogId !== processing.catalogId &&
-            item.infrastructureServices !== processing.infrastructureServices,
-        ) as Types.DocumentArray<ContractDataProcessingDocument>;
-        if (contract.dataProcessings.length !== initialLength) {
+            item.catalogId !== chain.catalogId &&
+            item.services !== chain.services,
+        ) as Types.DocumentArray<ContractServiceChainDocument>;
+        if (contract.serviceChains.length !== initialLength) {
           await contract.save();
-          return processing;
+          return chain;
         } else {
           throw new Error('Processing not found in the contract');
         }
