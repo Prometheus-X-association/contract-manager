@@ -2,12 +2,12 @@
   "dataProviderConfig": [
     {
       "source": "contracts",
-      "url": "mongodb://localhost:27017",
+      "url": "mongodb://contract-manager-mongodb:27017",
       "dbName": "contract"
     },
     {
       "source": "profiles",
-      "url": "mongodb://localhost:27017",
+      "url": "mongodb://contract-manager-mongodb:27017",
       "dbName": "contract",
       "watchChanges": false,
       "hostsProfiles": true

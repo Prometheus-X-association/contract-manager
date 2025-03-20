@@ -1,5 +1,3 @@
-version: "3.8"
-
 services:
   contract-manager:
     container_name: "contract-manager"
@@ -22,9 +20,8 @@ services:
     build:
       context: .
       dockerfile: docker/mongodb/Dockerfile
-#    Uncomment to connect mongodb container to mongo compass or another service
-#    ports:
-#      - "27017:27017"
+    ports:
+      - "27017:27017"
     volumes:
       - contract_data:/data/db
     networks:
