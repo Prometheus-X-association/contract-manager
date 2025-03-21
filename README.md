@@ -299,7 +299,6 @@ or
 >    "dataProcessings": [],
 >  }
 >}
-```
 >```
 > output :
 >
@@ -356,9 +355,9 @@ or
 >    "updatedAt": "2025-03-20T18:20:39.850Z",
 >    "__v": 0
 >}
-```
->
+>```
 > </details>
+
 > <details><summary>POST /negotiation/contract/negotiate</summary>
 >
 > headers: `{"x-ptx-catalog-key": process.env.CATALOG_AUTHORIZATION_KEY, Content-Type: application/json}`
@@ -444,7 +443,7 @@ or
 >
 > </details>
 
-For more information see the [tests definitions](https://github.com/Prometheus-X-association/contract-consent-agent/blob/main/docs/design-document.md#contract).
+For more information see the [Tests definition](https://github.com/Prometheus-X-association/contract-manager/wiki/Tests-definition).
 
 ## License
 
