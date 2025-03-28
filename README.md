@@ -2,10 +2,14 @@
 
 ## Prerequisites
 
-Before you begin, ensure you have met the following requirements:
+Before you begin, ensure you have met the following requirements in local:
 
-- [Node Version Manager (nvm)](https://github.com/nvm-sh/nvm) installed
 - [pnpm](https://pnpm.io/) package manager installed
+- [mongodb](https://www.mongodb.com/docs/)
+
+requirements with docker:
+
+- Docker or Docker desktop
 
 ### Setup
 1. Make sure to fill your .env (see .env.sample):
@@ -14,21 +18,21 @@ Before you begin, ensure you have met the following requirements:
   cat .env.sample
   ```
 
-2. Use the required Node.js version using nvm:
+2. Copy the .env file
 
-  ```bash
-  nvm use
-  ```
+```bash
+cp .env.sample.env
+```
 
-  On Windows, you can use the following command:
+3. Setup contract-agent.config.json (needed if USE_CONTRACT_AGENT=true in .env)
 
-  ```bash
-  nvm use $(Get-Content .nvmrc)
-  ```
+by default in the sample file the url are set to work with the mongodb provided in the docker compose file.
 
-  This ensures that the project uses the specified Node.js version.
+```bash
+cp contract-agent.config.sample.json contract-agent.config.json
+```
 
-3. Install project dependencies using pnpm:
+4. Install project dependencies using pnpm:
 
   ```bash
   pnpm install
@@ -65,7 +69,7 @@ Before you begin, ensure you have met the following requirements:
   ```
 
   This command will generate Swagger documentation,
-  accessible at http://localhost:{port}/api-docs/#/
+  accessible at http://localhost:{port}/docs/#/
 
 3. Generate Source Code documentation with:
 
@@ -95,9 +99,26 @@ Before you begin, ensure you have met the following requirements:
   This command will start your application using the compiled code.
 
 ## Docker
-1. Clone the repository from GitHub: `git clone https://github.com/prometheus-x/contract-manager.git`
+1. Clone the repository from GitHub: `git clone https://github.com/Prometheus-X-association/contract-manager.git`
 2. Navigate to the project directory: `cd contract-manager`
 3. Configure the application by setting up the necessary environment variables. You will need to specify database connection details and other relevant settings.
+```dotenv
+#example
+NODE_ENV="development"
+MONGO_USERNAME=""
+MONGO_PASSWORD=""
+MONGO_URL="mongodb://contract-manager-mongodb:27017/contract"
+MONGO_TEST_URL="mongodb://contract-manager-mongodb:27017/test-contract"
+SERVER_PORT=8888
+SECRET_AUTH_KEY="abc123"
+SECRET_SESSION_KEY="abc123Session"
+CATALOG_REGISTRY_URL="https://registry.visionstrust.com/static/references/rules"
+SERVER_BASE_URL=""
+CATALOG_REGISTRY_FILE_EXT=""
+LOGS_KEY=""
+USE_CONTRACT_AGENT =true
+CATALOG_AUTHORIZATION_KEY="123" 
+```
 4. Create a docker network using `docker network create ptx`
 5. Start the application: `docker-compose up -d`
 6. If you need to rebuild the image `docker-compose build` and restart with: `docker-compose up -d`
@@ -188,16 +209,28 @@ Here’s an example of a JSON configuration:
 
 ```json
 {
-  "source": "profiles",
-  "url": "mongodb://localhost:27017",
-  "dbName": "contract_consent_agent_db",
-  "watchChanges": false,
-  "hostsProfiles": true,
-  "existingDataCheck": true
+  "dataProviderConfig": [
+    {
+      "source": "contracts",
+      "url": "mongodb://contract-manager-mongodb:27017",
+      "dbName": "contract"
+    },
+    {
+      "source": "profiles",
+      "url": "mongodb://contract-manager-mongodb:27017",
+      "dbName": "contract",
+      "watchChanges": false,
+      "hostsProfiles": true
+    }
+  ]
 }
 ```
 
 ### Contract Agent Tests
+
+#### Prerequisites
+
+- requires a running mongoose server
 
 1. Run tests:
 
@@ -205,16 +238,132 @@ Here’s an example of a JSON configuration:
   pnpm test-agent
   ```
 
+or
+
+  ```bash
+  docker exec -it contract-manager pnpm test-agent
+  ```
+
   This command will run your tests using Mocha, with test files located at `./src/tests/*.agent.test.ts`.
+
+2. Expected result
+
+![expected result](./docs/images/img.png)
 
 #### example endpoints
 
-> Before using these endpoints you need to signup and login with a user
+> <details><summary>POST /contracts</summary>
+>
+> First create the contract to create the profile
+>
+> headers: `{"x-ptx-catalog-key": process.env.CATALOG_AUTHORIZATION_KEY, Content-Type: application/json}`
+>
+> the x-ptx-catalog-key is needed if you have set up the optional variable CATALOG_AUTHORIZATION_KEY in you .env
+> 
+> input: 
+>```json
+>{
+>  "role": "ecosystem",
+>  "contract": {
+>    "ecosystem": "test-ecosystem",
+>    "orchestrator": "",
+>    "serviceOfferings": [
+>      {
+>        "participant": "participant-1",
+>        "serviceOffering": "allowed-service",
+>        "policies": [
+>          {
+>            "description": "allowed-policy",
+>            "permission": [
+>              {
+>                "action": "read",
+>                "target": "http://contract-target/policy",
+>                "duty": [],
+>                "constraint": []
+>              },
+>              {
+>                "action": "use",
+>                "target": "http://contract-target/service",
+>                "duty": [],
+>                "constraint": []
+>              }
+>            ],
+>            "prohibition": []
+>          }
+>        ],
+>      }
+>    ],
+>    "purpose": [],
+>    "members": [],
+>    "revokedMembers": [],
+>    "dataProcessings": [],
+>  }
+>}
+>```
+> output :
+>
+>```json
+>{
+>    "ecosystem": "test-ecosystem",
+>    "orchestrator": "",
+>    "serviceOfferings": [
+>        {
+>            "participant": "participant-1",
+>            "serviceOffering": "allowed-service",
+>            "policies": [
+>                {
+>                    "description": "allowed-policy",
+>                    "permission": [
+>                        {
+>                            "action": "read",
+>                            "target": "http://contract-target/policy",
+>                            "duty": [],
+>                            "constraint": []
+>                        },
+>                        {
+>                            "action": "use",
+>                            "target": "http://contract-target/service",
+>                            "duty": [],
+>                            "constraint": []
+>                        }
+>                    ],
+>                    "prohibition": []
+>                }
+>            ],
+>            "_id": "67dc5c77a4e381ca892935d7"
+>        }
+>    ],
+>    "rolesAndObligations": [
+>        {
+>            "role": "ecosystem",
+>            "policies": [
+>                {
+>                    "permission": [],
+>                    "prohibition": []
+>                }
+>            ],
+>            "_id": "67dc5ead968a8212c516f18b"
+>        }
+>    ],
+>    "dataProcessings": [],
+>    "purpose": [],
+>    "members": [],
+>    "revokedMembers": [],
+>    "status": "pending",
+>    "_id": "67dc5c77a4e381ca892935d6",
+>    "createdAt": "2025-03-20T18:20:39.850Z",
+>    "updatedAt": "2025-03-20T18:20:39.850Z",
+>    "__v": 0
+>}
+>```
+> </details>
 
 > <details><summary>POST /negotiation/contract/negotiate</summary>
 >
-> headers: `{"x-ptx-catalog-key": process.env.CATALOG_AUTHORIZATION_KEY}`
+> headers: `{"x-ptx-catalog-key": process.env.CATALOG_AUTHORIZATION_KEY, Content-Type: application/json}`
 >
+> the x-ptx-catalog-key is needed if you have set up the optional variable CATALOG_AUTHORIZATION_KEY in you .env
+> 
 > input: 
 > ```json
 >  {
@@ -267,7 +416,9 @@ Here’s an example of a JSON configuration:
 
 > <details><summary>PUT /negotiation/profile/preferences</summary>
 >
-> headers: `{"x-ptx-catalog-key": process.env.CATALOG_AUTHORIZATION_KEY}`
+> headers: `{"x-ptx-catalog-key": process.env.CATALOG_AUTHORIZATION_KEY, Content-Type: application/json}`
+> 
+> the x-ptx-catalog-key is needed if you have set up the optional variable CATALOG_AUTHORIZATION_KEY in you .env
 >
 > input:
 >
@@ -291,6 +442,8 @@ Here’s an example of a JSON configuration:
 > ```
 >
 > </details>
+
+For more information see the [Tests definition](https://github.com/Prometheus-X-association/contract-manager/wiki/Tests-definition).
 
 ## License
 
