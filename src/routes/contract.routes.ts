@@ -15,12 +15,12 @@ import {
   checkExploitationByRole,
   getPolicyForServiceOffering,
   removeOfferingPolicies,
-  getDataProcessings,
-  writeDataProcessings,
-  insertDataProcessing,
-  removeDataProcessing,
-  updateDataProcessing,
-  deleteDataProcessing,
+  getServiceChains,
+  writeServiceChains,
+  insertServiceChain,
+  removeServiceChain,
+  updateServiceChain,
+  deleteServiceChain,
 } from '../controllers/contract.controller';
 import { check } from 'express-validator';
 import { logPayloadMiddleware } from 'middlewares/logPayload.middleware';
@@ -60,15 +60,15 @@ router.delete(
   removeOfferingPolicies,
 );
 
-// List the data processings within the chain available on the contrat
-router.get('/contracts/:id/processings', getDataProcessings);
-// Add the data processing chain to the contract
-router.post('/contracts/:id/processings', writeDataProcessings);
-// Insert a new data processing inside the chain at a specific given index
-router.put('/contracts/:id/processings/insert', insertDataProcessing);
-// Update a specific data processing from the chain
-router.put('/contracts/:id/processings/update/:processingId', updateDataProcessing);
-// Remove a specific data processing from the chain by index
-router.delete('/contracts/:id/processings/:processingId', removeDataProcessing);
+// List the service chains within the chain available on the contrat
+router.get('/contracts/:id/servicechains', getServiceChains);
+// Add the service chain to the contract
+router.post('/contracts/:id/servicechains', writeServiceChains);
+// Insert a new service chain inside the chain at a specific given index
+router.put('/contracts/:id/servicechains/insert', insertServiceChain);
+// Update a specific service chain from the chain
+router.put('/contracts/:id/servicechains/update/:chainId', updateServiceChain);
+// Remove a specific service chain from the chain by index
+router.delete('/contracts/:id/servicechains/:chainId', removeServiceChain);
 
 export default router;

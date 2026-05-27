@@ -3,6 +3,7 @@ import {
   Contract,
   BilateralContractDocument,
   BilateralContract,
+  DSPContractDocument,
 } from './schemas.interface';
 
 // Type for the generated mongoose contract
@@ -17,3 +18,5 @@ export type IContract = Contract & {
 export type IBilateralContractDB = BilateralContractDocument;
 // Type used for the Bilateral Contract data manipulation within the API
 export type IBilateralContract = BilateralContract;
+
+export type IDSPContractDB = DSPContractDocument;

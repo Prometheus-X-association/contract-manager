@@ -1,13 +1,11 @@
 import supertest from 'supertest';
 import { expect } from 'chai';
 import app from 'server';
-import ContractModel from 'models/contract.model';
+import Contract from 'models/contract.model';
 import { config } from 'config/config';
 import axios from 'axios';
 import http from 'http';
-import { _logGreen, _logObject, _logYellow } from './utils/utils';
-import { IContractDB } from 'interfaces/contract.interface';
-import mongoose, { Model } from 'mongoose';
+import { ruleAccess1 } from './mock/registryMock';
 
 let cookie: any;
 let contractId: any;
@@ -22,8 +20,6 @@ if (!config.catalog.registry.defined) {
   axios.defaults.baseURL = `${config.server.url}:${SERVER_PORT}/`;
 }
 
-let Contract: mongoose.Model<IContractDB>;
-
 describe('Policies injection test cases for contract (Dataspace use cases).', () => {
   let server: http.Server;
   before(async () => {
@@ -37,21 +33,17 @@ describe('Policies injection test cases for contract (Dataspace use cases).', ()
         resolve(true);
       });
     });
-    Contract = await ContractModel.getModel();
     await Contract.deleteMany({});
+    ruleAccess1();
   });
 
   it('Retrieve the cookie after pinging the server', async () => {
-    _logYellow('\n-Login the user');
     const authResponse = await supertest(app.router).get('/ping');
     cookie = authResponse.headers['set-cookie'];
-    _logGreen('Cookies:');
-    _logObject(cookie);
     expect(authResponse.status).to.equal(200);
   });
 
   it('should generate an ecosystem contract', async () => {
-    _logYellow('\n-Generate a contract with the following odrl policy');
     const contract = {
       ecosystem: 'ecosystem-id',
       '@context': 'http://www.w3.org/ns/odrl/2/',
@@ -59,20 +51,15 @@ describe('Policies injection test cases for contract (Dataspace use cases).', ()
       permission: [],
       prohibition: [],
     };
-    _logGreen('The odrl input contract:');
-    _logObject(contract);
     const response = await supertest(app.router)
       .post('/contracts/')
       .set('Cookie', cookie)
       .send({ contract, role: 'ecosystem' });
-    _logGreen('The contract in database:');
-    _logObject(response.body);
     expect(response.status).to.equal(201);
     contractId = response.body._id;
   });
 
   it('Should inject a policy', async () => {
-    _logYellow('\n-Inject a policy for resource access.');
     const role = 'ecosystem';
     const policyData = {
       role,
@@ -81,8 +68,6 @@ describe('Policies injection test cases for contract (Dataspace use cases).', ()
         target: 'a-target-uid',
       },
     };
-    _logGreen('The input policy set:');
-    _logObject(policyData);
     const response = await supertest(app.router)
       .put(`/contracts/policy/${contractId}`)
       .set('Cookie', cookie)
@@ -90,13 +75,10 @@ describe('Policies injection test cases for contract (Dataspace use cases).', ()
     expect(response.status).to.equal(200);
     expect(response.body).to.have.property('contract');
     const contract = response.body.contract;
-    _logGreen('The new contract in database:');
-    _logObject(contract);
     expect(contract._id).to.be.a('string');
   });
 
   it('Should inject a policy by role (participant)', async () => {
-    _logYellow('\n-Inject a policy for resources accessed by a specific role.');
     const role = 'participant';
     const policyData = {
       role,
@@ -105,21 +87,14 @@ describe('Policies injection test cases for contract (Dataspace use cases).', ()
         target: 'a-target-uid-for-participant-role',
       },
     };
-    _logGreen('The input policy set:');
-    _logObject(policyData);
     const response = await supertest(app.router)
       .put(`/contracts/policy/${contractId}`)
       .set('Cookie', cookie)
       .send(policyData);
-    _logGreen('The new contract in database:');
-    _logObject(response.body);
     expect(response.status).to.equal(200);
   });
 
   it('Should inject a second policy by role (participant)', async () => {
-    _logYellow(
-      '\n-Inject a second policy for resources accessed by a specific role.',
-    );
     const role = 'participant';
     const target = 'a-second-target-uid-for-participant-role';
     const policyData = {
@@ -129,14 +104,10 @@ describe('Policies injection test cases for contract (Dataspace use cases).', ()
         target,
       },
     };
-    _logGreen('The input policy set:');
-    _logObject(policyData);
     const response = await supertest(app.router)
       .put(`/contracts/policy/${contractId}`)
       .set('Cookie', cookie)
       .send(policyData);
-    _logGreen('The new contract in database:');
-    _logObject(response.body);
     expect(response.status).to.equal(200);
     expect(response.body.contract).to.be.an('object');
     const contract = response.body.contract;
@@ -160,8 +131,6 @@ describe('Policies injection test cases for contract (Dataspace use cases).', ()
   });
 
   it('Should inject an array of policies from\na given list of injection information', async () => {
-    _logYellow('\n-Inject a set of policies.');
-
     const role = 'provider';
     const policiesArray = [
       {
@@ -186,14 +155,10 @@ describe('Policies injection test cases for contract (Dataspace use cases).', ()
         },
       },
     ];
-    _logGreen('The input policies information to be injected:');
-    _logObject(policiesArray);
     const response = await supertest(app.router)
       .put(`/contracts/policies/${contractId}`)
       .set('Cookie', cookie)
       .send(policiesArray);
-    _logGreen('The new contract in database:');
-    _logObject(response.body);
     expect(response.status).to.equal(200);
     expect(response.body.contract).to.be.an('object');
     const contract = response.body.contract;
@@ -218,7 +183,6 @@ describe('Policies injection test cases for contract (Dataspace use cases).', ()
   });
 
   it('Should inject an array of policies from a given role and\na list of injections information', async () => {
-    _logYellow('\n-Inject a set of policies.');
     const role = 'service';
     const data = {
       role,
@@ -243,14 +207,10 @@ describe('Policies injection test cases for contract (Dataspace use cases).', ()
         },
       ],
     };
-    _logGreen('The input policies information to be injected:');
-    _logObject(data);
     const response = await supertest(app.router)
       .put(`/contracts/policies/role/${contractId}`)
       .set('Cookie', cookie)
       .send(data);
-    _logGreen('The new contract in database:');
-    _logObject(response.body);
     expect(response.status).to.equal(200);
     expect(response.body.contract).to.be.an('object');
     const contract = response.body.contract;
@@ -275,7 +235,6 @@ describe('Policies injection test cases for contract (Dataspace use cases).', ()
   });
 
   it('Should inject an array of policies from a given offering id and\na list of injections information', async () => {
-    _logYellow('\n-Inject a set of policies.');
     const participant = 'participant';
     const serviceOffering = 'offering';
     const data = {
@@ -302,14 +261,10 @@ describe('Policies injection test cases for contract (Dataspace use cases).', ()
         },
       ],
     };
-    _logGreen('The input policies information to be injected:');
-    _logObject(data);
     const response = await supertest(app.router)
       .put(`/contracts/policies/offering/${contractId}`)
       .set('Cookie', cookie)
       .send(data);
-    _logGreen('The new contract in database:');
-    _logObject(response.body);
     expect(response.status).to.equal(200);
     expect(response.body.contract).to.be.an('object');
     const contract = response.body.contract;
@@ -334,14 +289,11 @@ describe('Policies injection test cases for contract (Dataspace use cases).', ()
   });
 
   it('Should retrieve a valid policies for a given service offering', async () => {
-    _logYellow('\n-Retrieve policies for a given service offering.');
     const response = await supertest(app.router)
       .get(
         `/contracts/serviceoffering/${contractId}?participant=participant&serviceOffering=offering`,
       )
       .set('Cookie', cookie);
-    _logGreen('Policies:');
-    _logObject(response.body);
     expect(response.body).to.be.an('array');
     expect(response.body).to.deep.include.members([
       {
@@ -384,7 +336,6 @@ describe('Policies injection test cases for contract (Dataspace use cases).', ()
   });
 
   it('Should iterate over an array, injecting policies for a specified list of roles.', async () => {
-    _logYellow('\n-Inject a set of policies.');
     const data = [
       {
         roles: ['role-1', 'role-2'],
@@ -421,14 +372,10 @@ describe('Policies injection test cases for contract (Dataspace use cases).', ()
         ],
       },
     ];
-    _logGreen('The input policies information to be injected:');
-    _logObject(data);
     const response = await supertest(app.router)
       .put(`/contracts/policies/roles/${contractId}`)
       .set('Cookie', cookie)
       .send(data);
-    _logGreen('The new contract in the database:');
-    _logObject(response.body);
     expect(response.status).to.equal(200);
     expect(response.body.contract).to.be.an('object');
     const contract = response.body.contract;
@@ -457,7 +404,6 @@ describe('Policies injection test cases for contract (Dataspace use cases).', ()
   });
 
   it('Should remove a set of policies from a given offering and participant.', async () => {
-    _logYellow('\n-Remove a set of policies.');
     const participantId = 'participant';
     const offeringId = 'offering';
     const response = await supertest(app.router)
@@ -465,8 +411,6 @@ describe('Policies injection test cases for contract (Dataspace use cases).', ()
         `/contracts/policies/offering/${contractId}/${offeringId}/${participantId}`,
       )
       .set('Cookie', cookie);
-    _logGreen('The new contract in database:');
-    _logObject(response.body);
     expect(response.status).to.equal(200);
     expect(response.body.contract).to.be.an('object');
     const contract = response.body.contract;

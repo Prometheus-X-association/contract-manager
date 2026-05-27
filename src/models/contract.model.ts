@@ -1,8 +1,5 @@
-import mongoose, { FilterQuery, Query, Schema } from 'mongoose';
-import { IContract, IContractDB } from '../interfaces/contract.interface';
-import { ContractAgentService } from '../services/contract.agent.service';
-import { config } from '../config/config';
-import { Logger, MongooseProvider } from 'contract-agent';
+import mongoose, { Schema } from 'mongoose';
+import { IBilateralContractDB, IContractDB } from '../interfaces/contract.interface';
 
 // Ecosystem Contract Model / Dataspace User Case
 const PurposeSchema = new Schema({
@@ -88,22 +85,22 @@ const MemberSchema = new Schema(
   { _id: false },
 );
 
-const InfrastructureServiceSchema = new Schema({
-  participant: { type: String, required: true },
-  serviceOffering: { type: String, required: true },
-});
+const ServiceChainSchema = new Schema({
+    catalogId: { type: String, required: false },
+    serviceChainId: { type: String, required: false },
+    services: { type: [mongoose.Schema.Types.Mixed], default: [] }, // Changed to Mixed
+    },
+    { _id: false },
+);
 
-const DataProcessingSchema = new Schema({
-  catalogId: { type: String, required: true },
-  infrastructureServices: { type: [InfrastructureServiceSchema], default: [] },
-  status: {
-    type: String,
-    enum: ['active', 'inactive'],
-    default: 'active',
-  },
-});
+// const InfrastructureServiceSchema: any = new Schema({
+//     participant: { type: String, required: true },
+//     service: { type: String, required: true },
+//     pre: { type: [mongoose.Schema.Types.Mixed], default: [] } as any, // Changed to Mixed
+// });
 
-const ContractSchema: Schema = new Schema(
+
+export const ContractSchema: Schema = new Schema(
   {
     uid: String,
     profile: String,
@@ -111,7 +108,7 @@ const ContractSchema: Schema = new Schema(
     orchestrator: String,
     serviceOfferings: [OfferingSchema],
     rolesAndObligations: [{ role: String, policies: [PolicySchema] }],
-    dataProcessings: { type: [DataProcessingSchema], default: [] },
+    serviceChains: { type: [ServiceChainSchema], default: [] },
     purpose: [PurposeSchema],
     members: [MemberSchema],
     revokedMembers: [MemberSchema],
@@ -123,15 +120,18 @@ const ContractSchema: Schema = new Schema(
     jsonLD: {
       type: String,
     },
+    useDVCT: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,
   },
 );
 
-export { ContractSchema };
-export default {
-  getModel: async (): Promise<mongoose.Model<IContractDB>> => {
-    return mongoose.model<IContractDB>('Contract', ContractSchema);
-  },
-};
+export default mongoose.model<IContractDB>(
+    'Contract',
+    ContractSchema,
+);
+

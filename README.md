@@ -21,7 +21,7 @@ requirements with docker:
 2. Copy the .env file
 
 ```bash
-cp .env.sample.env
+cp .env.sample .env
 ```
 
 3. Setup contract-agent.config.json (needed if USE_CONTRACT_AGENT=true in .env)

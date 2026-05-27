@@ -805,32 +805,17 @@ export type ContractRolesAndObligation = {
 };
 
 /**
- * Lean version of ContractDataProcessingInfrastructureServiceDocument
- *
- * This has all Mongoose getters & functions removed. This type will be returned from `ContractDataProcessingDocument.toObject()`.
- * ```
- * const contractdataprocessingObject = contractdataprocessing.toObject();
- * ```
- */
-export type ContractDataProcessingInfrastructureService = {
-  participant: string;
-  serviceOffering: string;
-  _id: mongoose.Types.ObjectId;
-};
-
-/**
- * Lean version of ContractDataProcessingDocument
+ * Lean version of ContractServiceChainDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `ContractDocument.toObject()`.
  * ```
  * const contractObject = contract.toObject();
  * ```
  */
-export type ContractDataProcessing = {
-  catalogId: string;
-  infrastructureServices: ContractDataProcessingInfrastructureService[];
-  status?: 'active' | 'inactive';
-  _id: mongoose.Types.ObjectId;
+export type ContractServiceChain = {
+  catalogId?: string;
+  serviceChainId?: string;
+  services: any[];
 };
 
 /**
@@ -902,12 +887,13 @@ export type Contract = {
   orchestrator?: string;
   serviceOfferings: ContractServiceOffering[];
   rolesAndObligations: ContractRolesAndObligation[];
-  dataProcessings: ContractDataProcessing[];
+  serviceChains: ContractServiceChain[];
   purpose: ContractPurpose[];
   members: ContractRevokedMember[];
   revokedMembers: ContractRevokedMember[];
   status?: 'signed' | 'revoked' | 'pending';
   jsonLD?: string;
+  useDVCT?: boolean;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
@@ -1231,27 +1217,13 @@ export type ContractRolesAndObligationDocument =
 /**
  * Mongoose Subdocument type
  *
- * Type of `ContractDataProcessingDocument["infrastructureServices"]` element.
+ * Type of `ContractDocument["serviceChains"]` element.
  */
-export type ContractDataProcessingInfrastructureServiceDocument =
-  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
-    participant: string;
-    serviceOffering: string;
-    _id: mongoose.Types.ObjectId;
-  };
-
-/**
- * Mongoose Subdocument type
- *
- * Type of `ContractDocument["dataProcessings"]` element.
- */
-export type ContractDataProcessingDocument =
-  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
-    catalogId: string;
-    infrastructureServices: mongoose.Types.DocumentArray<ContractDataProcessingInfrastructureServiceDocument>;
-    status?: 'active' | 'inactive';
-    _id: mongoose.Types.ObjectId;
-  };
+export type ContractServiceChainDocument = mongoose.Types.Subdocument<any> & {
+  catalogId?: string;
+  serviceChainId?: string;
+  services: mongoose.Types.Array<any>;
+};
 
 /**
  * Mongoose Subdocument type
@@ -1318,16 +1290,59 @@ export type ContractDocument = mongoose.Document<
     orchestrator?: string;
     serviceOfferings: mongoose.Types.DocumentArray<ContractServiceOfferingDocument>;
     rolesAndObligations: mongoose.Types.DocumentArray<ContractRolesAndObligationDocument>;
-    dataProcessings: mongoose.Types.DocumentArray<ContractDataProcessingDocument>;
+    serviceChains: mongoose.Types.DocumentArray<ContractServiceChainDocument>;
     purpose: mongoose.Types.DocumentArray<ContractPurposeDocument>;
     members: mongoose.Types.DocumentArray<ContractRevokedMemberDocument>;
     revokedMembers: mongoose.Types.DocumentArray<ContractRevokedMemberDocument>;
     status?: 'signed' | 'revoked' | 'pending';
     jsonLD?: string;
+    useDVCT?: boolean;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
   };
+
+export type DSPContractDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  ContractQueries
+> &
+  ContractMethods & {
+    '@context': string[];
+    '@type': string;
+    contractDefinitionId: string;
+    consumerPid: string;
+    providerPid: string;
+    state:
+      | 'REQUESTED'
+      | 'OFFERED'
+      | 'ACCEPTED'
+      | 'AGREED'
+      | 'VERIFIED'
+      | 'FINALIZED'
+      | 'TERMINATED';
+    offer?: Record<string, unknown>;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+export type IDSPContract = {
+  '@context': string[];
+  '@type': string;
+  consumerPid?: string;
+  providerPid?: string;
+  state:
+    | 'REQUESTED'
+    | 'OFFERED'
+    | 'ACCEPTED'
+    | 'AGREED'
+    | 'VERIFIED'
+    | 'FINALIZED'
+    | 'TERMINATED';
+  offer?: Record<string, unknown>;
+  agreement?: Record<string, unknown>;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
 
 /**
  * Check if a property on a document is populated:
@@ -1376,20 +1391,20 @@ type PopulatedProperty<Root, T extends keyof Root> = Omit<Root, T> & {
 export type PopulatedDocument<DocType, T> = T extends keyof DocType
   ? PopulatedProperty<DocType, T>
   : ParentProperty<T> extends keyof DocType
-  ? Omit<DocType, ParentProperty<T>> & {
-      [ref in ParentProperty<T>]: DocType[ParentProperty<T>] extends mongoose.Types.Array<
-        infer U
-      >
-        ? mongoose.Types.Array<
-            ChildProperty<T> extends keyof U
-              ? PopulatedProperty<U, ChildProperty<T>>
-              : PopulatedDocument<U, ChildProperty<T>>
-          >
-        : ChildProperty<T> extends keyof DocType[ParentProperty<T>]
-        ? PopulatedProperty<DocType[ParentProperty<T>], ChildProperty<T>>
-        : PopulatedDocument<DocType[ParentProperty<T>], ChildProperty<T>>;
-    }
-  : DocType;
+    ? Omit<DocType, ParentProperty<T>> & {
+        [ref in ParentProperty<T>]: DocType[ParentProperty<T>] extends mongoose.Types.Array<
+          infer U
+        >
+          ? mongoose.Types.Array<
+              ChildProperty<T> extends keyof U
+                ? PopulatedProperty<U, ChildProperty<T>>
+                : PopulatedDocument<U, ChildProperty<T>>
+            >
+          : ChildProperty<T> extends keyof DocType[ParentProperty<T>]
+            ? PopulatedProperty<DocType[ParentProperty<T>], ChildProperty<T>>
+            : PopulatedDocument<DocType[ParentProperty<T>], ChildProperty<T>>;
+      }
+    : DocType;
 
 /**
  * Helper types used by the populate overloads
@@ -1406,26 +1421,26 @@ declare module 'mongoose' {
       path: T,
       select?: string | any,
       model?: string | Model<any, THelpers>,
-      match?: any
+      match?: any,
     ): Query<
       ResultType extends Array<DocType>
         ? Array<PopulatedDocument<Unarray<ResultType>, T>>
         : ResultType extends DocType
-        ? PopulatedDocument<Unarray<ResultType>, T>
-        : ResultType,
+          ? PopulatedDocument<Unarray<ResultType>, T>
+          : ResultType,
       DocType,
       THelpers
     > &
       THelpers;
 
     populate<T extends string>(
-      options: Modify<PopulateOptions, { path: T }> | Array<PopulateOptions>
+      options: Modify<PopulateOptions, { path: T }> | Array<PopulateOptions>,
     ): Query<
       ResultType extends Array<DocType>
         ? Array<PopulatedDocument<Unarray<ResultType>, T>>
         : ResultType extends DocType
-        ? PopulatedDocument<Unarray<ResultType>, T>
-        : ResultType,
+          ? PopulatedDocument<Unarray<ResultType>, T>
+          : ResultType,
       DocType,
       THelpers
     > &

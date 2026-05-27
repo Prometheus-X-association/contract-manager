@@ -5,6 +5,7 @@ import contractRoutes from 'routes/contract.routes';
 import bilateralContractRoutes from 'routes/bilateral.routes';
 import userRoutes from 'routes/user.routes';
 import contractsRoutes from 'routes/contracts.routes';
+import DSPContractRoutes from 'routes/dsp.routes';
 import { logger } from 'utils/logger';
 import swaggerUi from 'swagger-ui-express';
 import swaggerJson from './swagger/swagger.json';
@@ -13,9 +14,7 @@ import createMemoryStore from 'memorystore';
 import { config } from 'config/config';
 import path from 'path';
 import { ContractAgentService } from 'services/contract.agent.service';
-import { NegotiationAgentRouter } from 'contract-agent';
-
-import Contract from './models/contract.model';
+import { NegotiationAgentRouter } from 'contract-agent/contract-agent/dist';
 
 const router = express();
 const startServer = async (url: string) => {
@@ -56,7 +55,11 @@ const startServer = async (url: string) => {
   // entity that can act on contracts. But a proper layer of authorization
   // should be implemented per participant.
   router.use((req, res, next) => {
-    if (process.env.NODE_ENV !== 'development' && req.method !== 'GET') {
+    if (
+      process.env.NODE_ENV !== 'development' &&
+      req.method !== 'GET' &&
+      req.method !== 'OPTIONS'
+    ) {
       const authKey = req.headers['x-ptx-catalog-key'];
       if (!authKey || authKey !== config.auth.catalogKey) {
         return res.status(401).json({ message: 'Unauthorized' });
@@ -128,6 +131,7 @@ const startServer = async (url: string) => {
     bilateralContractRoutes,
     contractsRoutes,
     NegotiationAgentRouter,
+    DSPContractRoutes,
   );
 
   router.use((req, res, next) => {
