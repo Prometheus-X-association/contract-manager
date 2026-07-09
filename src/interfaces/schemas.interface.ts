@@ -908,6 +908,7 @@ export type Contract = {
   revokedMembers: ContractRevokedMember[];
   status?: 'signed' | 'revoked' | 'pending';
   jsonLD?: string;
+  vlaId?: string;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
@@ -1324,6 +1325,7 @@ export type ContractDocument = mongoose.Document<
     revokedMembers: mongoose.Types.DocumentArray<ContractRevokedMemberDocument>;
     status?: 'signed' | 'revoked' | 'pending';
     jsonLD?: string;
+    vlaId?: string;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;

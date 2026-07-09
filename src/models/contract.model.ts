@@ -123,6 +123,16 @@ const ContractSchema: Schema = new Schema(
     jsonLD: {
       type: String,
     },
+    vlaId: {
+      type: String,
+      // Enforce UUID v4 format so downstream systems (DVA, etc.) always receive
+      // a well-formed identifier. An empty string is allowed (null/undefined
+      // means "no VLA linked").
+      match: [
+        /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i,
+        'vlaId must be a valid UUID v4',
+      ],
+    },
   },
   {
     timestamps: true,

@@ -1,4 +1,4 @@
-import express, { Router } from 'express';
+import express, { Router, Request, Response, NextFunction } from 'express';
 import {
   createContract,
   getContract,
@@ -22,17 +22,40 @@ import {
   updateDataProcessing,
   deleteDataProcessing,
 } from '../controllers/contract.controller';
-import { check } from 'express-validator';
+import { check, validationResult } from 'express-validator';
 import { logPayloadMiddleware } from 'middlewares/logPayload.middleware';
+
+/** UUID v4 validator reused on POST and PUT routes that accept a vlaId. */
+const vlaIdRule = check('vlaId')
+  .optional({ nullable: true, checkFalsy: true })
+  .isUUID(4)
+  .withMessage('vlaId must be a valid UUID v4');
+
+/**
+ * Middleware that returns 422 Unprocessable Entity when express-validator
+ * finds errors. Must be placed after the check() calls on a route.
+ */
+const rejectOnValidationError = (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+): void => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    res.status(422).json({ errors: errors.array() });
+    return;
+  }
+  next();
+};
 
 // Ecosystem Contract Routes
 const router: Router = express.Router();
 router.get('/contracts/all/', getContracts);
 router.get('/contracts/for/:did', getContractsFor);
-router.post('/contracts/', createContract);
+router.post('/contracts/', vlaIdRule, rejectOnValidationError, createContract);
 router.get('/contracts/:id', getContract);
 router.get('/contracts/serviceoffering/:id', getPolicyForServiceOffering);
-router.put('/contracts/:id', updateContract);
+router.put('/contracts/:id', vlaIdRule, rejectOnValidationError, updateContract);
 router.put('/contracts/sign/:id', signContract);
 router.delete('/contracts/sign/revoke/:id/:did', revokeContractSignature);
 router.post(
