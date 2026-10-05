@@ -5,7 +5,7 @@ import Bilateral from 'models/bilateral.model';
 import { config } from 'config/config';
 import axios from 'axios';
 import http from 'http';
-import { _logYellow, _logGreen, _logObject } from './utils/utils';
+import { ruleAccess1, ruleBilling1, ruleBilling2, ruleBilling3, ruleBilling4 } from './mock/registryMock';
 
 let cookie: any;
 let contractId: any;
@@ -37,16 +37,12 @@ describe('Billing rules injection test cases for Bilateral Contract', () => {
   });
 
   it('Should ping the server', async () => {
-    _logYellow('\n-Ping the server');
     const authResponse = await supertest(app.router).get('/ping');
     cookie = authResponse.headers['set-cookie'];
-    _logGreen('Cookies:');
-    _logObject(cookie);
     expect(authResponse.status).to.equal(200);
   });
 
   it('should generate a bilateral contract', async () => {
-    _logYellow('\n-Generate a contract with the following odrl policy');
     const contract = {
       dataProvider: 'provider',
       dataConsumer: 'consumer',
@@ -56,20 +52,16 @@ describe('Billing rules injection test cases for Bilateral Contract', () => {
       permission: [],
       prohibition: [],
     };
-    _logGreen('The odrl input contract:');
-    _logObject(contract);
     const response = await supertest(app.router)
       .post('/bilaterals/')
       .set('Cookie', cookie)
       .send({ contract });
-    _logGreen('The contract in database:');
-    _logObject(response.body);
     expect(response.status).to.equal(201);
     contractId = response.body._id;
   });
 
   it('Should inject rule-billing-1', async () => {
-    _logYellow('\n-Inject rule-billing-1');
+    ruleBilling1();
     const policyData = {
       policyId: 'rule-billing-1',
       values: {
@@ -77,15 +69,11 @@ describe('Billing rules injection test cases for Bilateral Contract', () => {
         currentDateTime: new Date().toISOString(),
       },
     };
-    _logGreen('The input policy set:');
-    _logObject(policyData);
     const response = await supertest(app.router)
       .put(`/bilaterals/policy/${contractId}`)
       .set('Cookie', cookie)
       .send(policyData);
     expect(response.status).to.equal(200);
-    _logGreen('The new contract in database:');
-    _logObject(response.body.contract);
     const policy = response.body.contract.policy.find(
       (p: any) => p.permission[0].target === policyData.values.target,
     );
@@ -102,7 +90,7 @@ describe('Billing rules injection test cases for Bilateral Contract', () => {
   });
 
   it('Should inject rule-billing-2', async () => {
-    _logYellow('\n-Inject rule-billing-2');
+    ruleBilling2();
     const policyData = {
       policyId: 'rule-billing-2',
       values: {
@@ -110,15 +98,11 @@ describe('Billing rules injection test cases for Bilateral Contract', () => {
         amount: 100,
       },
     };
-    _logGreen('The input policy set:');
-    _logObject(policyData);
     const response = await supertest(app.router)
       .put(`/bilaterals/policy/${contractId}`)
       .set('Cookie', cookie)
       .send(policyData);
     expect(response.status).to.equal(200);
-    _logGreen('The new contract in database:');
-    _logObject(response.body.contract);
     const policy = response.body.contract.policy.find(
       (p: any) => p.permission[0].target === policyData.values.target,
     );
@@ -134,22 +118,18 @@ describe('Billing rules injection test cases for Bilateral Contract', () => {
   });
 
   it('Should inject rule-billing-3', async () => {
-    _logYellow('\n-Inject rule-billing-3');
+    ruleBilling3();
     const policyData = {
       policyId: 'rule-billing-3',
       values: {
         target: 'billing-target-3',
       },
     };
-    _logGreen('The input policy set:');
-    _logObject(policyData);
     const response = await supertest(app.router)
       .put(`/bilaterals/policy/${contractId}`)
       .set('Cookie', cookie)
       .send(policyData);
     expect(response.status).to.equal(200);
-    _logGreen('The new contract in database:');
-    _logObject(response.body.contract);
     const policy = response.body.contract.policy.find(
       (p: any) => p.permission[0].target === policyData.values.target,
     );
@@ -162,7 +142,7 @@ describe('Billing rules injection test cases for Bilateral Contract', () => {
   });
 
   it('Should inject rule-billing-4', async () => {
-    _logYellow('\n-Inject rule-billing-4');
+    ruleBilling4();
     const policyData = {
       policyId: 'rule-billing-4',
       values: {
@@ -171,15 +151,11 @@ describe('Billing rules injection test cases for Bilateral Contract', () => {
         amount: 150,
       },
     };
-    _logGreen('The input policy set:');
-    _logObject(policyData);
     const response = await supertest(app.router)
       .put(`/bilaterals/policy/${contractId}`)
       .set('Cookie', cookie)
       .send(policyData);
     expect(response.status).to.equal(200);
-    _logGreen('The new contract in database:');
-    _logObject(response.body.contract);
     const policy = response.body.contract.policy.find(
       (p: any) => p.permission[0].target === policyData.values.target,
     );
@@ -220,7 +196,7 @@ describe('Billing rules injection test cases for Bilateral Contract', () => {
   });
 
   it('Should update an existing policy', async () => {
-    _logYellow('\n-Update existing rule-billing-2');
+    ruleBilling2();
     const policyData = {
       policyId: 'rule-billing-2',
       values: {
@@ -228,15 +204,11 @@ describe('Billing rules injection test cases for Bilateral Contract', () => {
         amount: 200,
       },
     };
-    _logGreen('The input policy set for update:');
-    _logObject(policyData);
     const response = await supertest(app.router)
       .put(`/bilaterals/policy/${contractId}`)
       .set('Cookie', cookie)
       .send(policyData);
     expect(response.status).to.equal(200);
-    _logGreen('The updated contract in database:');
-    _logObject(response.body.contract);
     const policy = response.body.contract.policy.find(
       (p: any) => p.permission[0].target === policyData.values.target,
     );
@@ -248,9 +220,8 @@ describe('Billing rules injection test cases for Bilateral Contract', () => {
   });
 
   it('Should inject multiple policies (rule-billing-1 and rule-billing-2)', async () => {
-    _logYellow(
-      '\n-Inject multiple policies (rule-billing-1 and rule-billing-2)',
-    );
+    ruleBilling1();
+    ruleBilling2();
     const policiesArray = [
       {
         ruleId: 'rule-billing-1',
@@ -267,14 +238,10 @@ describe('Billing rules injection test cases for Bilateral Contract', () => {
         },
       },
     ];
-    _logGreen('The input policies information to be injected:');
-    _logObject(policiesArray);
     const response = await supertest(app.router)
       .put(`/bilaterals/policies/${contractId}`)
       .set('Cookie', cookie)
       .send(policiesArray);
-    _logGreen('The new contract in database:');
-    _logObject(response.body);
     expect(response.status).to.equal(200);
     expect(response.body.contract).to.be.an('object');
     const contract = response.body.contract;

@@ -1,16 +1,13 @@
 import supertest from 'supertest';
 import { expect } from 'chai';
 import app from 'server';
-import ContractModel from 'models/contract.model';
+import Contract from 'models/contract.model';
 import { config } from 'config/config';
 import axios from 'axios';
 import http from 'http';
-import { _logYellow, _logGreen, _logObject, wait } from './utils/utils';
-import { IContractDB } from 'interfaces/contract.interface';
-import mongoose from 'mongoose';
+import { wait } from './utils/utils';
 
 let cookie: any;
-let Contract: mongoose.Model<IContractDB>;
 let server: http.Server;
 let contractId: string;
 const SERVER_PORT = 9999;
@@ -26,31 +23,24 @@ describe('Contract Negotiation Integration Tests', () => {
     server = await app.startServer(config.mongo.testUrl);
     await new Promise((resolve) => {
       server.listen(SERVER_PORT, () => {
-        _logYellow('Test server running on port ' + SERVER_PORT);
         resolve(true);
       });
     });
-    Contract = await ContractModel.getModel();
     await Contract.deleteMany({});
   });
 
   after(async () => {
     await Contract.deleteMany({});
     server.close();
-    _logYellow('Test server stopped');
   });
 
   it('should retrieve the cookie after pinging the server', async () => {
-    _logYellow('\n-Login the user');
     const authResponse = await supertest(app.router).get('/ping');
     cookie = authResponse.headers['set-cookie'];
-    _logGreen('Cookies:');
-    _logObject(cookie);
     expect(authResponse.status).to.equal(200);
   });
 
   it('should create a new contract and update profile', async () => {
-    _logYellow('\n-Creating test contract');
     const contract = {
       '@context': 'http://www.w3.org/ns/odrl/2/',
       '@type': 'Offer',
@@ -85,8 +75,6 @@ describe('Contract Negotiation Integration Tests', () => {
       status: 'signed',
     };
 
-    _logGreen('Input contract:');
-    _logObject(contract);
 
     const contractResponse = await supertest(app.router)
       .post('/contracts/')
@@ -96,13 +84,9 @@ describe('Contract Negotiation Integration Tests', () => {
     expect(contractResponse.status).to.equal(201);
     contractId = contractResponse.body._id;
 
-    _logGreen('Created contract:');
-    _logObject(contractResponse.body);
-
     // Wait for the profile to be initialized
     await wait(1000);
 
-    _logYellow('\n-Updating profile preferences');
     const profileId = 'participant-1';
     const preferences = [
       {
@@ -122,12 +106,9 @@ describe('Contract Negotiation Integration Tests', () => {
 
     expect(updateResponse.status).to.equal(200);
 
-    _logGreen('Updated profile preferences:');
-    _logObject(updateResponse.body);
   });
 
   it('should test policy acceptance', async () => {
-    _logYellow('\n-Testing policy acceptance');
     const profileId = 'participant-1';
 
     const policyTest = {
@@ -159,7 +140,6 @@ describe('Contract Negotiation Integration Tests', () => {
   });
 
   it('should test service acceptance', async () => {
-    _logYellow('\n-Testing service acceptance');
     const profileId = 'participant-1';
 
     const serviceTest = {
@@ -197,7 +177,6 @@ describe('Contract Negotiation Integration Tests', () => {
   });
 
   it('should test contract acceptance', async () => {
-    _logYellow('\n-Testing contract acceptance');
     const profileId = 'participant-1';
 
     const contractTest = {
@@ -244,7 +223,6 @@ describe('Contract Negotiation Integration Tests', () => {
   });
 
   it('should test contract negotiation', async () => {
-    _logYellow('\n-Testing contract negotiation');
     const profileId = 'participant-1';
 
     const contractTest = {

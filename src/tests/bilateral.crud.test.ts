@@ -10,9 +10,7 @@ import { config } from 'config/config';
 let authTokenCookie: any;
 const SERVER_PORT = 9999;
 const API_ROUTE_BASE = '/bilaterals/';
-const _logObject = (data: any) => {
-  console.log(`\x1b[90m${JSON.stringify(data, null, 2)}\x1b[37m`);
-};
+
 describe('CRUD test cases for Bilateral Contracts.', () => {
   let server: any;
   before(async () => {
@@ -67,7 +65,6 @@ describe('CRUD test cases for Bilateral Contracts.', () => {
       .send({ contract: contractData });
     //
 
-    _logObject(response.body);
     // Check if the response status is 201 (Created)
     expect(response.status).to.equal(201);
     // Check if the response has a 'id' property
@@ -83,7 +80,6 @@ describe('CRUD test cases for Bilateral Contracts.', () => {
       .get(`${API_ROUTE_BASE}${createdContractId}`)
       .set('Cookie', authTokenCookie);
     //
-    _logObject(response.body);
     // Check if the response status is 200 (OK)
     expect(response.status).to.equal(200);
     // Check if the response has a 'id' property
@@ -101,7 +97,6 @@ describe('CRUD test cases for Bilateral Contracts.', () => {
       .set('Cookie', authTokenCookie)
       .send(updatedContractData);
     //
-    _logObject(response.body);
     // Check if the response status is 200 (OK)
     expect(response.status).to.equal(200);
     // Check if the response has the expected 'message'
@@ -127,7 +122,6 @@ describe('CRUD test cases for Bilateral Contracts.', () => {
       .set('Cookie', authTokenCookie)
       .send(signatureDataPartyA1);
     //
-    _logObject(responsePartyA1.body);
     // Check if the response status for party A's first signature is OK (200)
     expect(responsePartyA1.status).to.equal(200);
 
@@ -144,7 +138,6 @@ describe('CRUD test cases for Bilateral Contracts.', () => {
       .set('Cookie', authTokenCookie)
       .send(signatureDataPartyA2);
     //
-    _logObject(responsePartyA2.body);
     // Define the signature data for party B
     const signatureDataPartyB: BilateralContractSignature = {
       did: didPartyB,
@@ -158,7 +151,6 @@ describe('CRUD test cases for Bilateral Contracts.', () => {
       .set('Cookie', authTokenCookie)
       .send(signatureDataPartyB);
     //
-    _logObject(response.body);
     // Check if the response status is OK (200)
     expect(response.status).to.equal(200);
     // Check if the response contains the updated contract with the signature
@@ -210,7 +202,6 @@ describe('CRUD test cases for Bilateral Contracts.', () => {
       .set('Cookie', authTokenCookie)
       .send(signatureDataPartyC);
     //
-    _logObject(responsePartyC.body);
     // Check if the response status is not OK (expecting an error)
     expect(responsePartyC.status).to.not.equal(200);
     // Check if the response contains an error message
@@ -238,7 +229,6 @@ describe('CRUD test cases for Bilateral Contracts.', () => {
       .set('Cookie', authTokenCookie)
       .send(data);
     //
-    _logObject(response.body);
     //
     expect(response.body.authorised).to.equal(true);
   });
@@ -252,7 +242,6 @@ describe('CRUD test cases for Bilateral Contracts.', () => {
       .delete(`${API_ROUTE_BASE}sign/revoke/${createdContractId}/${didPartyB}`)
       .set('Cookie', authTokenCookie);
     //
-    _logObject(response.body);
     expect(response.status).to.equal(200);
     // Check if the response contains the updated contract with revokedSignatures
     expect(response.body).to.have.property('revokedSignatures');

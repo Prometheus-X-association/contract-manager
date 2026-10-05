@@ -805,32 +805,17 @@ export type ContractRolesAndObligation = {
 };
 
 /**
- * Lean version of ContractDataProcessingInfrastructureServiceDocument
- *
- * This has all Mongoose getters & functions removed. This type will be returned from `ContractDataProcessingDocument.toObject()`.
- * ```
- * const contractdataprocessingObject = contractdataprocessing.toObject();
- * ```
- */
-export type ContractDataProcessingInfrastructureService = {
-  participant: string;
-  serviceOffering: string;
-  _id: mongoose.Types.ObjectId;
-};
-
-/**
- * Lean version of ContractDataProcessingDocument
+ * Lean version of ContractServiceChainDocument
  *
  * This has all Mongoose getters & functions removed. This type will be returned from `ContractDocument.toObject()`.
  * ```
  * const contractObject = contract.toObject();
  * ```
  */
-export type ContractDataProcessing = {
-  catalogId: string;
-  infrastructureServices: ContractDataProcessingInfrastructureService[];
-  status?: 'active' | 'inactive';
-  _id: mongoose.Types.ObjectId;
+export type ContractServiceChain = {
+  catalogId?: string;
+  serviceChainId?: string;
+  services: any[];
 };
 
 /**
@@ -902,12 +887,13 @@ export type Contract = {
   orchestrator?: string;
   serviceOfferings: ContractServiceOffering[];
   rolesAndObligations: ContractRolesAndObligation[];
-  dataProcessings: ContractDataProcessing[];
+  serviceChains: ContractServiceChain[];
   purpose: ContractPurpose[];
   members: ContractRevokedMember[];
   revokedMembers: ContractRevokedMember[];
   status?: 'signed' | 'revoked' | 'pending';
   jsonLD?: string;
+  useDVCT?: boolean;
   _id: mongoose.Types.ObjectId;
   createdAt?: Date;
   updatedAt?: Date;
@@ -1092,6 +1078,51 @@ export type ContractServiceOfferingPolicyDocument =
 /**
  * Mongoose Subdocument type
  *
+ * Type of `ContractServiceOfferingDocument["serviceOfferings"]["resources"]` element.
+ */
+export type ResourceDocument = mongoose.Types.Subdocument<any> & {
+  resourceName?: string;
+  resourceId?: string;
+  resourceDescription?: string;
+  piiInformation?: {
+    dataUserRole?: 'dataController' | 'dataProcessor' | 'jointDataController';
+    processingPurposes?: string[];
+    legalBasis?: string;
+    usageRestrictions?: string[];
+    dpoContact?: {
+      name?: string;
+      email?: string;
+      phone?: string;
+    };
+    plannedProcessingActivities?: string[];
+    dataCategories?: string[];
+    dataSubjectCategories?: string[];
+    dataVolumeRange?: '1-100' | '100-1000' | '1000-10000' | '10000-100000' | '100000-1000000' | '1000000+';
+    subProcessorsInvolved?: mongoose.Types.Array<any>;
+    transferOutsideEEA?: {
+      hasTransfer?: boolean;
+      countries?: string[];
+      activities?: string[];
+      safeguards?: string[];
+    };
+    subsequentSubProcessingNoticePeriod?: number;
+    dataSubjectRightsAssistanceDelay?: number;
+    securityBreachAssistanceDelay?: 'reasonableDelay' | '72h';
+    auditNoticePeriod?: number;
+    subsequentControllerReuseAuthorization?: {
+      authorized?: boolean;
+      details?: string;
+    };
+    securityMeasures?: any;
+    securityCertificationStandard?: ('ISO27001' | 'ISO27701' | 'ISO9001' | 'Europrivacy' | 'SOC2' | 'SECNUMCLOUD')[];
+    securityCertificationDate?: Date;
+    securityCertificationExpiryDate?: Date;
+  };
+}
+
+/**
+ * Mongoose Subdocument type
+ *
  * Type of `ContractDocument["serviceOfferings"]` element.
  */
 export type ContractServiceOfferingDocument =
@@ -1100,7 +1131,227 @@ export type ContractServiceOfferingDocument =
     serviceOffering: string;
     policies: mongoose.Types.DocumentArray<ContractServiceOfferingPolicyDocument>;
     _id: mongoose.Types.ObjectId;
+
+    // Offer
+    offerName?: string;
+    offerId?: string;
+    offerCaption?: string;
+
+    // Resources
+    resources: mongoose.Types.DocumentArray<ResourceDocument>;
+
+    // Pricing
+    pricing?: {
+      value?: number;
+      billingPeriod?: string;
+      setupFee?: number;
+      description?: string;
+    };
+
+    // SLA
+    sla?: {
+      deliveryDeadline?: { value?: number; unit?: 'hours' | 'business days' | 'calendar days' };
+      availability?: 'Best effort' | '99%' | '99.5%' | '99.9%' | '99.95%' | '99.99%';
+      updateFrequency?: 'Real-time / streaming' | 'Hourly' | 'Daily' | 'Weekly' | 'Monthly' | 'Quarterly' | 'On request' | 'Static (no update)';
+      responseTime?: { value?: number; unit?: 'ms' | 's'; measurementBasis?: 'Average' | 'p95' | 'p99' };
+      availabilityTimeWindow?: { value?: '24/7' | 'Business hours 5x8' | 'Extended 5x12'; timezone?: string };
+      retentionPeriod?: 'Session only' | '30 days' | '90 days' | '1 year' | 'Contract duration' | 'Until consent withdrawal';
+      generalAvailabilityDate?: Date;
+      endOfSupportDate?: Date;
+      endOfLifeDate?: Date;
+      supportChannels?: ('Email' | 'Phone' | 'Chat' | 'Ticketing portal' | 'Slack' | 'Community forum' | 'Dedicated CSM')[];
+      supportServiceHours?: '24/7' | 'Business hours 5x8' | 'Extended 5x12';
+      supportSeverityLevel?: { level?: 'Critical' | 'High' | 'Medium' | 'Low'; responseTimeValue?: number; responseTimeUnit?: string }[];
+      measurementMonitoringMethod?: string;
+      note?: string;
+    };
+
+    // Commitments and Penalties
+    commitments?: {
+      commitmentConcerned?: string;
+      triggerOperator?: '<' | '<=' | '>' | '>=' | '=' | 'Outside window' | 'Not delivered';
+      triggerValue?: string;
+      consequenceType?: 'Service credit' | 'Discount' | 'Refund' | 'Fee waiver' | 'Suspension' | 'Termination' | 'Fixed compensation' | 'Cure period then escalation';
+      penaltyAmount?: number;
+      penaltyBasis?: '% of period fee' | '% of total value' | 'Fixed amount' | 'Credit days' | 'Amount per incident';
+      penaltyCap?: '% of monthly fee' | '% of annual fee' | '% of total value' | 'Fixed cap' | 'No cap';
+      measurementPeriod?: 'Per incident' | 'Daily' | 'Weekly' | 'Monthly' | 'Quarterly' | 'Rolling 30 days' | 'Rolling 90 days' | 'Contract duration';
+      claimProcedure?: 'Automatic credit' | 'Claim required' | 'Via ticket';
+      claimDeadlineDays?: number;
+      note?: string;
+    }[];
+
+    // Contract Duration
+    contractDuration?: {
+      value?: number;
+      unit?: 'months' | 'years';
+      renewalMode?: 'None (contract ends)' | 'Automatic renewal' | 'On mutual agreement';
+      noticePeriodDays?: number;
+    };
+
+    // Termination for Convenience
+    terminationForConvenience?: {
+      allowed?: boolean;
+      noticePeriodDays?: number;
+    };
+
+    // Termination for Cause
+    terminationForCause?: {
+      breachThreshold?: number;
+      noticePeriod?: 'Immediate (no notice)' | 'X days notice';
+      noticePeriodDays?: number;
+      regulatoryOrSecurityTermination?: 'Yes (immediate)' | 'Yes (with X days notice)' | 'No (case-by-case)';
+      regulatoryNoticeDays?: number;
+    };
+
+    // Penalties & Termination Link
+    penaltiesTerminationLink?: {
+      cumulativePenaltyCapTermination?: boolean;
+      suspensionBeforeTermination?: boolean;
+      suspensionDurationDays?: number;
+    };
+
+    // Custom Fields
+    customFields?: Record<string, unknown> | null;
   };
+
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `ContractDocument["project"]["dataNeed"]` element.
+ */
+export type  ProjectDataNeedDocument = mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    resource: string,
+    description: string,
+ };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `ContractDocument["project"]["serviceNeed"]` element.
+ */
+export type  ProjectServiceNeedDocument = mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    service: string,
+    description: string,
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `ContractDocument["project"]["serviceInfrastructures"]` element.
+ */
+export type  ProjectServiceInfrastructureDocument = mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    infrastructure: string,
+    description: string,
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `ContractDocument["project"]["contributions"]` element.
+ */
+export type  ProjectContributionDocument = mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    contribution: string,
+    description: string,
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `ContractDocument["project"]["participantsAndRoles"]` element.
+ */
+export type  ProjectParticipantRoleDocument = mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    participant: string,
+    roles: string[],
+  };
+
+/**
+ * Mongoose Subdocument type
+ *
+ * Type of `ContractDocument["project"]` element.
+ */
+export type ContractProjectDocument = mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+    title: string,
+    caption: string,
+    description: string,
+    categories: string[],
+    countryOrRegion: string,
+    picture: string,
+
+    // Project Governance
+    purpose: string,
+    benefit: string,
+
+    // Data Processing
+    desiredDataAvailabilityDate: Date,
+    legalBasisOfProcessing: string,
+    legalBasisDescription: string,
+
+    // Project Needs
+    dataNeed: mongoose.Types.DocumentArray<ProjectDataNeedDocument>;
+    serviceNeed: mongoose.Types.DocumentArray<ProjectServiceNeedDocument>;
+    serviceInfrastructures: mongoose.Types.DocumentArray<ProjectServiceInfrastructureDocument>;
+    criteriaAndConditions: string,
+
+    // Project Contributions
+    contributions: mongoose.Types.DocumentArray<ProjectContributionDocument>;
+
+    // Participants & Roles
+    participantsAndRoles: mongoose.Types.DocumentArray<ProjectParticipantRoleDocument>;
+  };
+
+export type ReversibilityExitSchema =mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+  value?: 'None' | 'Data deletion only' | 'Return + deletion' | 'Return + deletion + destruction certificate';
+  deadlineDays?: 30 | 60 | 90;
+  };
+
+export type  SubcontractingSchema =mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+  subcontractors: string[];
+  };
+
+export type SecurityIncidentNotificationSchema =mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+  value?: 'Without undue delay' | '24h' | '48h' | '72h';
+  };
+
+export type IntellectualPropertyOnOutputsSchema = mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+  value?: 'Provider retains all' | 'Consumer owns results' | 'Joint ownership' | 'Licensed back' | 'No derivative rights';
+  };
+
+export type GoverningLawSchema = mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+  countryISO?: string;
+  disputeMode?: 'Courts' | 'Arbitration' | 'Mediation then arbitration';
+ };
+
+export type ForceMajeureSchema = mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+  value?: 'Standard clause' | 'Standard + epidemic' | 'None';
+  };
+
+export type AuditRightSchema = mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+  value?: 'None' | 'Self-certification' | 'Audit on notice' | 'Third-party audit' | 'Regulator access';
+  frequency?: 'Annual' | 'On suspicion' | 'Once per contract';
+ };
+
+export type ConfidentialitySchema = mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+  value?: 'None' | 'Mutual NDA' | 'Unilateral NDA';
+  survivalYears?: 1 | 3 | 5;
+  };
+
+export type AmendmentModificationSchema = mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+  value?: 'Written amendment only' | 'Mutual agreement' | 'With notice';
+ };
+
+export type ContractAdditionalClausesDocument = mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
+  reversibilityExit?: ReversibilityExitSchema | null;
+  subcontracting?: SubcontractingSchema | null;
+  securityIncidentNotification?: SecurityIncidentNotificationSchema | null;
+  intellectualPropertyOnOutputs?: IntellectualPropertyOnOutputsSchema | null;
+  governingLawAndJurisdiction?: GoverningLawSchema | null;
+  forceMajeure?: ForceMajeureSchema | null;
+  auditRight?: AuditRightSchema | null;
+  confidentiality?: ConfidentialitySchema | null;
+  amendmentModification?: AmendmentModificationSchema | null;
+};
 
 /**
  * Mongoose Subdocument type
@@ -1231,27 +1482,13 @@ export type ContractRolesAndObligationDocument =
 /**
  * Mongoose Subdocument type
  *
- * Type of `ContractDataProcessingDocument["infrastructureServices"]` element.
+ * Type of `ContractDocument["serviceChains"]` element.
  */
-export type ContractDataProcessingInfrastructureServiceDocument =
-  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
-    participant: string;
-    serviceOffering: string;
-    _id: mongoose.Types.ObjectId;
-  };
-
-/**
- * Mongoose Subdocument type
- *
- * Type of `ContractDocument["dataProcessings"]` element.
- */
-export type ContractDataProcessingDocument =
-  mongoose.Types.Subdocument<mongoose.Types.ObjectId> & {
-    catalogId: string;
-    infrastructureServices: mongoose.Types.DocumentArray<ContractDataProcessingInfrastructureServiceDocument>;
-    status?: 'active' | 'inactive';
-    _id: mongoose.Types.ObjectId;
-  };
+export type ContractServiceChainDocument = mongoose.Types.Subdocument<any> & {
+  catalogId?: string;
+  serviceChainId?: string;
+  services: mongoose.Types.Array<any>;
+};
 
 /**
  * Mongoose Subdocument type
@@ -1318,16 +1555,62 @@ export type ContractDocument = mongoose.Document<
     orchestrator?: string;
     serviceOfferings: mongoose.Types.DocumentArray<ContractServiceOfferingDocument>;
     rolesAndObligations: mongoose.Types.DocumentArray<ContractRolesAndObligationDocument>;
-    dataProcessings: mongoose.Types.DocumentArray<ContractDataProcessingDocument>;
+    serviceChains: mongoose.Types.DocumentArray<ContractServiceChainDocument>;
     purpose: mongoose.Types.DocumentArray<ContractPurposeDocument>;
     members: mongoose.Types.DocumentArray<ContractRevokedMemberDocument>;
     revokedMembers: mongoose.Types.DocumentArray<ContractRevokedMemberDocument>;
     status?: 'signed' | 'revoked' | 'pending';
     jsonLD?: string;
+    useDVCT?: boolean;
+    project: mongoose.Types.DocumentArray<ContractProjectDocument>;
+    additionalClauses: mongoose.Types.DocumentArray<ContractAdditionalClausesDocument>;
+    customFields?: Record<string, unknown>;
     _id: mongoose.Types.ObjectId;
     createdAt?: Date;
     updatedAt?: Date;
   };
+
+export type DSPContractDocument = mongoose.Document<
+  mongoose.Types.ObjectId,
+  ContractQueries
+> &
+  ContractMethods & {
+    '@context': string[];
+    '@type': string;
+    contractDefinitionId: string;
+    consumerPid: string;
+    providerPid: string;
+    state:
+      | 'REQUESTED'
+      | 'OFFERED'
+      | 'ACCEPTED'
+      | 'AGREED'
+      | 'VERIFIED'
+      | 'FINALIZED'
+      | 'TERMINATED';
+    offer?: Record<string, unknown>;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
+
+export type IDSPContract = {
+  '@context': string[];
+  '@type': string;
+  consumerPid?: string;
+  providerPid?: string;
+  state:
+    | 'REQUESTED'
+    | 'OFFERED'
+    | 'ACCEPTED'
+    | 'AGREED'
+    | 'VERIFIED'
+    | 'FINALIZED'
+    | 'TERMINATED';
+  offer?: Record<string, unknown>;
+  agreement?: Record<string, unknown>;
+  createdAt?: Date;
+  updatedAt?: Date;
+};
 
 /**
  * Check if a property on a document is populated:
@@ -1376,20 +1659,20 @@ type PopulatedProperty<Root, T extends keyof Root> = Omit<Root, T> & {
 export type PopulatedDocument<DocType, T> = T extends keyof DocType
   ? PopulatedProperty<DocType, T>
   : ParentProperty<T> extends keyof DocType
-  ? Omit<DocType, ParentProperty<T>> & {
-      [ref in ParentProperty<T>]: DocType[ParentProperty<T>] extends mongoose.Types.Array<
-        infer U
-      >
-        ? mongoose.Types.Array<
-            ChildProperty<T> extends keyof U
-              ? PopulatedProperty<U, ChildProperty<T>>
-              : PopulatedDocument<U, ChildProperty<T>>
-          >
-        : ChildProperty<T> extends keyof DocType[ParentProperty<T>]
-        ? PopulatedProperty<DocType[ParentProperty<T>], ChildProperty<T>>
-        : PopulatedDocument<DocType[ParentProperty<T>], ChildProperty<T>>;
-    }
-  : DocType;
+    ? Omit<DocType, ParentProperty<T>> & {
+        [ref in ParentProperty<T>]: DocType[ParentProperty<T>] extends mongoose.Types.Array<
+          infer U
+        >
+          ? mongoose.Types.Array<
+              ChildProperty<T> extends keyof U
+                ? PopulatedProperty<U, ChildProperty<T>>
+                : PopulatedDocument<U, ChildProperty<T>>
+            >
+          : ChildProperty<T> extends keyof DocType[ParentProperty<T>]
+            ? PopulatedProperty<DocType[ParentProperty<T>], ChildProperty<T>>
+            : PopulatedDocument<DocType[ParentProperty<T>], ChildProperty<T>>;
+      }
+    : DocType;
 
 /**
  * Helper types used by the populate overloads
@@ -1406,26 +1689,26 @@ declare module 'mongoose' {
       path: T,
       select?: string | any,
       model?: string | Model<any, THelpers>,
-      match?: any
+      match?: any,
     ): Query<
       ResultType extends Array<DocType>
         ? Array<PopulatedDocument<Unarray<ResultType>, T>>
         : ResultType extends DocType
-        ? PopulatedDocument<Unarray<ResultType>, T>
-        : ResultType,
+          ? PopulatedDocument<Unarray<ResultType>, T>
+          : ResultType,
       DocType,
       THelpers
     > &
       THelpers;
 
     populate<T extends string>(
-      options: Modify<PopulateOptions, { path: T }> | Array<PopulateOptions>
+      options: Modify<PopulateOptions, { path: T }> | Array<PopulateOptions>,
     ): Query<
       ResultType extends Array<DocType>
         ? Array<PopulatedDocument<Unarray<ResultType>, T>>
         : ResultType extends DocType
-        ? PopulatedDocument<Unarray<ResultType>, T>
-        : ResultType,
+          ? PopulatedDocument<Unarray<ResultType>, T>
+          : ResultType,
       DocType,
       THelpers
     > &

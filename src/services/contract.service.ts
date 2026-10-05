@@ -1,11 +1,16 @@
-import mongoose, { Types } from 'mongoose';
+import mongoose, { Schema, Types } from 'mongoose';
 
-import { IContract, IContractDB } from 'interfaces/contract.interface';
-import ContractModel from '../models/contract.model';
+import {
+  CONTRACT_OFFERING_FLATTENED_KEYS,
+  IContract,
+  IContractDB,
+  IContractOfferingFlattenedFields,
+} from 'interfaces/contract.interface';
+import Contract from 'models/contract.model';
 import { logger } from 'utils/logger';
 import {
-  ContractDataProcessing,
-  ContractDataProcessingDocument,
+  ContractServiceChain,
+  ContractServiceChainDocument,
   ContractDocument,
   ContractMember,
   ContractServiceOffering,
@@ -17,7 +22,6 @@ import { genPolicyFromRule } from './policy/utils';
 import pdp from 'services/policy/pdp.service';
 
 // Ecosystem Contract Service
-let Contract: mongoose.Model<IContractDB>;
 export class ContractService {
   private static instance: ContractService;
 
@@ -25,7 +29,6 @@ export class ContractService {
 
   public static async getInstance(): Promise<ContractService> {
     if (!ContractService.instance) {
-      Contract = await ContractModel.getModel();
       ContractService.instance = new ContractService();
     }
     return ContractService.instance;
@@ -66,7 +69,7 @@ export class ContractService {
   public async getContract(contractId: string): Promise<IContractDB | null> {
     try {
       const contract = await Contract.findById(contractId)
-        .select('-jsonLD')
+        .select('-jsonLD -version -parent -child -rootContract')
         .lean();
       return contract;
     } catch (error) {
@@ -262,6 +265,7 @@ export class ContractService {
   // Get ecosystem contracts for a specific DID with optional filter
   public async getContractsFor(
     _did: string,
+    participantRole: 'all' | 'orchestrator' | 'member' = 'all',
     hasSigned?: boolean,
   ): Promise<IContractDB[]> {
     try {
@@ -273,13 +277,21 @@ export class ContractService {
         throw new Error(error.message);
       }
       const filter: Record<string, any> = {};
-      if (hasSigned) {
-        // Participant must appear in signatures
-        filter.members = { $elemMatch: { participant: did } };
-      } else if (hasSigned === false) {
-        // Participant must not appear in signatures
-        filter.members = { $not: { $elemMatch: { participant: did } } };
+
+      const memberCondition = hasSigned
+        ? { members: { $elemMatch: { participant: did } } }
+        : { members: { $not: { $elemMatch: { participant: did } } } };
+      const orchestratorCondition = { orchestrator: did };
+
+      if (participantRole === 'orchestrator') {
+        Object.assign(filter, orchestratorCondition);
+      } else if (participantRole === 'member') {
+        Object.assign(filter, memberCondition);
+      } else {
+        // 'all': orchestrator or member
+        filter.$or = [orchestratorCondition, memberCondition];
       }
+
       const contracts = await Contract.find(filter).select('-jsonLD');
       return contracts;
     } catch (error: any) {
@@ -561,11 +573,21 @@ export class ContractService {
     }
   }
 
+  /**
+   * Adds policies to an offering of the contract, and freezes the flattened
+   * catalog data carried alongside them.
+   *
+   * The flattened fields are merged, never replaced wholesale: a key absent from
+   * `flattened` leaves the persisted value untouched. This keeps an injection
+   * that only carries policies — every deployed caller before this change —
+   * from wiping data a previous injection had frozen.
+   */
   public async addOfferingPolicies(
     contractId: string,
     serviceOffering: string,
     participant: string,
     injections: IPolicyInjection[],
+    flattened?: IContractOfferingFlattenedFields,
   ): Promise<IContractDB | null> {
     try {
       const contract = await Contract.findById(contractId);
@@ -591,6 +613,8 @@ export class ContractService {
           contract.serviceOfferings[contract.serviceOfferings.length - 1];
       }
 
+      ContractService.mergeOfferingFlattenedFields(offering, flattened);
+
       offering.policies.push(
         ...(await Promise.all(
           injections.map(async (injection) => {
@@ -614,6 +638,32 @@ export class ContractService {
     } catch (error: any) {
       logger.error('[Contract/Service, addOfferingPolicies]:', error);
       throw error;
+    }
+  }
+
+  /**
+   * Copies the flattened catalog fields onto an offering subdocument.
+   *
+   * Only keys explicitly present and not `undefined`/`null` are written, so an
+   * absent key preserves whatever is already frozen in the contract. `null` is
+   * treated as "not provided" rather than "clear it", because senders build the
+   * payload from optional model fields and a cleared value is never meaningful
+   * for a contract that is supposed to be a frozen record.
+   */
+  private static mergeOfferingFlattenedFields(
+    offering: ContractServiceOfferingDocument,
+    flattened?: IContractOfferingFlattenedFields,
+  ): void {
+    if (!flattened) {
+      return;
+    }
+
+    for (const key of CONTRACT_OFFERING_FLATTENED_KEYS) {
+      const value = flattened[key];
+      if (value === undefined || value === null) {
+        continue;
+      }
+      offering.set(key, value);
     }
   }
 
@@ -650,14 +700,14 @@ export class ContractService {
     }
   }
 
-  // get data processings
-  public async getDataProcessings(
+  // get data chains
+  public async getServiceChains(
     contractId: string,
-  ): Promise<ContractDataProcessing[]> {
+  ): Promise<ContractServiceChain[]> {
     try {
       const contract = await Contract.findById(contractId).lean();
       if (contract) {
-        return contract.dataProcessings;
+        return contract.serviceChains;
       } else {
         throw new Error('Contract not found');
       }
@@ -666,63 +716,42 @@ export class ContractService {
     }
   }
 
-  // update data processings
-  public async writeDataProcessings(
+  // update data chains
+  public async writeServiceChains(
     contractId: string,
-    processings: ContractDataProcessing[],
-  ): Promise<ContractDataProcessing[]> {
+    chains: ContractServiceChain[],
+  ): Promise<ContractServiceChain[]> {
     try {
       const contract = await Contract.findById(contractId);
       if (!contract) {
         throw new Error('Contract not found');
       }
-      contract.set('dataProcessings', processings);
+      contract.set('serviceChains', chains);
       await contract.save();
-      return contract.dataProcessings;
+      return contract.serviceChains;
     } catch (error) {
       throw error;
     }
   }
-  /*
-  public async writeDataProcessings(
-    contractId: string,
-    processings: ContractDataProcessing[],
-  ): Promise<ContractDataProcessing[]> {
-    try {
-      const contract = await Contract.findById(contractId);
-      if (contract) {
-        contract.dataProcessings =
-          processings as Types.Array<ContractDataProcessingDocument>;
-        await contract.save();
-        return contract.dataProcessings;
-      } else {
-        throw new Error('Contract not found');
-      }
-    } catch (error) {
-      throw error;
-    }
-  }
-  */
 
-  public async insertDataProcessing(
+  public async insertServiceChain(
     contractId: string,
-    processing: ContractDataProcessing,
-  ): Promise<ContractDataProcessing> {
+    chain: ContractServiceChain,
+  ): Promise<ContractServiceChain> {
     try {
       const contract = await Contract.findById(contractId);
       if (contract) {
         if (
-          !contract.dataProcessings.find(
-            (element) => element.catalogId === processing.catalogId,
+          !contract.serviceChains.find(
+            (element) => element.serviceChainId === chain.serviceChainId,
           )
         ) {
-          processing.status = 'active';
-          contract.dataProcessings.push(processing);
+          contract.serviceChains.push(chain);
         } else {
-          throw new Error('data');
+          throw new Error('Active same data chain already exists');
         }
         await contract.save();
-        return processing;
+        return chain;
       } else {
         throw new Error('Contract not found');
       }
@@ -731,25 +760,21 @@ export class ContractService {
     }
   }
 
-  public async updateDataProcessing(
+  public async updateServiceChain(
     contractId: string,
-    processingId: string,
-    processing: ContractDataProcessing,
-  ): Promise<ContractDataProcessing[]> {
+    chainId: string,
+    chain: ContractServiceChain,
+  ): Promise<ContractServiceChain[]> {
     try {
       const contract = await Contract.findById(contractId);
       if (contract) {
-        const existingProcessing = contract.dataProcessings.find(
-          (item) =>
-            item.catalogId.toString() === processingId &&
-            item.status === 'active',
+        const existingProcessing = contract.serviceChains.find(
+          (item) => item.serviceChainId!.toString() === chainId,
         );
         if (existingProcessing) {
-          existingProcessing.status = 'inactive';
-          processing.status = 'active';
-          contract.dataProcessings.push(processing);
+          contract.serviceChains.push(chain);
           await contract.save();
-          return contract.dataProcessings;
+          return contract.serviceChains;
         } else {
           throw new Error('Processing not found in the contract');
         }
@@ -761,23 +786,29 @@ export class ContractService {
     }
   }
 
-  public async removeDataProcessing(
+  public async removeServiceChain(
     contractId: string,
-    processingId: string,
-  ): Promise<ContractDataProcessing> {
+    chainId: string,
+  ): Promise<ContractServiceChain[] | undefined> {
     try {
       const contract = await Contract.findById(contractId);
       if (contract) {
-        const processing = contract.dataProcessings.find(
-          (item) =>
-            item._id.toString() === processingId && item.status === 'active',
-        );
-        if (processing) {
-          processing.status = 'inactive';
+        const initialLength = contract.serviceChains.length;
+        contract.serviceChains = contract.serviceChains.filter((item) => {
+          if (
+            item?.serviceChainId &&
+            item.serviceChainId.toString() !== chainId
+          ) {
+            return item;
+          } else if (item?.catalogId && item.catalogId.toString() !== chainId) {
+            return item;
+          }
+        }) as Types.DocumentArray<ContractServiceChainDocument>;
+        if (contract.serviceChains.length !== initialLength) {
           await contract.save();
-          return processing;
+          return contract.serviceChains;
         } else {
-          throw new Error('Index out of bounds');
+          throw new Error('Processing not found in the contract');
         }
       } else {
         throw new Error('Contract not found');
@@ -787,22 +818,22 @@ export class ContractService {
     }
   }
 
-  public async deleteDataProcessing(
+  public async deleteServiceChain(
     contractId: string,
-    processing: ContractDataProcessing,
-  ): Promise<ContractDataProcessing> {
+    chain: ContractServiceChain,
+  ): Promise<ContractServiceChain> {
     try {
       const contract = await Contract.findById(contractId);
       if (contract) {
-        const initialLength = contract.dataProcessings.length;
-        contract.dataProcessings = contract.dataProcessings.filter(
+        const initialLength = contract.serviceChains.length;
+        contract.serviceChains = contract.serviceChains.filter(
           (item) =>
-            item.catalogId !== processing.catalogId &&
-            item.infrastructureServices !== processing.infrastructureServices,
-        ) as Types.DocumentArray<ContractDataProcessingDocument>;
-        if (contract.dataProcessings.length !== initialLength) {
+            (item.serviceChainId!.toString() || item.catalogId!.toString()) !==
+              chain.serviceChainId && item.services !== chain.services,
+        ) as Types.DocumentArray<ContractServiceChainDocument>;
+        if (contract.serviceChains.length !== initialLength) {
           await contract.save();
-          return processing;
+          return chain;
         } else {
           throw new Error('Processing not found in the contract');
         }

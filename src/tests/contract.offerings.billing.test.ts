@@ -1,13 +1,11 @@
 import supertest from 'supertest';
 import { expect } from 'chai';
 import app from 'server';
-import ContractModel from 'models/contract.model';
+import Contract from 'models/contract.model';
 import { config } from 'config/config';
 import axios from 'axios';
 import http from 'http';
-import { _logYellow, _logGreen, _logObject } from './utils/utils';
-import { IContractDB } from 'interfaces/contract.interface';
-import mongoose, { Model } from 'mongoose';
+import { ruleBilling1, ruleBilling2, ruleBilling3, ruleBilling4 } from './mock/registryMock';
 
 let cookie: any;
 let contractId: any;
@@ -21,7 +19,6 @@ if (!config.catalog.registry.defined) {
   axios.defaults.baseURL = `${config.server.url}:${SERVER_PORT}/`;
 }
 
-let Contract: mongoose.Model<IContractDB>;
 
 describe('Billing rules injection and removal test cases for contract', () => {
   let server: http.Server;
@@ -34,21 +31,16 @@ describe('Billing rules injection and removal test cases for contract', () => {
         resolve(true);
       });
     });
-    Contract = await ContractModel.getModel();
     await Contract.deleteMany({});
   });
 
   it('Retrieve the cookie after pinging the server', async () => {
-    _logYellow('\n-Login the user');
     const authResponse = await supertest(app.router).get('/ping');
     cookie = authResponse.headers['set-cookie'];
-    _logGreen('Cookies:');
-    _logObject(cookie);
     expect(authResponse.status).to.equal(200);
   });
 
   it('should generate an ecosystem contract', async () => {
-    _logYellow('\n-Generate a contract with the following odrl policy');
     const contract = {
       ecosystem: 'ecosystem-id',
       '@context': 'http://www.w3.org/ns/odrl/2/',
@@ -56,20 +48,16 @@ describe('Billing rules injection and removal test cases for contract', () => {
       permission: [],
       prohibition: [],
     };
-    _logGreen('The odrl input contract:');
-    _logObject(contract);
     const response = await supertest(app.router)
       .post('/contracts/')
       .set('Cookie', cookie)
       .send({ contract, role: 'ecosystem' });
-    _logGreen('The contract in database:');
-    _logObject(response.body);
     expect(response.status).to.equal(201);
     contractId = response.body._id;
   });
 
   it('Should inject rule-billing-1', async () => {
-    _logYellow('\n-Inject rule-billing-1');
+    ruleBilling1();
     const data = {
       participant: 'participant',
       serviceOffering: 'offering-1',
@@ -83,15 +71,11 @@ describe('Billing rules injection and removal test cases for contract', () => {
         },
       ],
     };
-    _logGreen('The input policy set:');
-    _logObject(data);
     const response = await supertest(app.router)
       .put(`/contracts/policies/offering/${contractId}`)
       .set('Cookie', cookie)
       .send(data);
     expect(response.status).to.equal(200);
-    _logGreen('The new contract in database:');
-    _logObject(response.body.contract);
     const offering = response.body.contract.serviceOfferings.find(
       (o: any) =>
         o.serviceOffering === data.serviceOffering &&
@@ -109,7 +93,7 @@ describe('Billing rules injection and removal test cases for contract', () => {
   });
 
   it('Should inject rule-billing-2', async () => {
-    _logYellow('\n-Inject rule-billing-2');
+    ruleBilling2();
     const data = {
       participant: 'participant',
       serviceOffering: 'offering-2',
@@ -123,15 +107,11 @@ describe('Billing rules injection and removal test cases for contract', () => {
         },
       ],
     };
-    _logGreen('The input policy set:');
-    _logObject(data);
     const response = await supertest(app.router)
       .put(`/contracts/policies/offering/${contractId}`)
       .set('Cookie', cookie)
       .send(data);
     expect(response.status).to.equal(200);
-    _logGreen('The new contract in database:');
-    _logObject(response.body.contract);
     const offering = response.body.contract.serviceOfferings.find(
       (o: any) =>
         o.serviceOffering === data.serviceOffering &&
@@ -152,7 +132,7 @@ describe('Billing rules injection and removal test cases for contract', () => {
   });
 
   it('Should inject rule-billing-3', async () => {
-    _logYellow('\n-Inject rule-billing-3');
+    ruleBilling3();
     const data = {
       participant: 'participant',
       serviceOffering: 'offering-3',
@@ -165,15 +145,11 @@ describe('Billing rules injection and removal test cases for contract', () => {
         },
       ],
     };
-    _logGreen('The input policy set:');
-    _logObject(data);
     const response = await supertest(app.router)
       .put(`/contracts/policies/offering/${contractId}`)
       .set('Cookie', cookie)
       .send(data);
     expect(response.status).to.equal(200);
-    _logGreen('The new contract in database:');
-    _logObject(response.body.contract);
     const offering = response.body.contract.serviceOfferings.find(
       (o: any) =>
         o.serviceOffering === data.serviceOffering &&
@@ -191,7 +167,7 @@ describe('Billing rules injection and removal test cases for contract', () => {
   });
 
   it('Should inject rule-billing-4', async () => {
-    _logYellow('\n-Inject rule-billing-4');
+    ruleBilling4();
     const data = {
       participant: 'participant',
       serviceOffering: 'offering-4',
@@ -206,15 +182,11 @@ describe('Billing rules injection and removal test cases for contract', () => {
         },
       ],
     };
-    _logGreen('The input policy set:');
-    _logObject(data);
     const response = await supertest(app.router)
       .put(`/contracts/policies/offering/${contractId}`)
       .set('Cookie', cookie)
       .send(data);
     expect(response.status).to.equal(200);
-    _logGreen('The new contract in database:');
-    _logObject(response.body.contract);
     const offering = response.body.contract.serviceOfferings.find(
       (o: any) =>
         o.serviceOffering === data.serviceOffering &&
@@ -255,7 +227,6 @@ describe('Billing rules injection and removal test cases for contract', () => {
   });
 
   it('Should remove billing policies for a service offering', async () => {
-    _logYellow('\n-Remove billing policies for a service offering');
     const participantId = 'participant';
     const offeringId = 'offering-1';
     const response = await supertest(app.router)
@@ -263,8 +234,6 @@ describe('Billing rules injection and removal test cases for contract', () => {
         `/contracts/policies/offering/${contractId}/${offeringId}/${participantId}`,
       )
       .set('Cookie', cookie);
-    _logGreen('The updated contract in database:');
-    _logObject(response.body);
     expect(response.status).to.equal(200);
     expect(response.body.contract).to.be.an('object');
     const contract = response.body.contract;

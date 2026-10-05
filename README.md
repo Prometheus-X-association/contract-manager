@@ -21,7 +21,7 @@ requirements with docker:
 2. Copy the .env file
 
 ```bash
-cp .env.sample.env
+cp .env.sample .env
 ```
 
 3. Setup contract-agent.config.json (needed if USE_CONTRACT_AGENT=true in .env)
@@ -444,6 +444,367 @@ or
 > </details>
 
 For more information see the [Tests definition](https://github.com/Prometheus-X-association/contract-manager/wiki/Tests-definition).
+
+## Contract exemple
+
+```json
+{
+  "contract": {
+    "@context": "http://www.w3.org/ns/odrl/2/",
+    "@type": "Offer",
+    "uid": "urn:contract:ecosystem:001",
+    "profile": "http://www.w3.org/ns/odrl/2/core",
+    "ecosystem": "did:ecosystem:dataspace-health",
+    "orchestrator": "did:org:orchestrator",
+    "useDVCT": true,
+    "status": "pending",
+    "permission": [
+      {
+        "action": "use",
+        "target": "http://target/resource"
+      }
+    ],
+    "rolesAndObligations": [
+      {
+        "role": "dataProvider",
+        "policies": [
+          {
+            "uid": "policy-001",
+            "description": "Provider must anonymize data before sharing",
+            "permission": [
+              {
+                "action": "use",
+                "target": "http://target/dataset",
+                "constraint": [
+                  {
+                    "@type": "Constraint",
+                    "leftOperand": "dateTime",
+                    "operator": "lteq",
+                    "rightOperand": "2027-12-31"
+                  }
+                ],
+                "duty": [
+                  {
+                    "action": "compensate",
+                    "constraint": [
+                      {
+                        "leftOperand": "payAmount",
+                        "operator": "eq",
+                        "rightOperand": "100"
+                      }
+                    ]
+                  }
+                ]
+              }
+            ],
+            "prohibition": [
+              {
+                "action": "distribute",
+                "target": "http://target/dataset",
+                "constraint": []
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "members": [
+      {
+        "participant": "did:org:provider",
+        "role": "dataProvider",
+        "signature": "sig-abc123",
+        "date": "2025-06-01T10:00:00.000Z"
+      },
+      {
+        "participant": "did:org:consumer",
+        "role": "dataConsumer",
+        "signature": "sig-def456",
+        "date": "2025-06-02T09:00:00.000Z"
+      }
+    ],
+    "revokedMembers": [],
+    "purpose": [
+      {
+        "uid": "purpose-001",
+        "purpose": "Research",
+        "action": "use",
+        "assigner": "did:org:provider",
+        "assignee": "did:org:consumer",
+        "purposeCategory": "HealthcareResearch",
+        "consentType": "Explicit",
+        "piiCategory": "HealthData",
+        "primaryPurpose": "true",
+        "termination": "2027-12-31",
+        "thirdPartyDisclosure": "false",
+        "thirdPartyName": ""
+      }
+    ],
+    "serviceChains": [
+      {
+        "catalogId": "catalog-001",
+        "serviceChainId": "chain-001",
+        "services": [
+          { "serviceId": "svc-A", "order": 1 },
+          { "serviceId": "svc-B", "order": 2 }
+        ]
+      }
+    ],
+    "serviceOfferings": [
+      {
+        "participant": "did:org:provider",
+        "serviceOffering": "did:offering:premium-data-pack",
+        "offerName": "Premium Health Data Pack",
+        "offerId": "offer-42",
+        "offerCaption": "Anonymized patient dataset for research",
+        "policies": [
+          {
+            "uid": "policy-offering-001",
+            "description": "Use restricted to research purposes",
+            "permission": [
+              {
+                "action": "use",
+                "target": "did:offering:premium-data-pack",
+                "constraint": [
+                  {
+                    "leftOperand": "purpose",
+                    "operator": "eq",
+                    "rightOperand": "research"
+                  }
+                ]
+              }
+            ],
+            "prohibition": []
+          }
+        ],
+        "resources": [
+          {
+            "resourceName": "Patient Records 2024",
+            "resourceId": "res-001",
+            "resourceDescription": "Anonymized patient records from 2024",
+            "piiInformation": {
+              "dataUserRole": "dataProcessor",
+              "processingPurposes": ["analytics", "research"],
+              "legalBasis": "Legitimate interest",
+              "usageRestrictions": ["no-resale", "anonymized-only"],
+              "dpoContact": {
+                "name": "Alice Dupont",
+                "email": "alice.dupont@health-org.fr",
+                "phone": "+33600000001"
+              },
+              "plannedProcessingActivities": ["profiling", "aggregation"],
+              "dataCategories": ["health", "demographics"],
+              "dataSubjectCategories": ["patients", "adults"],
+              "dataVolumeRange": "1000-10000",
+              "subProcessorsInvolved": [
+                { "name": "CloudCo", "role": "storage", "country": "FR" }
+              ],
+              "transferOutsideEEA": {
+                "hasTransfer": false,
+                "countries": [],
+                "activities": [],
+                "safeguards": []
+              },
+              "subsequentSubProcessingNoticePeriod": 30,
+              "dataSubjectRightsAssistanceDelay": 7,
+              "securityBreachAssistanceDelay": "72h",
+              "auditNoticePeriod": 14,
+              "subsequentControllerReuseAuthorization": {
+                "authorized": false,
+                "details": "Reuse not authorized without prior written consent"
+              },
+              "securityMeasures": {
+                "encryption": true,
+                "pseudonymization": true,
+                "accessControl": "RBAC"
+              },
+              "securityCertificationStandard": ["ISO27001", "ISO27701"],
+              "securityCertificationDate": "2024-01-15T00:00:00.000Z",
+              "securityCertificationExpiryDate": "2027-01-15T00:00:00.000Z"
+            }
+          }
+        ],
+        "pricing": {
+          "value": 299.90,
+          "billingPeriod": "monthly",
+          "setupFee": 500,
+          "description": "Monthly subscription – includes 10 000 API calls"
+        },
+        "sla": {
+          "deliveryDeadline": {
+            "value": 3,
+            "unit": "business days"
+          },
+          "availability": "99.9%",
+          "updateFrequency": "Daily",
+          "responseTime": {
+            "value": 200,
+            "unit": "ms",
+            "measurementBasis": "p95"
+          },
+          "availabilityTimeWindow": {
+            "value": "24/7",
+            "timezone": "Europe/Paris"
+          },
+          "retentionPeriod": "1 year",
+          "generalAvailabilityDate": "2025-07-01T00:00:00.000Z",
+          "endOfSupportDate": "2028-07-01T00:00:00.000Z",
+          "endOfLifeDate": "2030-01-01T00:00:00.000Z",
+          "supportChannels": ["Email", "Ticketing portal"],
+          "supportServiceHours": "Business hours 5x8",
+          "supportSeverityLevel": [
+            {
+              "level": "High",
+              "responseTimeValue": 4,
+              "responseTimeUnit": "hours"
+            }
+          ],
+          "measurementMonitoringMethod": "Automated monitoring dashboard (Datadog)",
+          "note": "SLA reviewed and renegotiated annually"
+        },
+        "commitments": [
+          {
+            "commitmentConcerned": "availability",
+            "triggerOperator": "<",
+            "triggerValue": "99.9%",
+            "consequenceType": "Service credit",
+            "penaltyAmount": 10,
+            "penaltyBasis": "% of period fee",
+            "penaltyCap": "% of monthly fee",
+            "measurementPeriod": "Monthly",
+            "claimProcedure": "Automatic credit",
+            "claimDeadlineDays": 30,
+            "note": "Credit capped at 30% of the monthly fee"
+          }
+        ],
+        "contractDuration": {
+          "value": 12,
+          "unit": "months",
+          "renewalMode": "Automatic renewal",
+          "noticePeriodDays": 30
+        },
+        "terminationForConvenience": {
+          "allowed": true,
+          "noticePeriodDays": 60
+        },
+        "terminationForCause": {
+          "breachThreshold": 3,
+          "noticePeriod": "X days notice",
+          "noticePeriodDays": 15,
+          "regulatoryOrSecurityTermination": "Yes (immediate)",
+          "regulatoryNoticeDays": 0
+        },
+        "penaltiesTerminationLink": {
+          "cumulativePenaltyCapTermination": true,
+          "suspensionBeforeTermination": true,
+          "suspensionDurationDays": 30
+        },
+        "customFields": {
+          "legalCode": "L2025-HR-042",
+          "sector": "healthcare",
+          "internalReference": "PRJ-HEALTH-001"
+        }
+      }
+    ],
+    "project": {
+      "title": "Cross-Border Health Analytics",
+      "caption": "Federated analytics on anonymized patient data",
+      "description": "This project aims to leverage anonymized patient records across EU member states to improve early diagnosis models.",
+      "categories": ["health", "data-analytics", "AI"],
+      "countryOrRegion": "FR",
+      "picture": "https://cdn.example.com/projects/health-analytics.png",
+      "purpose": "Improve early diagnosis through federated ML models",
+      "benefit": "Reduced diagnostic delays and improved patient outcomes",
+      "desiredDataAvailabilityDate": "2025-09-01T00:00:00.000Z",
+      "legalBasisOfProcessing": "Legitimate interest",
+      "legalBasisDescription": "GDPR Art. 6(1)(f) – Legitimate interest for scientific research",
+      "dataNeed": [
+        {
+          "resource": "did:resource:patient-records-2024",
+          "description": "Anonymized patient records from 2024 with diagnosis codes"
+        }
+      ],
+      "serviceNeed": [
+        {
+          "service": "did:service:federated-ml",
+          "description": "Federated machine learning inference service"
+        }
+      ],
+      "serviceInfrastructures": [
+        {
+          "infrastructure": "did:infra:cloud-eu-west",
+          "description": "EU-hosted cloud infrastructure compliant with GDPR"
+        }
+      ],
+      "criteriaAndConditions": "All participants must hold ISO 27001 certification. Data must remain within the EU.",
+      "contributions": [
+        {
+          "contribution": "Anonymized dataset",
+          "description": "50 000 anonymized patient records from 2022–2024"
+        },
+        {
+          "contribution": "ML model",
+          "description": "Pre-trained diagnosis classification model"
+        }
+      ],
+      "participantsAndRoles": [
+        {
+          "participant": "did:org:provider",
+          "roles": ["dataController", "dataProvider"]
+        },
+        {
+          "participant": "did:org:consumer",
+          "roles": ["dataProcessor", "modelConsumer"]
+        },
+        {
+          "participant": "did:org:orchestrator",
+          "roles": ["orchestrator"]
+        }
+      ]
+    },
+    "additionalClauses": {
+      "reversibilityExit": {
+        "value": "Return + deletion",
+        "deadlineDays": 30
+      },
+      "subcontracting": {
+        "subcontractors": ["did:org:cloudco", "did:org:auditfirm"]
+      },
+      "securityIncidentNotification": {
+        "value": "72h"
+      },
+      "intellectualPropertyOnOutputs": {
+        "value": "Joint ownership"
+      },
+      "governingLawAndJurisdiction": {
+        "countryISO": "FR",
+        "disputeMode": "Mediation then arbitration"
+      },
+      "forceMajeure": {
+        "value": "Standard + epidemic"
+      },
+      "auditRight": {
+        "value": "Third-party audit",
+        "frequency": "Annual"
+      },
+      "confidentiality": {
+        "value": "Mutual NDA",
+        "survivalYears": 3
+      },
+      "amendmentModification": {
+        "value": "Written amendment only"
+      }
+    },
+    "customFields": {
+      "internalProjectCode": "HEALTH-2025-001",
+      "budgetEuros": 250000,
+      "approvedBy": "did:person:legal-director",
+      "regulatoryFramework": "GDPR + MDR"
+    }
+  },
+  "role": "ecosystem"
+}
+
+```
 
 ## License
 

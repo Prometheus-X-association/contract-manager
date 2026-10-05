@@ -1,4 +1,4 @@
-import { Agent, ContractAgent, Logger, MongooseProvider } from 'contract-agent';
+import { Agent, ContractAgent, Logger, MongooseProvider } from 'contract-agent/contract-agent/dist';
 import { ContractSchema } from '../models/contract.model';
 import { IContractDB } from '../interfaces/contract.interface';
 

@@ -1,17 +1,14 @@
 import supertest from 'supertest';
 import app from 'server';
-import ContractModel from 'models/contract.model';
+import Contract from 'models/contract.model';
 import Bilateral from 'models/bilateral.model';
 import { config } from 'config/config';
 import bilateralService from 'services/bilateral.service';
 import { IBilateralContract, IContractDB } from 'interfaces/contract.interface';
 import { expect } from 'chai';
 import { ContractService } from 'services/contract.service';
-import mongoose, { Model } from 'mongoose';
 
 const SERVER_PORT = 9999;
-
-let Contract: mongoose.Model<IContractDB>;
 
 describe('Operations on offerings in contracts', () => {
   let server: any;
@@ -27,16 +24,11 @@ describe('Operations on offerings in contracts', () => {
       });
     });
 
-    Contract = await ContractModel.getModel();
     await Contract.deleteMany({});
     await Bilateral.deleteMany({});
 
     const authResponse = await supertest(app.router).get('/ping');
     authTokenCookie = authResponse.headers['set-cookie'];
-
-    console.log(
-      'Setting up bilateral & ecosystem contracts with a serviceOffering',
-    );
 
     // Create a bilateral contract
     const contractData: Partial<IBilateralContract> = {
